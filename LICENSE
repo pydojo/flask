@@ -3,19 +3,17 @@ Copyright © 2010 by the Pallets team.
 保留部分权力。
 
 源代码的分发和使用，软件的二进制版本和文档，
-, are permitted
-provided that the following conditions are met:
+有修改还是没有修改，都要经过许可，
+许可内容要符合如下条件：
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
+* 源代码的再次分发必须保留第一行的版权提醒、本条件清单，以及如下要求。
 
-* Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
+* 以二进制再次分发时必须再次进行第一行的版权提醒、本条件清单，以及文档中的要求，
+  并/或 其它随分发所含的所有素材。
 
-* Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
+* 无论是版权持有人的名字还是贡献者们的名字也需要用在合法或促销的产品上，
+  促销产品都使用了 Flask 即使没有具体的手写许可，
+  也要注明版权持有人与贡献者们的名字。
 
 THIS SOFTWARE AND DOCUMENTATION IS PROVIDED BY THE COPYRIGHT HOLDERS AND
 CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
