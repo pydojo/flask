@@ -1,13 +1,13 @@
 .. currentmodule:: flask
 
-Flask Changelog
+Flask 变更日志
 ===============
 
 
-Version 1.1
+版本 1.1
 -----------
 
-Unreleased
+未发布
 
 -   :meth:`flask.RequestContext.copy` includes the current session
     object in the request context copy. This prevents ``session``
@@ -805,7 +805,7 @@ Released on June 28th 2011, codename Grappa
 - Blueprints can provide blueprint specific error handlers.
 - Implemented generic :ref:`views` (class-based views).
 
-Version 0.6.1
+版本 0.6.1
 -------------
 
 Bugfix release, released on December 31st 2010
@@ -821,149 +821,129 @@ Bugfix release, released on December 31st 2010
   if the host server was a windows based operating system and the client
   uses backslashes to escape the directory the files where exposed from.
 
-Version 0.6
+版本 0.6
 -----------
 
-Released on July 27th 2010, codename Whisky
+发布于 July 27th 2010，代号 Whisky 威士忌
 
-- after request functions are now called in reverse order of
-  registration.
-- OPTIONS is now automatically implemented by Flask unless the
-  application explicitly adds 'OPTIONS' as method to the URL rule.
-  In this case no automatic OPTIONS handling kicks in.
-- static rules are now even in place if there is no static folder
-  for the module.  This was implemented to aid GAE which will
-  remove the static folder if it's part of a mapping in the .yml
-  file.
-- the :attr:`~flask.Flask.config` is now available in the templates
-  as `config`.
-- context processors will no longer override values passed directly
-  to the render function.
-- added the ability to limit the incoming request data with the
-  new ``MAX_CONTENT_LENGTH`` configuration value.
-- the endpoint for the :meth:`flask.Module.add_url_rule` method
-  is now optional to be consistent with the function of the
-  same name on the application object.
-- added a :func:`flask.make_response` function that simplifies
-  creating response object instances in views.
-- added signalling support based on blinker.  This feature is currently
-  optional and supposed to be used by extensions and applications.  If
-  you want to use it, make sure to have `blinker`_ installed.
-- refactored the way URL adapters are created.  This process is now
-  fully customizable with the :meth:`~flask.Flask.create_url_adapter`
-  method.
-- modules can now register for a subdomain instead of just an URL
-  prefix.  This makes it possible to bind a whole module to a
-  configurable subdomain.
+- 在请求函数之后就可以用逆序注册来调用这些请求函数。
+- OPTIONS 现在是由 Flask 自动部署，除非应用明确增加 'OPTIONS'
+  方法到 URL 规则中。在这种情况下 OPTIONS 处理不会自动介入。
+- 对于模块来说如果没有静态文件夹的话，静态规则依然存在。这
+  样做是为了 GAE，因为如果静态文件夹映射在 .yml 文件中的话，
+  GAE会删除静态文件夹。
+- :attr:`~flask.Flask.config` 属性现在可以用在模版中
+  作为 `config` 内容。
+- 语境处理器不再会覆写直接带入到翻译函数中的那些值了。
+- 已加入限制入口请求数据含带新 ``MAX_CONTENT_LENGTH`` 
+  配置值的能力。
+- :meth:`flask.Module.add_url_rule` 方法的端点可选为
+  与应用对象上同名函数保持一致了。
+- 已加入一个 :func:`flask.make_response` 函数，它直接
+  在视图函数中建立响应对象实例。
+- 已加入基于信号灯的信号支持。这个特性当前是可选项，并且可
+  能会由扩展与应用来使用。如果你想用这个特性的话，确保已经
+  安装了 `blinker`_ 库。
+- 重构了 URL 适配器建立的方法。这种重构处理现在完全可以用
+  :meth:`~flask.Flask.create_url_adapter` 方法来自定
+  义了。
+- 模块现在可以注册一个子域名来代替一个 URL 前缀。这样做可以
+  把一个完整的模块绑定到一个可配置的子域名上。
 
 .. _blinker: https://pypi.org/project/blinker/
 
-Version 0.5.2
+版本 0.5.2
 -------------
 
-Bugfix Release, released on July 15th 2010
+Bug 修复，发布于 July 15th 2010
 
-- fixed another issue with loading templates from directories when
+- 修复另一个从目录加载模版的问题，从而解决了什么时候模块用在哪里。
   modules were used.
 
-Version 0.5.1
+版本 0.5.1
 -------------
 
-Bugfix Release, released on July 6th 2010
+Bug 修复，发布于 July 6th 2010
 
-- fixes an issue with template loading from directories when modules
-  where used.
+- 修复一个模版加载目录的问题，从而解决了什么时候模块用在哪里。
 
-Version 0.5
+版本 0.5
 -----------
 
-Released on July 6th 2010, codename Calvados
+发布于 July 6th 2010，代号 Calvados 烈酒
 
-- fixed a bug with subdomains that was caused by the inability to
-  specify the server name.  The server name can now be set with
-  the ``SERVER_NAME`` config key.  This key is now also used to set
-  the session cookie cross-subdomain wide.
-- autoescaping is no longer active for all templates.  Instead it
-  is only active for ``.html``, ``.htm``, ``.xml`` and ``.xhtml``.
-  Inside templates this behavior can be changed with the
-  ``autoescape`` tag.
-- refactored Flask internally.  It now consists of more than a
-  single file.
-- :func:`flask.send_file` now emits etags and has the ability to
-  do conditional responses builtin.
-- (temporarily) dropped support for zipped applications.  This was a
-  rarely used feature and led to some confusing behavior.
-- added support for per-package template and static-file directories.
-- removed support for `create_jinja_loader` which is no longer used
-  in 0.5 due to the improved module support.
-- added a helper function to expose files from any directory.
+- 修复了一个 bug 该 bug 是不能访问具体服务器名的子域名。服务器名现在可以
+  用 ``SERVER_NAME`` 配置键来设置了。这个键名现在也用来设置会话 cookie
+  跨子域名功能。
+- 自动转义不再为所有模版处于激活状态。相反自动转义只为 ``.html``、 ``.htm``、
+  ``.xml`` 和 ``.xhtml`` 而激活。在这些模版中自动转义的行为可以用
+  ``autoescape`` 模版语言标签来改变。
+- 内部重构完 Flask 代码。现在是由多个文件组成的了。
+- :func:`flask.send_file` 函数此时发出许多电子标签后具备了内在的条件反射能力。
+- (临时地) 删除了压缩应用程序的支持。这是一个几乎用不到的特性，并且产生一些
+  令人困惑的表现。
+- 已加入支持每个包模版和静态文件目录。
+- 删除 `create_jinja_loader` 的支持，因为在 0.5 中不再使用是为了提升模块支持。
+- 已加入一个助手函数来曝露任何一个目录中的文件。
 
-Version 0.4
+版本 0.4
 -----------
 
-Released on June 18th 2010, codename Rakia
+发布于 June 18th 2010，代号 Rakia 果酒
 
-- added the ability to register application wide error handlers
-  from modules.
-- :meth:`~flask.Flask.after_request` handlers are now also invoked
-  if the request dies with an exception and an error handling page
-  kicks in.
-- test client has the ability to preserve the request context
-  for a little longer.  This can also be used to trigger custom
-  requests that do not pop the request stack for testing.
-- because the Python standard library caches loggers, the name of
-  the logger is configurable now to better support unittests.
-- added ``TESTING`` switch that can activate unittesting helpers.
-- the logger switches to ``DEBUG`` mode now if debug is enabled.
+- 已加入一项能力，从模块注册应用范围错误处理器。
+- :meth:`~flask.Flask.after_request` 方法处理器现在也都开始介入，
+  如果请求因为一个列外而终止，然后一个错误处理页面就会出现。
+- 测试客户端具有了保留一小段时间的请求语境能力。这项能力也可以用来触发
+  为测试而无法删除请求堆栈的自定义请求。
+- 由于 Python 标准库缓存日志，日志名现在可以配置成更好地支持单元测试。
+- 已加入 ``TESTING`` 开关，它可以激活单元测试助手。
+- 如果调试模式开启的话，日志现在可以切换到 ``DEBUG`` 调试模式。
 
-Version 0.3.1
+版本 0.3.1
 -------------
 
-Bugfix release, released on May 28th 2010
+Bug 修复，发布于 May 28th 2010
 
-- fixed a error reporting bug with :meth:`flask.Config.from_envvar`
-- removed some unused code from flask
-- release does no longer include development leftover files (.git
-  folder for themes, built documentation in zip and pdf file and
-  some .pyc files)
+- 修复了一个使用 :meth:`flask.Config.from_envvar` 方法报告时产生的一个错误。
+- 删除了一些 flask 中未使用的代码。
+- 本版本中不再含有开发残留文件 ( 对于主题来说的 .git 文件夹，建立文档时产生的 zip
+  和 pdf 文件，以及一些 .pyc 文件)
 
-Version 0.3
+版本 0.3
 -----------
 
-Released on May 28th 2010, codename Schnaps
+发布于 May 28th 2010，代号 Schnaps 白酒
 
-- added support for categories for flashed messages.
-- the application now configures a :class:`logging.Handler` and will
-  log request handling exceptions to that logger when not in debug
-  mode.  This makes it possible to receive mails on server errors
-  for example.
-- added support for context binding that does not require the use of
-  the with statement for playing in the console.
-- the request context is now available within the with statement making
-  it possible to further push the request context or pop it.
-- added support for configurations.
+- 已加入对闪存消息分类的支持。
+- 现在应用程序配置了一个 :class:`logging.Handler` 类并且在没有开启
+  调试模式时把那些请求处理例外错误记录在日志中。例如，这样可能实现接收
+  到服务器错误方面的电子邮件通知。
+- 已加入支持语境绑定，语境绑定不需要在终端里使用 ``with`` 语句。
+- 现在请求语境可以用在 ``with`` 语句里了，这样做可以实现稍后推送请求语境，
+  或者删除请求语境。
+- 已加入支持许多配置。
 
-Version 0.2
+版本 0.2
 -----------
 
-Released on May 12th 2010, codename Jägermeister
+发布于 May 12th 2010，代号 Jägermeister 开胃酒
 
-- various bugfixes
-- integrated JSON support
-- added :func:`~flask.get_template_attribute` helper function.
-- :meth:`~flask.Flask.add_url_rule` can now also register a
-  view function.
-- refactored internal request dispatching.
-- server listens on 127.0.0.1 by default now to fix issues with chrome.
-- added external URL support.
-- added support for :func:`~flask.send_file`
-- module support and internal request handling refactoring
-  to better support pluggable applications.
-- sessions can be set to be permanent now on a per-session basis.
-- better error reporting on missing secret keys.
-- added support for Google Appengine.
+- 各种 bug 修复
+- 集成了 JSON 支持
+- 已加入 :func:`~flask.get_template_attribute` 助手函数。
+- :meth:`~flask.Flask.add_url_rule` 该方法现在也可以注册
+  一个视图函数了。
+- 重构内部请求调度。
+- 修复了使用 chrome 浏览器默认访问在 127.0.0.1 上的服务器问题。
+- 已加入支持外部 URL 功能。
+- 已加入 :func:`~flask.send_file` 函数的支持。
+- 模块支持与内部请求处理重构成更好地支援可插拔应用程序。
+- 在每个会话基础上现在可以把会话设置成永久的了。
+- 在缺少密钥情况下有更好的错误报告内容。
+- 已加入支持 Google Appengine 应用引擎。
 
-Version 0.1
+版本 0.1
 -----------
 
-First public preview release.
+第一次公开预览发布。
