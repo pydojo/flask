@@ -24,8 +24,8 @@
 - 如果可能的话，包含一个小型完整可验证的例子 `minimal, complete, and verifiable example`_ 
   这样也会帮助我们识别问题到底是什么。同时这也会帮助检查问题不是因为你的代码造成的。
 - 描述清楚实际发生了什么。如果有一个例外的话，把完整的回溯信息也提供出来。
-- 列出你使用的 Python, Flask, 和 Werkzeug 版本号。如果可能的话，检查是否你遇到的问题
-  是否已经在项目仓库中获得解决。
+- 列出你使用的 Python, Flask, 和 Werkzeug 版本号。如果可能的话，检查是否你遇到
+  的问题已经在项目仓库中获得解决。
 
 .. _minimal, complete, and verifiable example: https://stackoverflow.com/help/mcve
 
@@ -159,7 +159,7 @@ Flask 提供了一份 ``Makefile`` 文件，其中含有许多快捷方法。这
 服务器，你可以在管理员面板中关闭仓库检查功能。
 
 这些问题也会在克隆仓库时产生问题。如果你在 git 配置文件中
-又如下设置内容的话 ::
+有如下设置内容的话 ::
 
     [fetch]
     fsckobjects = true
