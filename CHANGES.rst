@@ -398,10 +398,10 @@ Bugfix release, released on June 7th 2016.
 
 .. _#1872: https://github.com/pallets/flask/pull/1872
 
-Version 0.11
+版本 0.11
 ------------
 
-Released on May 29th 2016, codename Absinthe.
+发布于 May 29th 2016，代号 Absinthe 茴香酒
 
 - Added support to serializing top-level arrays to :func:`flask.jsonify`. This
   introduces a security risk in ancient browsers. See
@@ -484,120 +484,91 @@ Released on May 29th 2016, codename Absinthe.
 .. _#1763: https://github.com/pallets/flask/pull/1763
 .. _#1728: https://github.com/pallets/flask/pull/1728
 
-Version 0.10.2
+版本 0.10.2
 --------------
 
-(bugfix release, release date to be announced)
+Bug 修复，发布日期待公布
 
-- Fixed broken `test_appcontext_signals()` test case.
-- Raise an :exc:`AttributeError` in :func:`flask.helpers.find_package` with a
-  useful message explaining why it is raised when a PEP 302 import hook is used
-  without an `is_package()` method.
-- Fixed an issue causing exceptions raised before entering a request or app
-  context to be passed to teardown handlers.
-- Fixed an issue with query parameters getting removed from requests in
-  the test client when absolute URLs were requested.
-- Made `@before_first_request` into a decorator as intended.
-- Fixed an etags bug when sending a file streams with a name.
-- Fixed `send_from_directory` not expanding to the application root path
-  correctly.
-- Changed logic of before first request handlers to flip the flag after
-  invoking.  This will allow some uses that are potentially dangerous but
-  should probably be permitted.
-- Fixed Python 3 bug when a handler from `app.url_build_error_handlers`
-  reraises the `BuildError`.
+- 已修复断裂的 `test_appcontext_signals()` 测试用例。
+- 当 PEP 302 导入钩子使用时没有一个 `is_package()` 方法情况下，
+  在 :func:`flask.helpers.find_package` 函数中使用一个有用的消息来解释
+  为什么会产生一个 :exc:`AttributeError` 执行错误。
+- 已修复一个问题，在把一个请求或者一个应用语境输入到 teardown 处理器之前，导致一些
+  例外产生。
+- 已修复一个问题，在测试客户端中当请求绝对 URL 地址时，使用查询参数会从请求中得到删除。
+- 制作完 `@before_first_request` 到一个装饰器里作为以后使用。
+- 已修复一个电子标签 bug，该 bug 发生在使用一个名字发送一个文件流时。
+- 已修复 `send_from_directory` 不能正确地扩展到应用根路径上。
+- 已变更逻辑，第一次请求处理器之前变成第一次处理之后翻转旗语。这会允许一些潜在的危险
+  使用，但应该也是许可的。
+- 已修复 Python 3 bug，当一个来自 `app.url_build_error_handlers` 的处理器会
+  再次产生 `BuildError` 错误。
 
-Version 0.10.1
+版本 0.10.1
 --------------
 
-(bugfix release, released on June 14th 2013)
+Bug 修复，发布于 June 14th 2013
 
-- Fixed an issue where ``|tojson`` was not quoting single quotes which
-  made the filter not work properly in HTML attributes.  Now it's
-  possible to use that filter in single quoted attributes.  This should
-  make using that filter with angular.js easier.
-- Added support for byte strings back to the session system.  This broke
-  compatibility with the common case of people putting binary data for
-  token verification into the session.
-- Fixed an issue where registering the same method twice for the same endpoint
-  would trigger an exception incorrectly.
+- 修复一个问题， ``|tojson`` 所在之处没有使用单引号会让过滤器在 HTML 属性里不正确
+  地工作。现在使用在单引号属性中可以让过滤器正确工作了。这样做让与 angular.js 使用
+  时更容易工作了。
+- 已加入字节字符串的支持到会话系统中。否则为了令牌验证而把二进制数据放到会话里的共同
+  情况中会破坏兼容性。
+- 已修复一个问题，其中为同一个端点注册了两次同名方法会不正确地出发一个例外。
 
-Version 0.10
+版本 0.10
 ------------
 
-Released on June 13th 2013, codename Limoncello.
+发布于 June 13th 2013，代号 Limoncello 柠檬酒
 
-- Changed default cookie serialization format from pickle to JSON to
-  limit the impact an attacker can do if the secret key leaks.  See
-  :ref:`upgrading-to-010` for more information.
-- Added ``template_test`` methods in addition to the already existing
-  ``template_filter`` method family.
-- Added ``template_global`` methods in addition to the already existing
-  ``template_filter`` method family.
-- Set the content-length header for x-sendfile.
-- ``tojson`` filter now does not escape script blocks in HTML5 parsers.
-- ``tojson`` used in templates is now safe by default due.  This was
-  allowed due to the different escaping behavior.
-- Flask will now raise an error if you attempt to register a new function
-  on an already used endpoint.
-- Added wrapper module around simplejson and added default serialization
-  of datetime objects.  This allows much easier customization of how
-  JSON is handled by Flask or any Flask extension.
-- Removed deprecated internal ``flask.session`` module alias.  Use
-  ``flask.sessions`` instead to get the session module.  This is not to
-  be confused with ``flask.session`` the session proxy.
-- Templates can now be rendered without request context.  The behavior is
-  slightly different as the ``request``, ``session`` and ``g`` objects
-  will not be available and blueprint's context processors are not
-  called.
-- The config object is now available to the template as a real global and
-  not through a context processor which makes it available even in imported
-  templates by default.
-- Added an option to generate non-ascii encoded JSON which should result
-  in less bytes being transmitted over the network.  It's disabled by
-  default to not cause confusion with existing libraries that might expect
-  ``flask.json.dumps`` to return bytestrings by default.
-- ``flask.g`` is now stored on the app context instead of the request
-  context.
-- ``flask.g`` now gained a ``get()`` method for not erroring out on non
-  existing items.
-- ``flask.g`` now can be used with the ``in`` operator to see what's defined
-  and it now is iterable and will yield all attributes stored.
-- ``flask.Flask.request_globals_class`` got renamed to
-  ``flask.Flask.app_ctx_globals_class`` which is a better name to what it
-  does since 0.10.
-- `request`, `session` and `g` are now also added as proxies to the template
-  context which makes them available in imported templates.  One has to be
-  very careful with those though because usage outside of macros might
-  cause caching.
-- Flask will no longer invoke the wrong error handlers if a proxy
-  exception is passed through.
-- Added a workaround for chrome's cookies in localhost not working
-  as intended with domain names.
-- Changed logic for picking defaults for cookie values from sessions
-  to work better with Google Chrome.
-- Added `message_flashed` signal that simplifies flashing testing.
-- Added support for copying of request contexts for better working with
-  greenlets.
-- Removed custom JSON HTTP exception subclasses.  If you were relying on them
-  you can reintroduce them again yourself trivially.  Using them however is
-  strongly discouraged as the interface was flawed.
-- Python requirements changed: requiring Python 2.6 or 2.7 now to prepare
-  for Python 3.3 port.
-- Changed how the teardown system is informed about exceptions.  This is now
-  more reliable in case something handles an exception halfway through
-  the error handling process.
-- Request context preservation in debug mode now keeps the exception
-  information around which means that teardown handlers are able to
-  distinguish error from success cases.
-- Added the ``JSONIFY_PRETTYPRINT_REGULAR`` configuration variable.
-- Flask now orders JSON keys by default to not trash HTTP caches due to
-  different hash seeds between different workers.
-- Added `appcontext_pushed` and `appcontext_popped` signals.
-- The builtin run method now takes the ``SERVER_NAME`` into account when
-  picking the default port to run on.
-- Added `flask.request.get_json()` as a replacement for the old
-  `flask.request.json` property.
+- 已变更默认 cookie 从 pickle 到 JSON 序列化格式，如果密钥泄露的话，
+  达到限制一个追踪器能做什么。查看 :ref:`upgrading-to-010` 了解更多信息。
+- 已加入 ``template_test`` 一些方法到已有的 ``template_filter`` 方法家族中。
+- 已加入 ``template_global`` 一些方法到已有的 ``template_filter`` 方法家族中。
+- 为 x-sendfile 设置内容长度头部信息。
+- ``tojson`` 过滤器现在在 HTML5 语法分析器中不再转义脚本块语句了。
+- 用在模版里的 ``tojson`` 现在默认为安全模式。这样做是因为转义表现存在差异。
+- 如果你想要在一个已经使用的端点上注册一个新的函数，Flask 现在会产生一项错误。
+- 已加入简单的 JSON 打包模块，并且也加入了时间对象的默认序列化。这样做允许更容易
+  自定义如何通过 Flask 来处理 JSON 或者通过任何一个 Flask 扩展包也更容易处理了。
+- 删除淘汰的内部 ``flask.session`` 模块别名。使用 ``flask.sessions`` 代替
+  获得会话模块。这样就不会与 ``flask.session`` 会话代理混为一谈了。
+- 许多模版现在可以不用请求语境进行翻译了。这种行为与 ``request``、 ``session``
+  和 ``g`` 对象稍有不同，这三种对象不可以这样使用，以及蓝图语境处理器也不能这样调用。
+- 配置对象现在可以用在模版中作为一个真正的全局范围对象，并且不用通过语境处理器，甚至
+  默认导入到模版中。
+- 已加入一个选项来生成非 ASCII 编码的 JSON 对象，这样应该在网络上减少字节传输。默认
+  是关闭状态，为了与现有的库不产生困惑，而现有的库也许期望用 ``flask.json.dumps`` 
+  来默认返回字节字符串。
+- ``flask.g`` 现在存储在应用语境，而不是请求语境。
+- ``flask.g`` 现在有了一个 ``get()`` 方法，为了不存在的元素不会出现错误。
+- ``flask.g`` 现在可以与 ``in`` 操作符使用来查看定义了什么，并且
+  此时是可迭代对象，以及会生成所有已存储的属性。
+- ``flask.Flask.request_globals_class`` 已经更名为
+  ``flask.Flask.app_ctx_globals_class`` 了，这个名字从 0.10 开始更合适。
+- `request`、 `session` 和 `g` 现在也都增加成模版语境代理，这样在导入的模版中
+  就可以使用了。有一点要非常小心，那就是在宏范围外的使用也许会产生缓存。
+- 如果一个代理例外被代入的话，Flask 将不再介入错误处理器。
+- 已加入一项在 localhost 中 chrome 浏览器的 cookies 解决方案，而不是与域名一起
+  工作的解决方案。
+- 已变更来自会话的 cookie 值默认腌制逻辑，这样会更好地与 Google Chrome 
+  浏览器一起工作。
+- 已加入 `message_flashed` 信号，可以简化闪存消息测试。
+- 已加入请求语境副本支持，这样更好地与 greenlet 一起工作。
+- 删除自定义 JSON HTTP 例外子类。如果你依赖这些子类的话，你可以自己写这些子类。
+  使用这些子类不管怎么做到的，我们都是强烈不鼓励这样做，因为会导致接口溢出。
+- Python 需求变更：目前为 Python 2.6 或 2.7 ，现在要为 Python 3.3 做准备了。
+- 变更 teardown 系统如何呈现例外信息。此时在处理错误进程中半路介入处理一个例外的
+  一些情况变得更加可靠。
+- 请求语境保护在调试模式中现在保留例外信息，这样意味着 teardown 处理器都能够从成功
+  情况里区分出错误来。
+- 已加入 ``JSONIFY_PRETTYPRINT_REGULAR`` 配置变量。
+- Flask 现在默认对 JSON 键进行排序，这样不会把 HTTP 缓存当成垃圾处理，因为
+  不同的工作器之间存在不同的哈希种子。
+- 已加入 `appcontext_pushed` 和 `appcontext_popped` 信号。
+- 当在腌制默认端口上运行时，内置运行方法现在把 ``SERVER_NAME`` 放到账户中。
+- 已加入 `flask.request.get_json()` 作为老旧的 `flask.request.json` 属性
+  替换方法。
 
 版本 0.9
 -----------
