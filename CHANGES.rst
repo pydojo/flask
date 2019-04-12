@@ -599,156 +599,122 @@ Released on June 13th 2013, codename Limoncello.
 - Added `flask.request.get_json()` as a replacement for the old
   `flask.request.json` property.
 
-Version 0.9
+版本 0.9
 -----------
 
-Released on July 1st 2012, codename Campari.
+发布于 July 1st 2012，代号 Campari 低度酒
 
-- The :func:`flask.Request.on_json_loading_failed` now returns a JSON formatted
-  response by default.
-- The :func:`flask.url_for` function now can generate anchors to the
-  generated links.
-- The :func:`flask.url_for` function now can also explicitly generate
-  URL rules specific to a given HTTP method.
-- Logger now only returns the debug log setting if it was not set
-  explicitly.
-- Unregister a circular dependency between the WSGI environment and
-  the request object when shutting down the request.  This means that
-  environ ``werkzeug.request`` will be ``None`` after the response was
-  returned to the WSGI server but has the advantage that the garbage
-  collector is not needed on CPython to tear down the request unless
-  the user created circular dependencies themselves.
-- Session is now stored after callbacks so that if the session payload
-  is stored in the session you can still modify it in an after
-  request callback.
-- The :class:`flask.Flask` class will avoid importing the provided import name
-  if it can (the required first parameter), to benefit tools which build Flask
-  instances programmatically.  The Flask class will fall back to using import
-  on systems with custom module hooks, e.g. Google App Engine, or when the
-  import name is inside a zip archive (usually a .egg) prior to Python 2.7.
-- Blueprints now have a decorator to add custom template filters application
-  wide, :meth:`flask.Blueprint.app_template_filter`.
-- The Flask and Blueprint classes now have a non-decorator method for adding
-  custom template filters application wide,
-  :meth:`flask.Flask.add_template_filter` and
-  :meth:`flask.Blueprint.add_app_template_filter`.
-- The :func:`flask.get_flashed_messages` function now allows rendering flashed
-  message categories in separate blocks, through a ``category_filter``
-  argument.
-- The :meth:`flask.Flask.run` method now accepts ``None`` for `host` and `port`
-  arguments, using default values when ``None``.  This allows for calling run
-  using configuration values, e.g. ``app.run(app.config.get('MYHOST'),
-  app.config.get('MYPORT'))``, with proper behavior whether or not a config
-  file is provided.
-- The :meth:`flask.render_template` method now accepts a either an iterable of
-  template names or a single template name.  Previously, it only accepted a
-  single template name.  On an iterable, the first template found is rendered.
-- Added :meth:`flask.Flask.app_context` which works very similar to the
-  request context but only provides access to the current application.  This
-  also adds support for URL generation without an active request context.
-- View functions can now return a tuple with the first instance being an
-  instance of :class:`flask.Response`.  This allows for returning
-  ``jsonify(error="error msg"), 400`` from a view function.
-- :class:`~flask.Flask` and :class:`~flask.Blueprint` now provide a
-  :meth:`~flask.Flask.get_send_file_max_age` hook for subclasses to override
-  behavior of serving static files from Flask when using
-  :meth:`flask.Flask.send_static_file` (used for the default static file
-  handler) and :func:`~flask.helpers.send_file`.  This hook is provided a
-  filename, which for example allows changing cache controls by file extension.
-  The default max-age for `send_file` and static files can be configured
-  through a new ``SEND_FILE_MAX_AGE_DEFAULT`` configuration variable, which is
-  used in the default `get_send_file_max_age` implementation.
-- Fixed an assumption in sessions implementation which could break message
-  flashing on sessions implementations which use external storage.
-- Changed the behavior of tuple return values from functions.  They are no
-  longer arguments to the response object, they now have a defined meaning.
-- Added :attr:`flask.Flask.request_globals_class` to allow a specific class to
-  be used on creation of the :data:`~flask.g` instance of each request.
-- Added `required_methods` attribute to view functions to force-add methods
-  on registration.
-- Added :func:`flask.after_this_request`.
-- Added :func:`flask.stream_with_context` and the ability to push contexts
-  multiple times without producing unexpected behavior.
+- 函数 :func:`flask.Request.on_json_loading_failed` 现在默认返回一个 JSON 
+  格式的响应结果。
+- 函数 :func:`flask.url_for` 现在可以生成 HTML 链接锚点了。
+- 函数 :func:`flask.url_for` 现在也可以准确地生成 URL 规则到一个给出的 HTTP 方法。
+- 如果没有明确设置的话，日志现在只返回调试日志配置。
+- 当终止请求时，不会在 WSGI 环境与请求对象之间注册一个回路依赖。这意味着响应返回给
+  WSGI 服务器后 ``werkzeug.request`` 会是 ``None`` ，但在 CPython 上具有垃圾
+  收集器优势会清理请求，除非用户自己建立回路依赖。
+- 现在回调之后才存储会话，所以如果会话装载存储在会话中，你仍然可以在一个请求回调之后
+  修改会话。
+- 类 :class:`flask.Flask` 会避免导入已提供的导入名称，如果能够的话 (需要第一个参数)，
+  有效的工具会以编程方式建立 Flask 实例。Flask 类会在系统上回到使用自定义模块钩子使用
+  导入，例如，Google 应用引擎，或者当导入名称时在Python 2.7 以前版本位于一个压缩文档
+  里时 (通常是一个 .egg 文件) 。
+- 蓝图技术现在具有了一个装饰器来增加自定义模版过滤器应用方法 :meth:`flask.Blueprint.app_template_filter`
+- Flask 和 Blueprint 类现在具有了一个非装饰器方法来增加自定义模版过滤器应用，分别是
+  :meth:`flask.Flask.add_template_filter` 和
+  :meth:`flask.Blueprint.add_app_template_filter`
+- 函数 :func:`flask.get_flashed_messages` 现在允许在各自的块语句中翻译闪存消息类别，
+  通过一个 ``category_filter`` 参数来实现。
+- :meth:`flask.Flask.run` 方法现在接受参数 `host` 和 `port` 值为 ``None`` 时，
+  使用默认值。这样对于调用 ``run`` 方法时允许使用配置值，例如：
+  ``app.run(app.config.get('MYHOST'), app.config.get('MYPORT'))`` ，这样使用
+  不管有没有提供一个配置文件都会有正确的表现。
+- :meth:`flask.render_template` 方法现在即可以接受一种模版名的可迭代对象，也可以
+  接受单个模版名。以前的话，只能接受单个模版名。在一个可迭代对象上，第一个找到的模版才
+  会被翻译。
+- 已加入 :meth:`flask.Flask.app_context` 方法，该方法工作类似请求语境，但只提供访问
+  当前应用。这样也增加了对没有一个激活请求语境的 URL 生成支持。
+- 视图函数现在可以返回一个元组了，其中第一个实例是 :class:`flask.Response` 类的实例。
+  这样允许从一个视图函数返回 ``jsonify(error="error msg"), 400`` 结果。
+- :class:`~flask.Flask` 类和 :class:`~flask.Blueprint` 类现在提供了一个
+  :meth:`~flask.Flask.get_send_file_max_age` 方法钩子给子类来覆写来自 Flask 
+  的静态文件服务行为，这要在 Flask 使用 :meth:`flask.Flask.send_static_file` 
+  (默认静态文件处理器使用的) 方法和 :func:`~flask.helpers.send_file` 函数时有效。
+  这个钩子要用一个文件名来提供，其中例如通过文件扩展允许改变缓存控制。对于 `send_file`
+  默认最大时限和静态文件可以通过一个新的 ``SEND_FILE_MAX_AGE_DEFAULT`` 配置变量来
+  设置，该配置变量用于 `get_send_file_max_age` 默认部署。
+- 已修复一项会话部署使用外部存储时可能会打断闪存消息的会话部署假设。
+- 变更了从函数返回元组值的行为。它们不再作为响应对象的参数，它们现在具有一种已经定义完的
+  意义了。
+- 已加入 :attr:`flask.Flask.request_globals_class` 属性来允许一个具体类用在每个
+  请求实例 :data:`~flask.g` 数据建立上。
+- 已加入 `required_methods` 属性给视图函数在注册上必须增加的方法。
+- 已加入 :func:`flask.after_this_request` 函数。
+- 已加入 :func:`flask.stream_with_context` 函数并且具备把语境多次推送的能力，不会
+  产生意外表现。
 
-Version 0.8.1
+版本 0.8.1
 -------------
 
-Bugfix release, released on July 1st 2012
+Bug 修复，发布于 July 1st 2012
 
-- Fixed an issue with the undocumented `flask.session` module to not
-  work properly on Python 2.5.  It should not be used but did cause
-  some problems for package managers.
+- 已修复 Python 2.5 上使用无文档的 `flask.session` 模块无法正确工作的问题。以后不会
+  这样用了，但曾经导致包管理器一些问题。
 
-Version 0.8
+版本 0.8
 -----------
 
-Released on September 29th 2011, codename Rakija
+发布于 September 29th 2011，代号 Rakija 蒸馏果酒
 
-- Refactored session support into a session interface so that
-  the implementation of the sessions can be changed without
-  having to override the Flask class.
-- Empty session cookies are now deleted properly automatically.
-- View functions can now opt out of getting the automatic
-  OPTIONS implementation.
-- HTTP exceptions and Bad Request errors can now be trapped so that they
-  show up normally in the traceback.
-- Flask in debug mode is now detecting some common problems and tries to
-  warn you about them.
-- Flask in debug mode will now complain with an assertion error if a view
-  was attached after the first request was handled.  This gives earlier
-  feedback when users forget to import view code ahead of time.
-- Added the ability to register callbacks that are only triggered once at
-  the beginning of the first request. (:meth:`Flask.before_first_request`)
-- Malformed JSON data will now trigger a bad request HTTP exception instead
-  of a value error which usually would result in a 500 internal server
-  error if not handled.  This is a backwards incompatible change.
-- Applications now not only have a root path where the resources and modules
-  are located but also an instance path which is the designated place to
-  drop files that are modified at runtime (uploads etc.).  Also this is
-  conceptually only instance depending and outside version control so it's
-  the perfect place to put configuration files etc.  For more information
-  see :ref:`instance-folders`.
-- Added the ``APPLICATION_ROOT`` configuration variable.
-- Implemented :meth:`~flask.testing.TestClient.session_transaction` to
-  easily modify sessions from the test environment.
-- Refactored test client internally.  The ``APPLICATION_ROOT`` configuration
-  variable as well as ``SERVER_NAME`` are now properly used by the test client
-  as defaults.
-- Added :attr:`flask.views.View.decorators` to support simpler decorating of
-  pluggable (class-based) views.
-- Fixed an issue where the test client if used with the "with" statement did not
-  trigger the execution of the teardown handlers.
-- Added finer control over the session cookie parameters.
-- HEAD requests to a method view now automatically dispatch to the `get`
-  method if no handler was implemented.
-- Implemented the virtual :mod:`flask.ext` package to import extensions from.
-- The context preservation on exceptions is now an integral component of
-  Flask itself and no longer of the test client.  This cleaned up some
-  internal logic and lowers the odds of runaway request contexts in unittests.
+- 重构会话支持进入一个会话接口，这样部署的会话可以不用覆写 Flask 类就可以变更会话。
+- 空会话 cookies 现在都自动地正确删除。
+- 试图函数现在可以选择自动 OPTIONS 部署了。
+- 现在可以获得 HTTP 例外与坏的请求错误，这样可以正常显示在回溯信息中。
+- 在 Flask 调试模式中现在能检测一些共性问题，并且尽量提示给你。
+- 如果一个试图函数在处理第一次请求之后出现，在 Flask 调试模式中现在会用一个判断错误
+  来提示你。当用户忘记导入视图函数代码时，这会尽早给出反馈。
+- 已加入在第一次请求开始时注册只触发一次的回调。 (:meth:`Flask.before_first_request`)
+- 异常的 JSON 数据现在会出发一个坏的请求 HTTP 例外来代替 500 内部服务器错误值。这
+  不会是一个向后兼容的变更。
+- 许多应用程序现在不仅有一个资源与模块所在位置的根路径，也有一个实例路径。实例路径所
+  设计的位置是用来丢掉那些在运行时修改的文件 (包括上传文件，等)。这是一个概念上只针对
+  实例依赖和外部版本控制，所以这是一个完美的放置配置等文件的地方。对于更多信息请查看
+  :ref:`instance-folders` 实例文件夹。
+- 已加入 ``APPLICATION_ROOT`` 配置变量。
+- 已部署 :meth:`~flask.testing.TestClient.session_transaction` 方法容易修改
+  测试环境中的会话。
+- 重构内部测试客户端。``APPLICATION_ROOT`` 配置变量与 ``SERVER_NAME`` 变量现在
+  都正确的被测试客户端作为默认使用。
+- 已加入 :attr:`flask.views.View.decorators` 属性来支持更简单的可插拔 (基于类的)
+  试图函数的装饰器。
+- 已修复一个测试客户端问题，如果使用了 ``with`` 语句不能触发 teardown 处理器的执行。
+- 已加入对会话 cookie 参数的更好控制。
+- 如果没有部署一个处理器的话，现在 HEAD 请求一个方法视图自动调度到 `get` 方法。
+- 已部署虚拟模块 :mod:`flask.ext` 包来导入扩展包。
+- 在例外上的语境保护现在是 Flask 自身的一个内部组件，并且不再属于测试客户端。这样做
+  可以让内部逻辑变得整洁，以及减少单元测试中运行请求语境的可能性。
 
-Version 0.7.3
+版本 0.7.3
 -------------
 
-Bugfix release, release date to be decided
+Bug 修复，发布时间需要确定
 
-- Fixed the Jinja2 environment's list_templates method not returning the
-  correct names when blueprints or modules were involved.
+- 修复 当引入蓝图或模块时，Jinja2 环境的 ``list_templates`` 方法
+  无法返回正确名字的问题。
 
-Version 0.7.2
+版本 0.7.2
 -------------
 
-Bugfix release, released on July 6th 2011
+Bug 修复，发布于 on July 6th 2011
 
-- Fixed an issue with URL processors not properly working on
-  blueprints.
+- 修复一个 URL 处理器不能正确工作在蓝图上的问题。
 
-Version 0.7.1
+版本 0.7.1
 -------------
 
-Bugfix release, released on June 29th 2011
+Bug修复，发布于 June 29th 2011
 
-- Added missing future import that broke 2.5 compatibility.
-- Fixed an infinite redirect issue with blueprints.
+- 已加入缺少的特性，兼容 2.5 中 import 不会导致断裂。
+- 修复一个蓝图技术无限重定向问题。
 
 版本 0.7
 -----------
