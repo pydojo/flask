@@ -403,9 +403,8 @@ Bugfix release, released on June 7th 2016.
 
 发布于 May 29th 2016，代号 Absinthe 茴香酒
 
-- Added support to serializing top-level arrays to :func:`flask.jsonify`. This
-  introduces a security risk in ancient browsers. See
-  :ref:`json-security` for details.
+- 已加入顶层阵列序列化到 :func:`flask.jsonify` 函数的支持。这介绍了在老旧浏览器中的
+  一项安全风险。查看 :ref:`json-security` 了解细节。
 - Added before_render_template signal.
 - Added `**kwargs` to :meth:`flask.Test.test_client` to support passing
   additional keyword arguments to the constructor of
