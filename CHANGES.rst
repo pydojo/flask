@@ -750,76 +750,60 @@ Bugfix release, released on June 29th 2011
 - Added missing future import that broke 2.5 compatibility.
 - Fixed an infinite redirect issue with blueprints.
 
-Version 0.7
+版本 0.7
 -----------
 
-Released on June 28th 2011, codename Grappa
+发布于 June 28th 2011，代号 Grappa 白兰地
 
-- Added :meth:`~flask.Flask.make_default_options_response`
-  which can be used by subclasses to alter the default
-  behavior for ``OPTIONS`` responses.
-- Unbound locals now raise a proper :exc:`RuntimeError` instead
-  of an :exc:`AttributeError`.
-- Mimetype guessing and etag support based on file objects is now
-  deprecated for :func:`flask.send_file` because it was unreliable.
-  Pass filenames instead or attach your own etags and provide a
-  proper mimetype by hand.
-- Static file handling for modules now requires the name of the
-  static folder to be supplied explicitly.  The previous autodetection
-  was not reliable and caused issues on Google's App Engine.  Until
-  1.0 the old behavior will continue to work but issue dependency
-  warnings.
-- fixed a problem for Flask to run on jython.
-- added a ``PROPAGATE_EXCEPTIONS`` configuration variable that can be
-  used to flip the setting of exception propagation which previously
-  was linked to ``DEBUG`` alone and is now linked to either ``DEBUG`` or
-  ``TESTING``.
-- Flask no longer internally depends on rules being added through the
-  `add_url_rule` function and can now also accept regular werkzeug
-  rules added to the url map.
-- Added an `endpoint` method to the flask application object which
-  allows one to register a callback to an arbitrary endpoint with
-  a decorator.
-- Use Last-Modified for static file sending instead of Date which
-  was incorrectly introduced in 0.6.
-- Added `create_jinja_loader` to override the loader creation process.
-- Implemented a silent flag for `config.from_pyfile`.
-- Added `teardown_request` decorator, for functions that should run at the end
-  of a request regardless of whether an exception occurred.  Also the behavior
-  for `after_request` was changed.  It's now no longer executed when an exception
-  is raised.  See :ref:`upgrading-to-new-teardown-handling`
-- Implemented :func:`flask.has_request_context`
-- Deprecated `init_jinja_globals`.  Override the
-  :meth:`~flask.Flask.create_jinja_environment` method instead to
-  achieve the same functionality.
-- Added :func:`flask.safe_join`
-- The automatic JSON request data unpacking now looks at the charset
-  mimetype parameter.
-- Don't modify the session on :func:`flask.get_flashed_messages` if there
-  are no messages in the session.
-- `before_request` handlers are now able to abort requests with errors.
-- it is not possible to define user exception handlers.  That way you can
-  provide custom error messages from a central hub for certain errors that
-  might occur during request processing (for instance database connection
-  errors, timeouts from remote resources etc.).
-- Blueprints can provide blueprint specific error handlers.
-- Implemented generic :ref:`views` (class-based views).
+- 已加入 :meth:`~flask.Flask.make_default_options_response` 方法，
+  该方法可以用于子类来警告 ``OPTIONS`` 响应的默认行为。
+- 解绑本地现在会产生一个正确的 :exc:`RuntimeError` 运行错误来代替一个
+  :exc:`AttributeError` 属性错误。
+- 对于 :func:`flask.send_file` 函数淘汰了媒体类型的猜测和电子标签支持，
+  因为猜猜是不可靠的。代入文件名或写你自己的电子标签后通过手动提供一个正确
+  的媒体类型。
+- 对于模块来说静态文件处理现在需要提供明确的静态文件夹名。以前自动检测是
+  不可靠的，并且在 Google 的应用引擎上会产生问题。直到 1.0 老旧的表现
+  依然会存在，但会有依赖警告。
+- 修复一个运行在 jython 上的 Flask 问题。
+- 已加入一个 ``PROPAGATE_EXCEPTIONS`` 配置变量，这个变量可以用来翻页
+  例外传播设置，以前的例外传播设置只会连接到 ``DEBUG`` 上，而现在既可以
+  连接到 ``DEBUG`` 模式上，也可以连接到 ``TESTING`` 测试模式上。
+- Flask 不再内部依靠通过 `add_url_rule` 函数增加的规则，并且现在可以
+  接受常规的 werkzeug 规则加入到 url 地图中。
+- 已加入一个 `endpoint` 方法给 flask 应用对象，这样允许一个对象注册一个
+  回调给任何一个带有一个装饰器的端点。
+- 使用最后编辑日期给静态文件发送，这样代替了 0.6 中介绍的不正确发送日期。
+- 已加入 `create_jinja_loader` 来覆写加载器建立的进程。
+- 为 `config.from_pyfile` 部署一个沉默旗语。
+- 已加入 `teardown_request` 装饰器，对那些应该运行在一个请求结束时考虑
+  是否有一个例外发生。同样对于 `after_request` 的表现也有了变更。当一个
+  例外产生时它现在不再执行了。查看 :ref:`upgrading-to-new-teardown-handling`
+- 已部署 :func:`flask.has_request_context` 函数。
+- 淘汰了 `init_jinja_globals` 方法。覆写 :meth:`~flask.Flask.create_jinja_environment` 
+  方法来代替同样的功能。
+- 已加入 :func:`flask.safe_join` 函数。
+- 自动化 JSON 请求数据解压现在会查看媒体类型参数字符集。
+- 如果在会话里没有消息的话，不会修改 :func:`flask.get_flashed_messages` 函数
+  上的会话。
+- `before_request` 处理器现在能够用错误来忽略请求。
+- 不再支持定义用户例外处理器。在请求处理过程中你可以为某种可能发生的错误提供
+  来自一个中心 hub 的自定义错误消息 (例如，对于数据库连接实例错误来说，远程
+  资源超时错误，等等)。
+- 蓝图技术可以提供蓝图具体的错误处理器。
+- 已部署普通的 :ref:`views` 视图函数(基于类的视图函数)。
 
 版本 0.6.1
 -------------
 
-Bugfix release, released on December 31st 2010
+Bug 修复，发布于 December 31st 2010
 
-- Fixed an issue where the default ``OPTIONS`` response was
-  not exposing all valid methods in the ``Allow`` header.
-- Jinja2 template loading syntax now allows "./" in front of
-  a template load path.  Previously this caused issues with
-  module setups.
-- Fixed an issue where the subdomain setting for modules was
-  ignored for the static folder.
-- Fixed a security problem that allowed clients to download arbitrary files
-  if the host server was a windows based operating system and the client
-  uses backslashes to escape the directory the files where exposed from.
+- 修复了一个默认 ``OPTIONS`` 响应没有曝露 ``Allow`` 头部中所有合法方法的 bug
+- Jinja2 模版加载句法现在允许在一个模版加载路径里使用 "./" 写法。以前使用模块
+  配置会有问题。
+- 修复了一个为模块配置子域名会忽略静态文件夹的问题。
+- 修复一个安全问题，问题是如果主机服务器是 Windows 操作系统的话客户端会下载任何文件，
+  并且客户端使用反斜杠转义目录会导致文件暴露出来。
 
 版本 0.6
 -----------
