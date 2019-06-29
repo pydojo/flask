@@ -354,47 +354,46 @@ Bugfix release, released on March 31st 2017
   event that a `BaseException` such as `KeyboardInterrupt` is raised in a
   request handler.
 
-Version 0.12
+版本 0.12
 ------------
 
-Released on December 21st 2016, codename Punsch.
+发布于 December 21st 2016，代号 Punsch 潘趣酒
 
-- the cli command now responds to `--version`.
-- Mimetype guessing and ETag generation for file-like objects in ``send_file``
-  has been removed, as per issue ``#104``. (`#1849`_)
-- Mimetype guessing in ``send_file`` now fails loudly and doesn't fall back to
-  ``application/octet-stream``. (`#1988`_)
-- Make ``flask.safe_join`` able to join multiple paths like ``os.path.join``
-  (`#1730`_).
-- Revert a behavior change that made the dev server crash instead of returning
-  an Internal Server Error (`#2006`_).
-- Correctly invoke response handlers for both regular request dispatching as
-  well as error handlers.
-- Disable logger propagation by default for the app logger.
-- Add support for range requests in ``send_file``.
-- ``app.test_client`` includes preset default environment, which can now be
-  directly set, instead of per ``client.get``.
+- 命令行命令现在有了 `--version` 选项。
+- 对于类似文件的对象 Mimetype 猜测和 ETag 生成已经从 ``send_file`` 中移除，
+  因为有如下问题 ``#104`` (`#1849`_)
+- 在 ``send_file`` 中的 Mimetype 猜测现在明显失败，
+  并且不回滚到 ``application/octet-stream`` (`#1988`_)
+- 让 ``flask.safe_join`` 能够加入多个路径，就像 ``os.path.join`` 一样。
+  (`#1730`_)
+- 恢复一个行为变更，让开发服务器崩溃，而不是返回一项内部服务器错误。 (`#2006`_)
+- 对于正常请求发送和错误处理器都会正确地引入响应处理器。
+- 对于应用日志器，禁用默认日志器广播。
+- 在 ``send_file`` 中增加范围请求支持。
+- ``app.test_client`` 包含预置默认环境，现在可以直接设置默认环境，
+  不再每次都用 ``client.get`` 来设置了。
 
 .. _#1849: https://github.com/pallets/flask/pull/1849
 .. _#1988: https://github.com/pallets/flask/pull/1988
 .. _#1730: https://github.com/pallets/flask/pull/1730
 .. _#2006: https://github.com/pallets/flask/pull/2006
 
-Version 0.11.2
+版本 0.11.2
 --------------
 
-Bugfix release, unreleased
+Bug 修复，未发布
 
-- Fix crash when running under PyPy3. (`#1814`_)
+- 修复了在 PyPy3 下运行时的崩溃。 (`#1814`_)
 
 .. _#1814: https://github.com/pallets/flask/pull/1814
 
-Version 0.11.1
+版本 0.11.1
 --------------
 
-Bugfix release, released on June 7th 2016.
+Bug 修复，发布于 June 7th 2016
 
-- Fixed a bug that prevented ``FLASK_APP=foobar/__init__.py`` from working. (`#1872`_)
+- 修复了一个 bug，该 bug 阻止来自工作中的 ``FLASK_APP=foobar/__init__.py``
+  (`#1872`_)
 
 .. _#1872: https://github.com/pallets/flask/pull/1872
 
@@ -405,75 +404,60 @@ Bugfix release, released on June 7th 2016.
 
 - 已加入顶层阵列序列化到 :func:`flask.jsonify` 函数的支持。这介绍了在老旧浏览器中的
   一项安全风险。查看 :ref:`json-security` 了解细节。
-- Added before_render_template signal.
-- Added `**kwargs` to :meth:`flask.Test.test_client` to support passing
-  additional keyword arguments to the constructor of
-  :attr:`flask.Flask.test_client_class`.
-- Added ``SESSION_REFRESH_EACH_REQUEST`` config key that controls the
-  set-cookie behavior.  If set to ``True`` a permanent session will be
-  refreshed each request and get their lifetime extended, if set to
-  ``False`` it will only be modified if the session actually modifies.
-  Non permanent sessions are not affected by this and will always
-  expire if the browser window closes.
-- Made Flask support custom JSON mimetypes for incoming data.
-- Added support for returning tuples in the form ``(response, headers)``
-  from a view function.
-- Added :meth:`flask.Config.from_json`.
-- Added :attr:`flask.Flask.config_class`.
-- Added :meth:`flask.Config.get_namespace`.
-- Templates are no longer automatically reloaded outside of debug mode. This
-  can be configured with the new ``TEMPLATES_AUTO_RELOAD`` config key.
-- Added a workaround for a limitation in Python 3.3's namespace loader.
-- Added support for explicit root paths when using Python 3.3's namespace
-  packages.
-- Added :command:`flask` and the ``flask.cli`` module to start the local
-  debug server through the click CLI system.  This is recommended over the old
-  ``flask.run()`` method as it works faster and more reliable due to a
-  different design and also replaces ``Flask-Script``.
-- Error handlers that match specific classes are now checked first,
-  thereby allowing catching exceptions that are subclasses of HTTP
-  exceptions (in ``werkzeug.exceptions``).  This makes it possible
-  for an extension author to create exceptions that will by default
-  result in the HTTP error of their choosing, but may be caught with
-  a custom error handler if desired.
-- Added :meth:`flask.Config.from_mapping`.
-- Flask will now log by default even if debug is disabled.  The log format is
-  now hardcoded but the default log handling can be disabled through the
-  ``LOGGER_HANDLER_POLICY`` configuration key.
-- Removed deprecated module functionality.
-- Added the ``EXPLAIN_TEMPLATE_LOADING`` config flag which when enabled will
-  instruct Flask to explain how it locates templates.  This should help
-  users debug when the wrong templates are loaded.
-- Enforce blueprint handling in the order they were registered for template
-  loading.
-- Ported test suite to py.test.
-- Deprecated ``request.json`` in favour of ``request.get_json()``.
+- 已加入 before_render_template 信号。
+- 已把 `**kwargs` 多关键字参数加入到 :meth:`flask.Test.test_client` 方法中，
+  为了支持把额外的关键字参数代入到 :attr:`flask.Flask.test_client_class` 
+  属性构造器中。
+- 已加入 ``SESSION_REFRESH_EACH_REQUEST`` 配置键，该键控制设置cookie行为。
+  如果键值是 ``True`` 的话，每次请求一个永久会话会被刷新，并且获得生命周期的延续；
+  如果键值是 ``False`` 的话，只在实际修改会话时才会修改永久会话。
+  非永久绘画不会受到此项配置键的影响，并且关闭浏览器总会让非永久会话过期。
+- 对于进入的数据来说，Flask 支持了自定义 JSON mimetypes 
+- 已加入支持从一个视图函数返回的元组形式 ``(response, headers)``
+- 已加入方法 :meth:`flask.Config.from_json`
+- 已加入属性 :attr:`flask.Flask.config_class`
+- 已加入方法 :meth:`flask.Config.get_namespace`
+- debug 模式以外模版不再自动重新加载。自动加载模版功能可以用新的
+  ``TEMPLATES_AUTO_RELOAD`` 配置键来设置。
+- 针对 Python3.3 命名空间加载器的一个限制，加入了一种变通解决方案。
+- 已加入使用 Python3.3 命名空间包时的明确根路径支持。
+- 已加入 :command:`flask` 命令和 ``flask.cli`` 模块来启动本地调试服务器，
+  通过鼠标点击 CLI 系统即可。这种更新要比老旧的 ``flask.run()`` 方法工作效率
+  更快更可信赖，因为用了不同的设计并且也代替了 ``Flask-Script``
+- 错误处理器在匹配具体的类别之前都先做检查，因此允许获得 HTTP 例外的子类类外，
+  HTTP 例外都在 ``werkzeug.exceptions`` 中。这样的更新让一名扩展件作者可以
+  选择 HTTP 错误作为默认例外结果，也可以用一种自定义错误处理捕获例外。
+- 已加入方法 :meth:`flask.Config.from_mapping`
+- Flask 日志现在是默认开启，即是禁用调试模式也有日志功能。日志格式现在是硬编码，
+  但默认日志处理可以禁用，通过 ``LOGGER_HANDLER_POLICY`` 配置键设置。
+- 删除不赞成的模块功能。
+- 已加入 ``EXPLAIN_TEMPLATE_LOADING`` 配置键，当开启时会让 Flask 解释如何分配模版。
+  这项配置在加载了错误的模版时帮助用户调试。
+- 蓝图处理严格按照注册模版加载时的顺序进行。
+- 已移植测试套件到 py.test
+- 不赞成 ``request.json`` 用法，改为 ``request.get_json()`` 用法。
 - Add "pretty" and "compressed" separators definitions in jsonify() method.
   Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing
   unnecessary white space included by default after separators.
-- JSON responses are now terminated with a newline character, because it is a
-  convention that UNIX text files end with a newline and some clients don't
-  deal well when this newline is missing. See
-  https://github.com/pallets/flask/pull/1262 -- this came up originally as a
-  part of https://github.com/kennethreitz/httpbin/issues/168
-- The automatically provided ``OPTIONS`` method is now correctly disabled if
-  the user registered an overriding rule with the lowercase-version
-  ``options`` (issue ``#1288``).
-- ``flask.json.jsonify`` now supports the ``datetime.date`` type (`#1326`_).
-- Don't leak exception info of already catched exceptions to context teardown
-  handlers (`#1393`_).
-- Allow custom Jinja environment subclasses (`#1422`_).
-- Updated extension dev guidelines.
+- JSON 响应现在都用一个新行字符来终止，因为方便 UNIX 文件已一个新行作为结束，
+  并且一些客户端缺少这个新行字符无法获得良好的处理。查看
+  https://github.com/pallets/flask/pull/1262 网址，内容都是原始中的一部分，
+  原始内容网址是 https://github.com/kennethreitz/httpbin/issues/168
+- 如果用户使用小写版本 ``options`` (issue ``#1288``)注册一个覆写规则的话，
+  自动化提供的 ``OPTIONS`` 方法现在会正确地禁用。
+- ``flask.json.jsonify`` 现在支持 ``datetime.date`` 类型 (`#1326`_)
+- 不要把已捕获的例外信息泄露到语境管理器 teardown 处理器里。 (`#1393`_)
+- 允许自定义 Jinja 环境子类。 (`#1422`_)
+- 更新扩展件开发指导。
 
-- ``flask.g`` now has ``pop()`` and ``setdefault`` methods.
-- Turn on autoescape for ``flask.templating.render_template_string`` by default
-  (`#1515`_).
-- ``flask.ext`` is now deprecated (`#1484`_).
-- ``send_from_directory`` now raises BadRequest if the filename is invalid on
-  the server OS (`#1763`_).
-- Added the ``JSONIFY_MIMETYPE`` configuration variable (`#1728`_).
-- Exceptions during teardown handling will no longer leave bad application
-  contexts lingering around.
+- ``flask.g`` 现在有了 ``pop()`` 和 ``setdefault`` 方法了。
+- 默认为 ``flask.templating.render_template_string`` 打开自动化转义。
+  (`#1515`_)
+- 现在不赞成使用 ``flask.ext`` (`#1484`_)
+- 如果文件名在服务器操作系统上非法的话，
+  ``send_from_directory`` 现在抛出 BadRequest 例外 (`#1763`_)
+- 已加入 ``JSONIFY_MIMETYPE`` 配置变量 (`#1728`_)
+- 在 teardown 处理过程中出现的例外不再把坏应用保留在语境中。
 
 .. _#1326: https://github.com/pallets/flask/pull/1326
 .. _#1393: https://github.com/pallets/flask/pull/1393
