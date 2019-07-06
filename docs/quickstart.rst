@@ -58,121 +58,106 @@
     $ python -m flask run
      * Running on http://127.0.0.1:5000/
 
-This launches a very simple builtin server, which is good enough for testing
-but probably not what you want to use in production. For deployment options see
-:ref:`deployment`.
+命令行启动方式加载了一种非常简单的内置服务器，好到足以用来测试开发使用，
+但可能不是你想要用在生产中的方式。对于部署来说众多选项查看 :ref:`deployment` 文档。
 
-Now head over to `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_, and you
-should see your hello world greeting.
+现在回看一下 `http://127.0.0.1:5000/ <http://127.0.0.1:5000/>`_ 地址，
+你在浏览器中可以看到视图函数返回的内容出现在页面上了。
 
 .. _public-server:
 
-.. admonition:: Externally Visible Server
+.. admonition:: 从外部看到服务器
 
-   If you run the server you will notice that the server is only accessible
-   from your own computer, not from any other in the network.  This is the
-   default because in debugging mode a user of the application can execute
-   arbitrary Python code on your computer.
+   如果你运行服务器的话，你会注意到服务器只可以在自己的电脑上访问，
+   网络中的其它电脑无法看到。采用这种默认配置是因为在调试模式中
+   应用的一名使用者可以执行你电脑上的任意 Python 代码。
 
-   If you have the debugger disabled or trust the users on your network,
-   you can make the server publicly available simply by adding
-   ``--host=0.0.0.0`` to the command line::
+   如果你已经禁用了调试器的话，或者信任你网络中的其它用户的话，
+   你可以让服务器变成公共可用模式，直接通过增加如下选项
+   ``--host=0.0.0.0`` 到命令行中::
 
        $ flask run --host=0.0.0.0
 
-   This tells your operating system to listen on all public IPs.
+   这就告诉了你的操作系统去监听所有公共 IPs 地址。
 
 
-What to do if the Server does not Start
+如果服务器没启动该怎么办
 ---------------------------------------
 
-In case the :command:`python -m flask` fails or :command:`flask` does not exist,
-there are multiple reasons this might be the case.  First of all you need
-to look at the error message.
+在使用 :command:`python -m flask` 命令失败时，或 :command:`flask` 命令不存在的话，
+可能有许多原因导致。首先你需要查看错误消息。
 
-Old Version of Flask
+老旧的 Flask 版本
 ````````````````````
 
-Versions of Flask older than 0.11 use to have different ways to start the
-application.  In short, the :command:`flask` command did not exist, and
-neither did :command:`python -m flask`.  In that case you have two options:
-either upgrade to newer Flask versions or have a look at the :ref:`server`
-docs to see the alternative method for running a server.
+比 0.11 版本还要旧的 Flask 曾使用不同方式启动应用。当时 :command:`flask` 命令还没有，
+并且也没有 :command:`python -m flask` 命令方式。在此种情况中你有两个选择：
+更新到最新的 Flask 版本，或者查看 :ref:`server` 文档了解运行一个服务器的另一种方法。
 
-Invalid Import Name
+非法导入名
 ```````````````````
 
-The ``FLASK_APP`` environment variable is the name of the module to import at
-:command:`flask run`. In case that module is incorrectly named you will get an
-import error upon start (or if debug is enabled when you navigate to the
-application). It will tell you what it tried to import and why it failed.
+在 ``FLASK_APP`` 环境变量设置的模块名要在 :command:`flask run` 命令运行时被导入。
+这种情况中，模块名设置不正确，你会得到一个错误。（或者如果调试开启的话，
+当你导航到应用时也会提示错误。）它会告诉你要导入什么和为什么失败。
 
-The most common reason is a typo or because you did not actually create an
-``app`` object.
+最共同的原因是拼写错误，或者因为你还没建立一个 ``app`` 对象。
 
 .. _debug-mode:
 
-Debug Mode
+调试模式
 ----------
 
-(Want to just log errors and stack traces? See :ref:`application-errors`)
+（想要只记录错误日志和堆栈线索吗？查看 :ref:`application-errors` 文档。）
 
-The :command:`flask` script is nice to start a local development server, but
-you would have to restart it manually after each change to your code.
-That is not very nice and Flask can do better.  If you enable debug
-support the server will reload itself on code changes, and it will also
-provide you with a helpful debugger if things go wrong.
+该 :command:`flask` 脚本是良好地启动一个本地开发服务器工具，但你不得不在每次变更你的代码时手动重启服务器。
+手动不是非常良好的选择，并且 Flask 可以比手动更好。如果你开启调试支持的话，
+服务器会在代码变更后重新加载，以及如果有什么问题也会提供有帮助的调试信息。
 
-To enable all development features (including debug mode) you can export
-the ``FLASK_ENV`` environment variable and set it to ``development``
-before running the server::
+要开启全部开发特性（包括调试模式）你可以导出 ``FLASK_ENV`` 环境变量后
+设置成 ``development`` 值，在运行服务器前执行此项操作::
 
     $ export FLASK_ENV=development
     $ flask run
 
-(On Windows you need to use ``set`` instead of ``export``.)
+（在 Windows 系统上你需要使用 ``set`` 命令代替 ``export`` 命令。）
 
-This does the following things:
+该项操作效果如下：
 
-1.  it activates the debugger
-2.  it activates the automatic reloader
-3.  it enables the debug mode on the Flask application.
+1.  激活调试器，
+2.  激活自动加载服务器，
+3.  在 Flask 应用上开启调试模式。
 
-You can also control debug mode separately from the environment by
-exporting ``FLASK_DEBUG=1``.
+你也可以通过环境变量来控制调试模式，通过导出 ``FLASK_DEBUG=1`` 环境变量。
 
-There are more parameters that are explained in the :ref:`server` docs.
+更多的参数都解释在 :ref:`server` 文档中。
 
-.. admonition:: Attention
+.. admonition:: 注意
 
-   Even though the interactive debugger does not work in forking environments
-   (which makes it nearly impossible to use on production servers), it still
-   allows the execution of arbitrary code. This makes it a major security risk
-   and therefore it **must never be used on production machines**.
+   尽管交互式调试器不工作在叉子环境中（因为叉子版本几乎不用在生产服务器中），
+   它依然允许任意代码的执行。这会造成主要的安全风险，并且因此**永远不要用在生产机器上**。
 
-Screenshot of the debugger in action:
+调试器执行中的截图：
 
 .. image:: _static/debugger.png
    :align: center
    :class: screenshot
    :alt: screenshot of debugger in action
 
-More information on using the debugger can be found in the `Werkzeug
-documentation`_.
+在使用调试器中的更多信息可以在 `Werkzeug documentation`_ 文档中找到。
 
 .. _Werkzeug documentation: http://werkzeug.pocoo.org/docs/debug/#using-the-debugger
 
-Have another debugger in mind? See :ref:`working-with-debuggers`.
+还记得另一个调试器吗？查看 :ref:`working-with-debuggers` 参考内容。
 
 
-Routing
+路由
 -------
 
-Modern web applications use meaningful URLs to help users. Users are more
-likely to like a page and come back if the page uses a meaningful URL they can
-remember and use to directly visit a page.
+现代网络应用使用有意义的 URLs 地址来帮助用户访问。用户们都更可能喜欢一个页面并回顾页面都是通过
+容易记住的 URL 地址来访问，并且直接用网址来访问一个页面。
 
-Use the :meth:`~flask.Flask.route` decorator to bind a function to a URL. ::
+使用 :meth:`~flask.Flask.route` 方法装饰器把一个视图函数与一个 URL 地址绑定在一起。 ::
 
     @app.route('/')
     def index():
