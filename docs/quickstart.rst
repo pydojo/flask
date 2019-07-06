@@ -1,17 +1,17 @@
 .. _quickstart:
 
-Quickstart
+快速开始
 ==========
 
-Eager to get started?  This page gives a good introduction to Flask.  It
-assumes you already have Flask installed.  If you do not, head over to the
-:ref:`installation` section.
+是不是饥渴难耐了？本篇会给你一次 Flask 良好的指导。
+假设你已经安装完 Flask 了，如果还没安装，回顾一下
+:ref:`installation` 内容。
 
 
-A Minimal Application
+一个迷你应用
 ---------------------
 
-A minimal Flask application looks something like this::
+一个迷你型的 Flask 应用看来就是下面这个样子::
 
     from flask import Flask
     app = Flask(__name__)
@@ -20,46 +20,39 @@ A minimal Flask application looks something like this::
     def hello_world():
         return 'Hello, World!'
 
-So what did that code do?
+那么这段代码做了什么？
 
-1. First we imported the :class:`~flask.Flask` class.  An instance of this
-   class will be our WSGI application.
-2. Next we create an instance of this class. The first argument is the name of
-   the application's module or package.  If you are using a single module (as
-   in this example), you should use ``__name__`` because depending on if it's
-   started as application or imported as module the name will be different
-   (``'__main__'`` versus the actual import name). This is needed so that
-   Flask knows where to look for templates, static files, and so on. For more
-   information have a look at the :class:`~flask.Flask` documentation.
-3. We then use the :meth:`~flask.Flask.route` decorator to tell Flask what URL
-   should trigger our function.
-4. The function is given a name which is also used to generate URLs for that
-   particular function, and returns the message we want to display in the
-   user's browser.
+1. 首先我们导入了 :class:`~flask.Flask` 类。从而该类的一个实例会变成我们的 WSGI 应用。
+2. 下一行我们建立了一个该类的实例。第一个参数值是应用模块或包的名字。
+   如果你们只用做一个单一模块的话（如同此处的例子一样），
+   你应该使用 ``__name__`` 这个变量名，因为依据模块启动的方式是应用方式或导入方式而不同。
+   （``'__main__'`` 会与该变量做比较）。该变量名是需要的，这样 Flask 知道去哪里寻找模版、
+   静态文件，等等资源。对于更多的相关信息看一下 :class:`~flask.Flask` 文档。
+3. 当我们接下来使用 :meth:`~flask.Flask.route` 方法作为装饰器时，它告诉 Flask 应该
+   用哪个 URL 地址来触发我们的视图函数。
+4. 路由方法中给出的名字也会用来生成 URLs 地址提供给视图函数，
+   然后返回的消息就是我们想要显示在用户浏览器中的内容。
 
-Just save it as :file:`hello.py` or something similar. Make sure to not call
-your application :file:`flask.py` because this would conflict with Flask
-itself.
+把这段代码保存成 :file:`hello.py` 文件或其它名字的 Python 文件。
+确保不要与 :file:`flask.py` 名字一样，因为这会导致与使用 Flask 产生冲突。
 
-To run the application you can either use the :command:`flask` command or
-python's ``-m`` switch with Flask.  Before you can do that you need
-to tell your terminal the application to work with by exporting the
-``FLASK_APP`` environment variable::
+要运行应用，你既可以使用 :command:`flask` 命令方式，也可以使用 python 的 ``-m`` 带着 Flask 切换方式。
+在你运行应用之前，你需要告诉终端，应用要与导出``FLASK_APP`` 环境变量一起工作::
 
     $ export FLASK_APP=hello.py
     $ flask run
      * Running on http://127.0.0.1:5000/
 
-If you are on Windows, the environment variable syntax depends on command line
-interpreter. On Command Prompt::
+如果你们用 Windows 系统的话，环境变量句法要根据命令行解释器用法。
+在命令行窗口中::
 
     C:\path\to\app>set FLASK_APP=hello.py
 
-And on PowerShell::
+以及在 PowerShell 窗口中::
 
     PS C:\path\to\app> $env:FLASK_APP = "hello.py"
 
-Alternatively you can use :command:`python -m flask`::
+另外你可以使用 :command:`python -m flask`::
 
     $ export FLASK_APP=hello.py
     $ python -m flask run
