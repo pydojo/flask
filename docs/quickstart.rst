@@ -167,16 +167,14 @@
     def hello():
         return 'Hello, World'
 
-You can do more! You can make parts of the URL dynamic and attach multiple
-rules to a function.
+你可以做的更多！你可以把 URL 部分变成动态形式后伴随多个规则给一个视图函数。
 
-Variable Rules
+变量规则
 ``````````````
 
-You can add variable sections to a URL by marking sections with
-``<variable_name>``. Your function then receives the ``<variable_name>``
-as a keyword argument. Optionally, you can use a converter to specify the type
-of the argument like ``<converter:variable_name>``. ::
+你可以把变量部分加入到一个 URL 区域，通过使用 ``<variable_name>`` 来标记。
+之后你的视图函数把 ``<variable_name>`` 接受成一个关键字参数。
+另外，你可以使用一个转换器来描述参数的类型，就像 ``<converter:variable_name>`` 这种形式 ::
 
     @app.route('/user/<username>')
     def show_user_profile(username):
@@ -193,20 +191,20 @@ of the argument like ``<converter:variable_name>``. ::
         # show the subpath after /path/
         return 'Subpath %s' % subpath
 
-Converter types:
+转换器类型：
 
 ========== ==========================================
-``string`` (default) accepts any text without a slash
-``int``    accepts positive integers
-``float``  accepts positive floating point values
-``path``   like ``string`` but also accepts slashes
-``uuid``   accepts UUID strings
+``string`` （默认）不用一个反斜杠接受任何文本内容
+``int``    接受正整数
+``float``  接受正浮点数值
+``path``   类似 ``string`` 但也接受许多反斜杠
+``uuid``   接受 UUID 字符串
 ========== ==========================================
 
-Unique URLs / Redirection Behavior
+唯一 URLs 地址 / 重定向行为
 ``````````````````````````````````
 
-The following two rules differ in their use of a trailing slash. ::
+如下2条规则在使用一个反斜杠做结尾时是有区别的。 ::
 
     @app.route('/projects/')
     def projects():
@@ -216,46 +214,39 @@ The following two rules differ in their use of a trailing slash. ::
     def about():
         return 'The about page'
 
-The canonical URL for the ``projects`` endpoint has a trailing slash.
-It's similar to a folder in a file system. If you access the URL without
-a trailing slash, Flask redirects you to the canonical URL with the
-trailing slash.
+对于 ``projects`` 端点来说有一个反斜杠做结尾是权威的 URL 地址形式。
+就像在一个文件系统中的文件夹表示一样。如果你访问网址不带反斜杠结尾的话，
+Flask 会为你重定向到权威网址形式。
 
-The canonical URL for the ``about`` endpoint does not have a trailing
-slash. It's similar to the pathname of a file. Accessing the URL with a
-trailing slash produces a 404 "Not Found" error. This helps keep URLs
-unique for these resources, which helps search engines avoid indexing
-the same page twice.
+对于The canonical URL for the ``about`` 端点来说没有一个反斜杠作为网址也是权威的形式。
+它类似一个文件的路径名。用有反斜杠结尾的方式访问它的话会产生一个 404  "Not Found" 错误代码。
+这帮助让 URLs 成为这类资源的唯一网址形式，也帮助搜索引擎避免二次索引同一个页面。
 
 
 .. _url-building:
 
-URL Building
+URL 地址建立
 ````````````
 
-To build a URL to a specific function, use the :func:`~flask.url_for` function.
-It accepts the name of the function as its first argument and any number of
-keyword arguments, each corresponding to a variable part of the URL rule.
-Unknown variable parts are appended to the URL as query parameters.
+要把一个 URL 地址建立给一个具体的视图函数，使用 :func:`~flask.url_for` 函数。
+它把视图函数名接受成自己的第一个参数值，然后还有多关键字参数，每个参数都对应着 URL 规则
+中一个变量部门。未知的变量部分都会追加到 URL 中作为查询参数。
 
-Why would you want to build URLs using the URL reversing function
-:func:`~flask.url_for` instead of hard-coding them into your templates?
+为什么你想要建立 URLs 地址时使用 URL 逆向函数 :func:`~flask.url_for` 来代替
+在你的模版中使用硬编码方式呢？
 
-1. Reversing is often more descriptive than hard-coding the URLs.
-2. You can change your URLs in one go instead of needing to remember to
-   manually change hard-coded URLs.
-3. URL building handles escaping of special characters and Unicode data
-   transparently.
-4. The generated paths are always absolute, avoiding unexpected behavior
-   of relative paths in browsers.
-5. If your application is placed outside the URL root, for example, in
-   ``/myapplication`` instead of ``/``, :func:`~flask.url_for` properly
-   handles that for you.
+1. 逆向常常要比硬编码 URLs 地址更具描述性。
+2. 你可以动态改变你的 URLs 地址，代替了每次手动改变硬编码 URLs 地址。
+3. URL 地址建立中明确地处理具体字符的转义和 Unicode 数据。
+4. 生成的路径都一直是绝对路径，这样避免了在浏览器中相对路径的意外行为。
+5. 如果你的应用放在 URL 根地址以外的话，例如，
+   是 ``/myapplication`` 地址，而不是 ``/`` 地址的话，
+   :func:`~flask.url_for` 函数能为你正确地处理。
 
-For example, here we use the :meth:`~flask.Flask.test_request_context` method
-to try out :func:`~flask.url_for`. :meth:`~flask.Flask.test_request_context`
-tells Flask to behave as though it's handling a request even while we use a
-Python shell. See :ref:`context-locals`.
+举例，这里我们使用了 :meth:`~flask.Flask.test_request_context` 方法来尝试
+ :func:`~flask.url_for` 函数。那么 :meth:`~flask.Flask.test_request_context`
+方法告诉 Flask 要表现成处理一个地址请求，甚至我们使用一个 Python 会话。
+查看 :ref:`context-locals` 参考内容。
 
 .. code-block:: python
 
