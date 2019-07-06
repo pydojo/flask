@@ -1,29 +1,25 @@
 .. _installation:
 
-Installation
+安装 Flask
 ============
 
-Python Version
+Python 版本
 --------------
 
-We recommend using the latest version of Python 3. Flask supports Python 3.4
-and newer, Python 2.7, and PyPy.
+我们建议使用最新的 Python3 版本。Flask 支持大于 Python3.4 的版本，
+以及支持 Python2.7 和 PyPy 版本。
 
-Dependencies
+依赖情况
 ------------
 
-These distributions will be installed automatically when installing Flask.
+当安装 Flask 的过程中如下依赖库都会自动安装。
 
-* `Werkzeug`_ implements WSGI, the standard Python interface between
-  applications and servers.
-* `Jinja`_ is a template language that renders the pages your application
-  serves.
-* `MarkupSafe`_ comes with Jinja. It escapes untrusted input when rendering
-  templates to avoid injection attacks.
-* `ItsDangerous`_ securely signs data to ensure its integrity. This is used
-  to protect Flask's session cookie.
-* `Click`_ is a framework for writing command line applications. It provides
-  the ``flask`` command and allows adding custom management commands.
+* `Werkzeug`_ 部署 WSGI 的库，在应用于服务器之间提供标准的 Python 接口。
+* `Jinja`_ 是一个模版语言库，把应用服务翻译到页面上。
+* `MarkupSafe`_ 伴随着 Jinja 一起安装的安全库。它在翻译模版过程中
+  转义那些不被信赖的输入，来避免注射攻击。
+* `ItsDangerous`_ 安全标记数据来确保数据的诚实性。它保护着 Flask 的会话cookie
+* `Click`_ 是一个写命令行程序的框架。它提供着 ``flask`` 命令以及允许增加自定义管理命令。
 
 .. _Werkzeug: http://werkzeug.pocoo.org/
 .. _Jinja: http://jinja.pocoo.org/
@@ -31,53 +27,46 @@ These distributions will be installed automatically when installing Flask.
 .. _ItsDangerous: https://pythonhosted.org/itsdangerous/
 .. _Click: http://click.pocoo.org/
 
-Optional dependencies
+可选的依赖情况
 ~~~~~~~~~~~~~~~~~~~~~
 
-These distributions will not be installed automatically. Flask will detect and
-use them if you install them.
+如下依赖库不会自动安装。手动安装后 Flask 会检测并使用它们。
 
-* `Blinker`_ provides support for :ref:`signals`.
-* `SimpleJSON`_ is a fast JSON implementation that is compatible with
-  Python's ``json`` module. It is preferred for JSON operations if it is
-  installed.
-* `python-dotenv`_ enables support for :ref:`dotenv` when running ``flask``
-  commands.
-* `Watchdog`_ provides a faster, more efficient reloader for the development
-  server.
+* `Blinker`_ 针对 :ref:`signals` 提供支持。
+* `SimpleJSON`_ 是一个快速 JSON 部署库，它兼容 Python 的 ``json`` 标准库。
+  如果安装的话更适合对 JSON 的操作。
+* `python-dotenv`_ 当运行 ``flask`` 命令时开启 :ref:`dotenv` 支持。
+* `Watchdog`_ 针对开发服务器提供更快速、更有效的重载性能。
 
 .. _Blinker: https://pythonhosted.org/blinker/
 .. _SimpleJSON: https://simplejson.readthedocs.io/
 .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 .. _watchdog: https://pythonhosted.org/watchdog/
 
-Virtual environments
+虚拟环境
 --------------------
 
-Use a virtual environment to manage the dependencies for your project, both in
-development and in production.
+使用一个虚拟环境来管理项目的这些依赖库，既可以用在开发中，也可以用在生产中。
 
-What problem does a virtual environment solve? The more Python projects you
-have, the more likely it is that you need to work with different versions of
-Python libraries, or even Python itself. Newer versions of libraries for one
-project can break compatibility in another project.
+一个虚拟环境到底解决什么问题？
+你有许多 Python 项目时，很可能要与不同的 Python 库版本一起工作。
+Python 库越新的版本对于一个项目来说可能会导致在其它项目中使用时无效。
 
-Virtual environments are independent groups of Python libraries, one for each
-project. Packages installed for one project will not affect other projects or
-the operating system's packages.
+虚拟环境都是独立的 Python 库安装环境，针对每个项目所安装的库版本都可以不一样。
+那么为每个项目所安装的库版本因为在不同的虚拟环境中，彼此互不影响。
+同时也不会影响在系统范围中所安装的 Python 库版本。
 
-Python 3 comes bundled with the :mod:`venv` module to create virtual
-environments. If you're using a modern version of Python, you can continue on
-to the next section.
+Python3 的标准虚拟环境库是 :mod:`venv` 模块，它可以建立众多虚拟环境。
+如果你所使用的 Python 版本是比较新的3系，你可以继续看下一部分内容。
 
-If you're using Python 2, see :ref:`install-install-virtualenv` first.
+如果你使用的是 Python2 淘汰的遗产版本，先参考 :ref:`install-install-virtualenv` 内容。
 
 .. _install-create-env:
 
-Create an environment
+建立一个虚拟环境
 ~~~~~~~~~~~~~~~~~~~~~
 
-Create a project folder and a :file:`venv` folder within:
+建立一个项目目录后，进入项目目录建立虚拟环境第二个 :file:`venv` 是虚拟环境目录名：
 
 .. code-block:: sh
 
@@ -85,20 +74,19 @@ Create a project folder and a :file:`venv` folder within:
     $ cd myproject
     $ python3 -m venv venv
 
-On Windows:
+在 Windows 上建立虚拟环境：
 
 .. code-block:: bat
 
     $ py -3 -m venv venv
 
-If you needed to install virtualenv because you are using Python 2, use
-the following command instead:
+由于你正在使用 Python2 所安装的 virtualenv 要使用如下命令来建立虚拟环境：
 
 .. code-block:: sh
 
     $ python2 -m virtualenv venv
 
-On Windows:
+在 Windows 上建立虚拟环境：
 
 .. code-block:: bat
 
@@ -106,40 +94,39 @@ On Windows:
 
 .. _install-activate-env:
 
-Activate the environment
+激活虚拟环境
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before you work on your project, activate the corresponding environment:
+在项目上开始工作之前，激活对应的虚拟环境：
 
 .. code-block:: sh
 
     $ . venv/bin/activate
 
-On Windows:
+在 Windows 上激活虚拟环境：
 
 .. code-block:: bat
 
     > venv\Scripts\activate
 
-Your shell prompt will change to show the name of the activated environment.
+命令行提示符最左边会显示激活虚拟环境的提示符。
 
-Install Flask
+安装 Flask
 -------------
 
-Within the activated environment, use the following command to install Flask:
+在激活虚拟环境后，使用如下命令安装 Flask：
 
 .. code-block:: sh
 
     $ pip install Flask
 
-Flask is now installed. Check out the :doc:`/quickstart` or go to the
-:doc:`Documentation Overview </index>`.
+Flask 安装完。可以阅读 :doc:`/quickstart` 文档，或者查看
+ :doc:`Documentation Overview </index>` 文档。
 
-Living on the edge
+活在边缘中的方式
 ~~~~~~~~~~~~~~~~~~
 
-If you want to work with the latest Flask code before it's released, install or
-update the code from the master branch:
+如果你想用还未发布的最新 Flask 代码的话，需要从主干安装或更新 Flask 代码：
 
 .. code-block:: sh
 
@@ -147,13 +134,12 @@ update the code from the master branch:
 
 .. _install-install-virtualenv:
 
-Install virtualenv
+安装 virtualenv
 ------------------
 
-If you are using Python 2, the venv module is not available. Instead,
-install `virtualenv`_.
+如果你正在使用 Python2 的话，venv 标准库无法使用。而是要安装 `virtualenv`_ 第三方库。
 
-On Linux, virtualenv is provided by your package manager:
+在 Linux 系统上 virtualenv 是由软件包管理器提供：
 
 .. code-block:: sh
 
@@ -166,21 +152,21 @@ On Linux, virtualenv is provided by your package manager:
     # Arch
     $ sudo pacman -S python-virtualenv
 
-If you are on Mac OS X or Windows, download `get-pip.py`_, then:
+如果在 Mac OS X 或 Windows 系统上，下载 `get-pip.py`_ 后，安装：
 
 .. code-block:: sh
 
     $ sudo python2 Downloads/get-pip.py
     $ sudo python2 -m pip install virtualenv
 
-On Windows, as an administrator:
+在 Windows 系统上，要以管理员身份来安装：
 
 .. code-block:: bat
 
     > \Python27\python.exe Downloads\get-pip.py
     > \Python27\python.exe -m pip install virtualenv
 
-Now you can return above and :ref:`install-create-env`.
+此时你可以回看并参考 :ref:`install-create-env` 文档。
 
 .. _virtualenv: https://virtualenv.pypa.io/
 .. _get-pip.py: https://bootstrap.pypa.io/get-pip.py
