@@ -94,77 +94,68 @@ Released on April 29th 2018
 .. _#2742: https://github.com/pallets/flask/issues/2742
 
 
-Version 1.0
+版本 1.0
 -----------
 
-Released on April 26th 2018
+发布于 April 26th 2018
 
--   **Python 2.6 and 3.3 are no longer supported.** (`pallets/meta#24`_)
--   Bump minimum dependency versions to the latest stable versions:
+-   **不再支持 Python 2.6 和 3.3 版本。** (`pallets/meta#24`_)
+-   最新稳定版本所需要的依赖库最小版本号：
     Werkzeug >= 0.14, Jinja >= 2.10, itsdangerous >= 0.24, Click >= 5.1.
     (`#2586`_)
--   Skip :meth:`app.run <Flask.run>` when a Flask application is run
-    from the command line. This avoids some behavior that was confusing
-    to debug.
--   Change the default for :data:`JSONIFY_PRETTYPRINT_REGULAR` to
-    ``False``. :func:`~json.jsonify` returns a compact format by
-    default, and an indented format in debug mode. (`#2193`_)
--   :meth:`Flask.__init__ <Flask>` accepts the ``host_matching``
-    argument and sets it on :attr:`~Flask.url_map`. (`#1559`_)
--   :meth:`Flask.__init__ <Flask>` accepts the ``static_host`` argument
-    and passes it as the ``host`` argument when defining the static
-    route. (`#1559`_)
--   :func:`send_file` supports Unicode in ``attachment_filename``.
+-   当一个 Flask 应用从命令行运行时，跳过 :meth:`app.run <Flask.run>` 方法。
+    这样避免一些导致调试困惑的行为。
+-   把 :data:`JSONIFY_PRETTYPRINT_REGULAR` 默认值变更为 ``False``
+    函数 :func:`~json.jsonify` 默认返回一种紧凑格式，
+    在调试模式中带有一种缩进格式。 (`#2193`_)
+-   方法 :meth:`Flask.__init__ <Flask>` 接受 ``host_matching`` 参数，
+    并且把参数设置在 :attr:`~Flask.url_map` 属性上。 (`#1559`_)
+-   方法 :meth:`Flask.__init__ <Flask>` 接受 ``static_host`` 参数，
+    并且当定义静态路线时把参数代入成 ``host`` 参数。 (`#1559`_)
+-   函数 :func:`send_file` 在 ``attachment_filename`` 中支持 Unicode 编码。
     (`#2223`_)
--   Pass ``_scheme`` argument from :func:`url_for` to
-    :meth:`~Flask.handle_url_build_error`. (`#2017`_)
--   :meth:`~Flask.add_url_rule` accepts the
-    ``provide_automatic_options`` argument to disable adding the
-    ``OPTIONS`` method. (`#1489`_)
--   :class:`~views.MethodView` subclasses inherit method handlers from
-    base classes. (`#1936`_)
--   Errors caused while opening the session at the beginning of the
-    request are handled by the app's error handlers. (`#2254`_)
--   Blueprints gained :attr:`~Blueprint.json_encoder` and
-    :attr:`~Blueprint.json_decoder` attributes to override the app's
-    encoder and decoder. (`#1898`_)
--   :meth:`Flask.make_response` raises ``TypeError`` instead of
-    ``ValueError`` for bad response types. The error messages have been
-    improved to describe why the type is invalid. (`#2256`_)
--   Add ``routes`` CLI command to output routes registered on the
-    application. (`#2259`_)
--   Show warning when session cookie domain is a bare hostname or an IP
-    address, as these may not behave properly in some browsers, such as
-    Chrome. (`#2282`_)
--   Allow IP address as exact session cookie domain. (`#2282`_)
--   ``SESSION_COOKIE_DOMAIN`` is set if it is detected through
-    ``SERVER_NAME``. (`#2282`_)
--   Auto-detect zero-argument app factory called ``create_app`` or
-    ``make_app`` from ``FLASK_APP``. (`#2297`_)
--   Factory functions are not required to take a ``script_info``
-    parameter to work with the ``flask`` command. If they take a single
-    parameter or a parameter named ``script_info``, the
-    :class:`~cli.ScriptInfo` object will be passed. (`#2319`_)
--   ``FLASK_APP`` can be set to an app factory, with arguments if
-    needed, for example ``FLASK_APP=myproject.app:create_app('dev')``.
+-   把函数 :func:`url_for` 的 ``_scheme`` 参数代入到
+    方法 :meth:`~Flask.handle_url_build_error` 中。 (`#2017`_)
+-   方法 :meth:`~Flask.add_url_rule` 接受
+    ``provide_automatic_options`` 参数来禁用增加 ``OPTIONS`` 方法。 (`#1489`_)
+-   类 :class:`~views.MethodView` 的子类从基类继承方法处理器 (`#1936`_)
+-   当在请求开始时打开会话，由应用错误处理器处理的请求会产生错误。 (`#2254`_)
+-   蓝图获得 :attr:`~Blueprint.json_encoder` 和
+    :attr:`~Blueprint.json_decoder` 属性来覆写应用的编码器和解码器。 (`#1898`_)
+-   方法 :meth:`Flask.make_response` 对于坏的响应类型抛出 ``TypeError`` 例外，
+    而不是 ``ValueError`` 例外。错误消息已经得到改善，描述为什么类型是非法的。
+    (`#2256`_)
+-   增加 ``routes`` 命令行命令来输出注册在应用上的路线。 (`#2259`_)
+-   当会话 cookie 域是一个裸露主机名，或一个 IP 地址时显示警告。
+    因为在有些浏览器中可能表现不正常，例如 Chrome 浏览器。 (`#2282`_)
+-   允许 IP 地址完全作为会话 cookie 域。 (`#2282`_)
+-   如果 ``SESSION_COOKIE_DOMAIN`` 通过 ``SERVER_NAME`` 检测到的话，
+    说明 ``SESSION_COOKIE_DOMAIN`` 被设置了。 (`#2282`_)
+-   从 ``FLASK_APP`` 调用 ``create_app`` 或 ``make_app`` 会自动检测
+    无参数应用工厂。 (`#2297`_)
+-   工厂函数都不需要一个 ``script_info`` 参数来与 ``flask`` 命令一起工作。
+    如果工厂函数使用单一参数，或用了 ``script_info`` 参数的话，
+    类 :class:`~cli.ScriptInfo` 对象会被代入。 (`#2319`_)
+-   ``FLASK_APP`` 可以被设置到一个应用工厂上，如果需要可以带参数。
+    例如： ``FLASK_APP=myproject.app:create_app('dev')``
     (`#2326`_)
--   ``FLASK_APP`` can point to local packages that are not installed in
-    editable mode, although ``pip install -e`` is still preferred.
+-   ``FLASK_APP`` 可以指向没有安装的可编辑模式本地包，
+    尽管 ``pip install -e`` 依然是好的包安装模式。
     (`#2414`_)
--   The :class:`~views.View` class attribute
-    :attr:`~views.View.provide_automatic_options` is set in
-    :meth:`~views.View.as_view`, to be detected by
-    :meth:`~Flask.add_url_rule`. (`#2316`_)
--   Error handling will try handlers registered for ``blueprint, code``,
-    ``app, code``, ``blueprint, exception``, ``app, exception``.
+-   类 :class:`~views.View` 的属性
+    :attr:`~views.View.provide_automatic_options` 被设置在
+    :meth:`~views.View.as_view` 方法里，能被
+    :meth:`~Flask.add_url_rule` 方法检测到。 (`#2316`_)
+-   错误处理会尝试处理器注册 ``blueprint, code``,
+    ``app, code``, ``blueprint, exception``, ``app, exception``
     (`#2314`_)
--   ``Cookie`` is added to the response's ``Vary`` header if the session
-    is accessed at all during the request (and not deleted). (`#2288`_)
--   :meth:`~Flask.test_request_context` accepts ``subdomain`` and
-    ``url_scheme`` arguments for use when building the base URL.
+-   请求期间（和没有删除请求期间）如果会话被访问的话，
+    ``Cookie`` 加入到响应的 ``Vary`` 头部。 (`#2288`_)
+-   当建立基础 URL 时，使用 :meth:`~Flask.test_request_context` 方法接受
+    ``subdomain`` 和 ``url_scheme`` 参数。
     (`#1621`_)
--   Set :data:`APPLICATION_ROOT` to ``'/'`` by default. This was already
-    the implicit default when it was set to ``None``.
+-   把 :data:`APPLICATION_ROOT` 默认设置成 ``'/'`` 值。当设置成 ``None`` 值时，
+    隐含的默认值也是 ``'/'``
 -   :data:`TRAP_BAD_REQUEST_ERRORS` is enabled by default in debug mode.
     ``BadRequestKeyError`` has a message with the bad key in debug mode
     instead of the generic bad request message. (`#2348`_)
@@ -305,59 +296,56 @@ Released on April 26th 2018
 .. _#2709: https://github.com/pallets/flask/pull/2709
 
 
-Version 0.12.4
+版本 0.12.4
 --------------
 
-Released on April 29 2018
+发布于 April 29 2018
 
--   Repackage 0.12.3 to fix package layout issue. (`#2728`_)
+-   对 0.12.3 版本进行重新打包来修复包层次问题。 (`#2728`_)
 
 .. _#2728: https://github.com/pallets/flask/issues/2728
 
 
-Version 0.12.3
+版本 0.12.3
 --------------
 
-Released on April 26th 2018
+发布于 April 26th 2018
 
--   :func:`Request.get_json` no longer accepts arbitrary encodings.
-    Incoming JSON should be encoded using UTF-8 per :rfc:`8259`, but
-    Flask will autodetect UTF-8, -16, or -32. (`#2692`_)
--   Fix a Python warning about imports when using ``python -m flask``.
+-   函数 :func:`Request.get_json` 不再接受任何一种编码。
+    入口 JSON 应该每次使用 UTF-8 编码 :rfc:`8259`，
+    但 Flask 会自动检测 UTF-8 UTF-16 或 UTF-32。(`#2692`_)
+-   修复使用 ``python -m flask`` 时一个关于 Python 导入的警告。
     (`#2666`_)
--   Fix a ``ValueError`` caused by invalid ``Range`` requests in some
-    cases.
+-   修复某些情况中由于非法 ``Range`` 请求导致的一个 ``ValueError`` bug
 
 .. _#2666: https://github.com/pallets/flask/issues/2666
 .. _#2692: https://github.com/pallets/flask/issues/2692
 
 
-Version 0.12.2
+版本 0.12.2
 --------------
 
-Released on May 16 2017
+发布于 May 16 2017
 
-- Fix a bug in `safe_join` on Windows.
+- 修复Windows系统 `safe_join` 中的一个 bug
 
-Version 0.12.1
+版本 0.12.1
 --------------
 
-Bugfix release, released on March 31st 2017
+Bug 修复，发布于 March 31th 2017
 
-- Prevent `flask run` from showing a NoAppException when an ImportError occurs
-  within the imported application module.
-- Fix encoding behavior of ``app.config.from_pyfile`` for Python 3. Fix
-  ``#2118``.
-- Use the ``SERVER_NAME`` config if it is present as default values for
-  ``app.run``. ``#2109``, ``#2152``
-- Call `ctx.auto_pop` with the exception object instead of `None`, in the
-  event that a `BaseException` such as `KeyboardInterrupt` is raised in a
-  request handler.
+- 在已导入的应用模块中，当一项 ImportError 例外出现时，
+  防止 `flask run` 显示一个 NoAppException 例外。
+- 为 Python3 修复 ``app.config.from_pyfile`` 的编码行为。``#2118``
+- 如果对于 ``app.run`` 作为默认值的话，使用 ``SERVER_NAME`` 配置项。
+  ``#2109``, ``#2152``
+- 调用 `ctx.auto_pop` 含带例外对象，而不是 `None`，在事件中是一个 `BaseException`
+  就像一个请求处理器中抛出的 `KeyboardInterrupt` 一样。
 
 版本 0.12
 ------------
 
-发布于 December 21st 2016，代号 Punsch 潘趣酒
+发布于 December 21th 2016，代号 Punsch 潘趣酒
 
 - 命令行命令现在有了 `--version` 选项。
 - 对于类似文件的对象 Mimetype 猜测和 ETag 生成已经从 ``send_file`` 中移除，
@@ -436,9 +424,9 @@ Bug 修复，发布于 June 7th 2016
 - 蓝图处理严格按照注册模版加载时的顺序进行。
 - 已移植测试套件到 py.test
 - 不赞成 ``request.json`` 用法，改为 ``request.get_json()`` 用法。
-- Add "pretty" and "compressed" separators definitions in jsonify() method.
-  Reduces JSON response size when JSONIFY_PRETTYPRINT_REGULAR=False by removing
-  unnecessary white space included by default after separators.
+- 增加 "pretty" 和 "compressed" 分隔符定义到 jsonify() 方法里。
+  减少 JSON 响应规模，当 JSONIFY_PRETTYPRINT_REGULAR=False 时默认移除分隔符后
+  不需要的空白内容。
 - JSON 响应现在都用一个新行字符来终止，因为方便 UNIX 文件已一个新行作为结束，
   并且一些客户端缺少这个新行字符无法获得良好的处理。查看
   https://github.com/pallets/flask/pull/1262 网址，内容都是原始中的一部分，
