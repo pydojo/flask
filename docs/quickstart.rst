@@ -576,9 +576,8 @@ Flask 会为你把字符串转换成响应对象。如果你想明确地实现�
 重定向和错误
 --------------------
 
-To redirect a user to another endpoint, use the :func:`~flask.redirect`
-function; to abort a request early with an error code, use the
-:func:`~flask.abort` function::
+要把一个用户重定向到另一个端点上，使用 :func:`~flask.redirect` 函数；
+要使用一个错误代号提前终止一个请求，使用 :func:`~flask.abort` 函数::
 
     from flask import abort, redirect, url_for
 
@@ -591,13 +590,11 @@ function; to abort a request early with an error code, use the
         abort(401)
         this_is_never_executed()
 
-This is a rather pointless example because a user will be redirected from
-the index to a page they cannot access (401 means access denied) but it
-shows how that works.
+这个例子没有什么生产价值，因为一名用户会从主页位置重定向到一个无权访问的页面
+（401 错误代号的意思是拒绝访问），但足够说明是如何工作的。
 
-By default a black and white error page is shown for each error code.  If
-you want to customize the error page, you can use the
-:meth:`~flask.Flask.errorhandler` decorator::
+对于每个 HTTP 错误代号都是默认显示一个黑白页面。如果你想要自定义错误页面的话，
+你可以使用 :meth:`~flask.Flask.errorhandler` 装饰器实现::
 
     from flask import render_template
 
@@ -605,47 +602,41 @@ you want to customize the error page, you can use the
     def page_not_found(error):
         return render_template('page_not_found.html'), 404
 
-Note the ``404`` after the :func:`~flask.render_template` call.  This
-tells Flask that the status code of that page should be 404 which means
-not found.  By default 200 is assumed which translates to: all went well.
+注意 ``404`` 写在 :func:`~flask.render_template` 函数调用之后。
+这是告诉 Flask 该页面的状态代号应该是 404 意思是无法找到访问的页面。
+默认的 200 代号是假设一切都正常的意思。
 
-See :ref:`error-handlers` for more details.
+查看 :ref:`error-handlers` 参考文档了解更多细节。
 
 .. _about-responses:
 
-About Responses
+关于响应
 ---------------
 
-The return value from a view function is automatically converted into a
-response object for you.  If the return value is a string it's converted
-into a response object with the string as response body, a ``200 OK``
-status code and a :mimetype:`text/html` mimetype.  The logic that Flask applies to
-converting return values into response objects is as follows:
+从一个视图函数返回的值是自动地为你转换成一个响应对象。如果返回值是一个字符串的话，
+字符串会转化成一种字符串作为响应主体的响应对象，一个 ``200 OK`` 状态代号和
+一个 :mimetype:`text/html` 多功能互联网邮件扩展类型。Flask 作用在转换过程
+的逻辑，把值返回给响应对象，情况如下：
 
-1.  If a response object of the correct type is returned it's directly
-    returned from the view.
-2.  If it's a string, a response object is created with that data and the
-    default parameters.
-3.  If a tuple is returned the items in the tuple can provide extra
-    information.  Such tuples have to be in the form ``(response, status,
-    headers)`` or ``(response, headers)`` where at least one item has
-    to be in the tuple.  The ``status`` value will override the status code
-    and ``headers`` can be a list or dictionary of additional header values.
-4.  If none of that works, Flask will assume the return value is a
-    valid WSGI application and convert that into a response object.
+1.  如果返回的是正确类型的一个响应对象的话，它就是直接从视图函数返回的。
+2.  如果是一个字符串的话，所建立的一个响应对象含有这个字符串数据和默认参数。
+3.  如果返回的是一个元组的话，元组中的元素可以提供额外的信息。那么元组形式
+    要是 ``(response, status, headers)`` 或 ``(response, headers)`` 
+    其中一种。 ``status`` 值会覆写状态代号，并且 ``headers`` 可以是
+    额外头部值的一种列表或字典形式。
+4.  如果以上都不是的话，Flask 会假设返回值是一个合法的 WSGI 应用，
+    并且把 WSGI 应用转换成一个响应对象。
 
-If you want to get hold of the resulting response object inside the view
-you can use the :func:`~flask.make_response` function.
+如果你想在视图函数中控制响应对象结果的话，你可以使用 :func:`~flask.make_response` 函数。
 
-Imagine you have a view like this::
+想象一下你此时有一个像下面一样的视图函数::
 
     @app.errorhandler(404)
     def not_found(error):
         return render_template('error.html'), 404
 
-You just need to wrap the return expression with
-:func:`~flask.make_response` and get the response object to modify it, then
-return it::
+你只需要把返回语句表达式部分用 :func:`~flask.make_response` 打包起来，
+然后就得到一个响应对象可以修改它，接着返回修改后的响应对象::
 
     @app.errorhandler(404)
     def not_found(error):
@@ -655,18 +646,15 @@ return it::
 
 .. _sessions:
 
-Sessions
+会话
 --------
 
-In addition to the request object there is also a second object called
-:class:`~flask.session` which allows you to store information specific to a
-user from one request to the next.  This is implemented on top of cookies
-for you and signs the cookies cryptographically.  What this means is that
-the user could look at the contents of your cookie but not modify it,
-unless they know the secret key used for signing.
+另外请求对象也有第二个对象名叫 :class:`~flask.session` 类，它让你存储
+从一个请求到下一个请求用户的信息。这个类为你部署在 cookies 的顶层然后对
+ cookies 进行加密签名。意思就是用户可以查看你的 cookie 内容却无法修改内容，
+除非知道签名时使用的密钥。
 
-In order to use sessions you have to set a secret key.  Here is how
-sessions work::
+要使用会话你就需要设置一个密钥。如下就是会话如何工作的示例::
 
     from flask import Flask, session, redirect, url_for, escape, request
 
@@ -699,96 +687,83 @@ sessions work::
         session.pop('username', None)
         return redirect(url_for('index'))
 
-The :func:`~flask.escape` mentioned here does escaping for you if you are
-not using the template engine (as in this example).
+这里要注意 :func:`~flask.escape` 函数，如果你没有使用模版引擎的话（如同本例中一样），
+该函数会为你执行转义功能。
 
-.. admonition:: How to generate good secret keys
+.. admonition:: 如何生成良好的密钥
 
-    A secret key should be as random as possible. Your operating system has
-    ways to generate pretty random data based on a cryptographic random
-    generator. Use the following command to quickly generate a value for
-    :attr:`Flask.secret_key` (or :data:`SECRET_KEY`)::
+    一个密钥应该尽可能是随机结果。你的操作系统有非常好的随机数据生成机制，
+    依据一种加密的随机生成器来实现。使用如下命令可以快速为你生成一个随机值 
+    :attr:`Flask.secret_key` 属性（或 :data:`SECRET_KEY` 数据）::
 
         $ python -c 'import os; print(os.urandom(16))'
         b'_5#y2L"F4Q8z\n\xec]/'
 
-A note on cookie-based sessions: Flask will take the values you put into the
-session object and serialize them into a cookie.  If you are finding some
-values do not persist across requests, cookies are indeed enabled, and you are
-not getting a clear error message, check the size of the cookie in your page
-responses compared to the size supported by web browsers.
+在基于 cookie 的会话上有一点要注意：Flask 会得到你放到会话对象中的值，然后把
+值序列化到一个 cookie 中。如果你正在寻找一些值的时候，不要通过请求对象来存储，
+cookies 都是启用的，并且你们都得不到一个清晰的错误消息，检查你的页面响应中的
+ cookie 大小，与浏览器保存的大小进行比较。
 
-Besides the default client-side based sessions, if you want to handle
-sessions on the server-side instead, there are several
-Flask extensions that support this.
+另外对于默认客户端方的会话，如果你想要在服务器端来处理客户端会话，
+有许多 Flask 扩展件支持这项任务。
 
-Message Flashing
+消息闪存
 ----------------
 
-Good applications and user interfaces are all about feedback.  If the user
-does not get enough feedback they will probably end up hating the
-application.  Flask provides a really simple way to give feedback to a
-user with the flashing system.  The flashing system basically makes it
-possible to record a message at the end of a request and access it on the next
-(and only the next) request.  This is usually combined with a layout
-template to expose the message.
+好的网络应用和良好的用户接口都有关乎反馈的功能。如果用户得不到足够的反馈，
+用户都会恨恶那些具有隐含性质的网络应用。Flask 提供了真正直接的方式把反馈
+提供给用户，使用的就是闪存系统。闪存系统基本上在一个请求结束时，让记录一条消息
+变成可能，并且在下一个请求（且只在下一个请求）上可以获得上一条消息。
+这项技术常常与一个图层模版组合使用来曝光消息。
 
-To flash a message use the :func:`~flask.flash` method, to get hold of the
-messages you can use :func:`~flask.get_flashed_messages` which is also
-available in the templates.  Check out the :ref:`message-flashing-pattern`
-for a full example.
+要闪存一条消息使用 :func:`~flask.flash` 函数，要得到消息你可以使用
+ :func:`~flask.get_flashed_messages` 函数并且也可以用在模版中。
+对于一个完整的示例查看 :ref:`message-flashing-pattern` 参考文档。
 
-Logging
+日志
 -------
 
 .. versionadded:: 0.3
 
-Sometimes you might be in a situation where you deal with data that
-should be correct, but actually is not.  For example you may have some client-side
-code that sends an HTTP request to the server but it's obviously
-malformed.  This might be caused by a user tampering with the data, or the
-client code failing.  Most of the time it's okay to reply with ``400 Bad
-Request`` in that situation, but sometimes that won't do and the code has
-to continue working.
+有时候你也许身处一种情况中，你要处理的数据应该是正确的，但实际上却相反。
+例如你也许有一些客户端代码，发送一个 HTTP 请求给服务器，但显然发送的数据被玷污了。
+这也许是因为一名用户篡改了数据，或者客户端代码执行失败。大多数时候在这种情形里用
+ ``400 Bad Request`` 作为回复是可以的，但有时候无法实现，并且客户端代码依然正在执行。
 
-You may still want to log that something fishy happened.  This is where
-loggers come in handy.  As of Flask 0.3 a logger is preconfigured for you
-to use.
+你也许想通过日志来记录那些腥臭的行为。这就是日志器登场的时候了。
+从 Flask 0.3 开始，一个日志器预先配置完供你使用。
 
-Here are some example log calls::
+如下是一些日志调用的例子::
 
     app.logger.debug('A value for debugging')
     app.logger.warning('A warning occurred (%d apples)', 42)
     app.logger.error('An error occurred')
 
-The attached :attr:`~flask.Flask.logger` is a standard logging
-:class:`~logging.Logger`, so head over to the official `logging
-documentation <https://docs.python.org/library/logging.html>`_ for more
-information.
+已经增加的 :attr:`~flask.Flask.logger` 属性是一项标准日志 :class:`~logging.Logger` 类，
+所以回顾官方 `logging documentation <https://docs.python.org/library/logging.html>`_ 
+文档了解更多信息。
 
-Read more on :ref:`application-errors`.
+再阅读 :ref:`application-errors` 参考文档也有益处。
 
-Hooking in WSGI Middlewares
+在 WSGI 中间件里的钩子处理
 ---------------------------
 
-If you want to add a WSGI middleware to your application you can wrap the
-internal WSGI application.  For example if you want to use one of the
-middlewares from the Werkzeug package to work around bugs in lighttpd, you
-can do it like this::
+如果你想要增加一个 WSGI 中间件到你的网络应用中，你可以打包内部的 WSGI 应用。
+例如，如果你想使用 Werkzeug 包中的一个中间件的话，在 lighttpd 中围绕着 bugs 工作，
+你可以像下面这样来实现::
 
     from werkzeug.contrib.fixers import LighttpdCGIRootFix
     app.wsgi_app = LighttpdCGIRootFix(app.wsgi_app)
 
-Using Flask Extensions
+使用 Flask 扩展件
 ----------------------
 
-Extensions are packages that help you accomplish common tasks. For
-example, Flask-SQLAlchemy provides SQLAlchemy support that makes it simple
-and easy to use with Flask.
+扩展件都是帮助你完成共性任务的包。例如， Flask-SQLAlchemy 提供了 SQLAlchemy 数据库支持，
+它让 Flask 与数据库操作变得容易简单。
 
-For more on Flask extensions, have a look at :ref:`extensions`.
+更多的 Flask 扩展件，查看 :ref:`extensions` 参考文档。
 
-Deploying to a Web Server
+部署到一台网络服务器上
 -------------------------
 
-Ready to deploy your new Flask app? Go to :ref:`deployment`.
+想把你的新 Flask 网络应用部署到网络服务器上吗？直接阅读 :ref:`deployment` 参考文档。
