@@ -3,25 +3,22 @@
 FastCGI
 =======
 
-FastCGI is a deployment option on servers like `nginx`_, `lighttpd`_, and
-`cherokee`_; see :doc:`uwsgi` and :doc:`wsgi-standalone` for other options. To
-use your WSGI application with any of them you will need a FastCGI server first.
-The most popular one is `flup`_ which we will use for this guide. Make sure to
-have it installed to follow along.
+FastCGI 是像 `nginx`_、 `lighttpd`_、和 `cherokee`_ 服务器上的一种配置选项；
+查看 :doc:`uwsgi` 文档和 :doc:`wsgi-standalone` 文档了解其它选项。
+上面中的任何一种服务器要使用你的 WSGI 应用都先需要一个 FastCGI 服务器才可以。
+最受欢迎的一个就是 `flup`_ ，我们会使用此项作为指导。确保已经安装上后在看下面内容。
 
-.. admonition:: Watch Out
+.. admonition:: 小心
 
-   Please make sure in advance that any ``app.run()`` calls you might
-   have in your application file are inside an ``if __name__ ==
-   '__main__':`` block or moved to a separate file.  Just make sure it's
-   not called because this will always start a local WSGI server which
-   we do not want if we deploy that application to FastCGI.
+   一定要确保在你的网络应用中任何一个 ``app.run()`` 调用放在
+    ``if __name__ == '__main__':`` 习语块内，或者移到单个文件里。
+   只要确保不会被调用即可，因为总会启动一个本地 WSGI 服务器，
+   如果我们把网络应用部署到 FastCGI 上的话，这不是我们想要的现象。
 
-Creating a `.fcgi` file
+建立一个 `.fcgi` 文件
 -----------------------
 
-First you need to create the FastCGI server file.  Let's call it
-`yourapplication.fcgi`::
+首先你需要建立 FastCGI 服务器文件。此处我们叫它 `yourapplication.fcgi`::
 
     #!/usr/bin/python
     from flup.server.fcgi import WSGIServer
@@ -30,38 +27,33 @@ First you need to create the FastCGI server file.  Let's call it
     if __name__ == '__main__':
         WSGIServer(app).run()
 
-This is enough for Apache to work, however nginx and older versions of
-lighttpd need a socket to be explicitly passed to communicate with the
-FastCGI server.  For that to work you need to pass the path to the
-socket to the :class:`~flup.server.fcgi.WSGIServer`::
+这就足以让 Apache 工作起来了。不管如何做到的， nginx 和老版本的 lighttpd 都
+需要一个插槽来明确地代入到与 FastCGI 服务器通信中。
+这样你需要把路径代入到插槽中 :class:`~flup.server.fcgi.WSGIServer`::
 
     WSGIServer(application, bindAddress='/path/to/fcgi.sock').run()
 
-The path has to be the exact same path you define in the server
-config.
+路径必须要与你定义在服务器配置中的路径完全一样。
 
-Save the :file:`yourapplication.fcgi` file somewhere you will find it again.
-It makes sense to have that in :file:`/var/www/yourapplication` or something
-similar.
+把 :file:`yourapplication.fcgi` 文件保存在你可以再次找到的地方。
+保存位置要在 :file:`/var/www/yourapplication` 文件路径里，或者类似的其它位置。
 
-Make sure to set the executable bit on that file so that the servers
-can execute it:
+确保把文件设置成可执行权限，这样服务器才可以执行它：
 
-.. sourcecode:: text
+.. sourcecode:: 增加执行权限
 
     $ chmod +x /var/www/yourapplication/yourapplication.fcgi
 
-Configuring Apache
+配置 Apache
 ------------------
 
-The example above is good enough for a basic Apache deployment but your
-`.fcgi` file will appear in your application URL e.g.
-``example.com/yourapplication.fcgi/news/``. There are few ways to configure
-your application so that yourapplication.fcgi does not appear in the URL.
-A preferable way is to use the ScriptAlias and SetHandler configuration
-directives to route requests to the FastCGI server. The following example
-uses FastCgiServer to start 5 instances of the application which will
-handle all incoming requests::
+上面的例子对于一个基本的 Apache 部署来说已经足够好了，
+但你的 `.fcgi` 文件会显示在你的网络应用 URL 网址中。例如，
+``example.com/yourapplication.fcgi/news/`` 这种现象。
+这里也有几个方法来配置你的网络应用，这样 `.fcgi` 文件就不会显示在网址中了。
+一种完美的方法就是使用 ScriptAlias 和 SetHandler 配置指令来把请求指向到
+ FastCGI 服务器。如下的示例使用了 FastCgiServer 来启动应用的 5 个实例，
+这样会处理所有进入的请求::
 
     LoadModule fastcgi_module /usr/lib64/httpd/modules/mod_fastcgi.so
 
@@ -79,16 +71,15 @@ handle all incoming requests::
         </Location>
     </VirtualHost>
 
-These processes will be managed by Apache. If you're using a standalone
-FastCGI server, you can use the FastCgiExternalServer directive instead.
-Note that in the following the path is not real, it's simply used as an
-identifier to other
-directives such as AliasMatch::
+这些进程会由 Apache 管理着。如果你正在使用一个单独的 FastCGI 服务器的话，
+你可以使用 FastCgiExternalServer 指令代替 FastCgiServer 指令。
+但要注意下面的路径部分不是实际路径，它是直接用做一个识别符，指向另一个指令，
+就像 AliasMatch 一样::
 
     FastCgiServer /var/www/html/yourapplication -host 127.0.0.1:3000
 
-If you cannot set ScriptAlias, for example on a shared web host, you can use
-WSGI middleware to remove yourapplication.fcgi from the URLs. Set .htaccess::
+如果你无法配置 ScriptAlias 指令的话，例如在一台分享网络主机上，你可以使用
+WSGI 中间件从 URL 网址中来移除 yourapplication.fcgi 文件名。设置 .htaccess 文件::
 
     <IfModule mod_fcgid.c>
        AddHandler fcgid-script .fcgi
@@ -106,7 +97,7 @@ WSGI middleware to remove yourapplication.fcgi from the URLs. Set .htaccess::
        RewriteRule ^(.*)$ yourapplication.fcgi/$1 [QSA,L]
     </IfModule>
 
-Set yourapplication.fcgi::
+设置 yourapplication.fcgi 文件::
 
     #!/usr/bin/python
     #: optional path to your local python site-packages folder
@@ -129,10 +120,10 @@ Set yourapplication.fcgi::
     if __name__ == '__main__':
         WSGIServer(app).run()
 
-Configuring lighttpd
+配置 lighttpd
 --------------------
 
-A basic FastCGI configuration for lighttpd looks like that::
+对于 lighttpd 服务器的一项基础 FastCGI 配置看起来像下面内容::
 
     fastcgi.server = ("/yourapplication.fcgi" =>
         ((
@@ -152,23 +143,22 @@ A basic FastCGI configuration for lighttpd looks like that::
         "^(/.*)$" => "/yourapplication.fcgi$1"
     )
 
-Remember to enable the FastCGI, alias and rewrite modules. This configuration
-binds the application to ``/yourapplication``.  If you want the application to
-work in the URL root you have to work around a lighttpd bug with the
-:class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix` middleware.
+记住开启 FastCGI、 alias 和 rewrite 模块。这种配置把网络应用绑定到
+ ``/yourapplication`` 上了。如果你想要网络应用工作在 URL 根路径上的话，
+你就要用 :class:`~werkzeug.contrib.fixers.LighttpdCGIRootFix` 中间件
+来处理一个 lighttpd bug 了。
 
-Make sure to apply it only if you are mounting the application the URL
-root. Also, see the Lighty docs for more information on `FastCGI and Python
-<https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModFastCGI>`_ (note that
-explicitly passing a socket to run() is no longer necessary).
+如果你正在把网络应用挂载到 URL 根路径上的话，只确保应用它即可。
+对于更多信息也要稍微查看一下 `FastCGI and Python
+<https://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModFastCGI>`_ 
+文档内容（注意这里就不需要明确地把一个插槽代入到 run() 中了）。
 
-Configuring nginx
+配置 nginx
 -----------------
 
-Installing FastCGI applications on nginx is a bit different because by
-default no FastCGI parameters are forwarded.
+在 nginx 上安装 FastCGI 应用有点不一样，因为默认不直接提供 FastCGI 参数。
 
-A basic Flask FastCGI configuration for nginx looks like this::
+一个基础的 Flask FastCGI 配置，对于 nginx 来说看起来像下面这样::
 
     location = /yourapplication { rewrite ^ /yourapplication/ last; }
     location /yourapplication { try_files $uri @yourapplication; }
@@ -180,9 +170,9 @@ A basic Flask FastCGI configuration for nginx looks like this::
         fastcgi_pass unix:/tmp/yourapplication-fcgi.sock;
     }
 
-This configuration binds the application to ``/yourapplication``.  If you
-want to have it in the URL root it's a bit simpler because you don't
-have to figure out how to calculate ``PATH_INFO`` and ``SCRIPT_NAME``::
+这种配置是把应用绑定到 ``/yourapplication`` 上。
+如果你想要在 URL 根路径上有这项内容的话，就更容易一点儿了，
+因为你不需要知道如何计算 ``PATH_INFO`` 和 ``SCRIPT_NAME``::
 
     location / { try_files $uri @yourapplication; }
     location @yourapplication {
@@ -192,32 +182,28 @@ have to figure out how to calculate ``PATH_INFO`` and ``SCRIPT_NAME``::
         fastcgi_pass unix:/tmp/yourapplication-fcgi.sock;
     }
 
-Running FastCGI Processes
+运行 FastCGI 进程
 -------------------------
 
-Since nginx and others do not load FastCGI apps, you have to do it by
-yourself.  `Supervisor can manage FastCGI processes.
+由于 nginx 和其它服务器不加载 FastCGI 应用，你还要自己来实现。
+ `Supervisor can manage FastCGI processes.
 <http://supervisord.org/configuration.html#fcgi-program-x-section-settings>`_
-You can look around for other FastCGI process managers or write a script
-to run your `.fcgi` file at boot, e.g. using a SysV ``init.d`` script.
-For a temporary solution, you can always run the ``.fcgi`` script inside
-GNU screen.  See ``man screen`` for details, and note that this is a
-manual solution which does not persist across system restart::
+ 文档介绍了另一种 FastCGI 进程管理器，或写一个脚本在引导时来运行你的 `.fcgi` 文件。
+例如使用一个系统 ``init.d`` 脚本。对于一种临时解决方案来说，你可以在 GNU screen里一直
+运行 ``.fcgi`` 脚本。查看 ``man screen`` 了解细节，而且注意这是一种手动解决方案，
+意味着系统重启后就无效了::
 
     $ screen
     $ /var/www/yourapplication/yourapplication.fcgi
 
-Debugging
+调试
 ---------
 
-FastCGI deployments tend to be hard to debug on most web servers.  Very
-often the only thing the server log tells you is something along the
-lines of "premature end of headers".  In order to debug the application
-the only thing that can really give you ideas why it breaks is switching
-to the correct user and executing the application by hand.
+FastCGI 部署在大多数网络服务器上都是难于吊饰的。常常只有服务器日志能够告诉你
+一些头部早期结束信息行。要调试应用唯一的事情就是给你一些为什么应用断裂的信息，
+这样你可以手动切换到正确的用户和手动执行应用。
 
-This example assumes your application is called `application.fcgi` and
-that your web server user is `www-data`::
+这个实例假设你的应用名叫 `application.fcgi` 并且你的网络服务器用户是 `www-data`::
 
     $ su www-data
     $ cd /var/www/yourapplication
@@ -226,13 +212,12 @@ that your web server user is `www-data`::
       File "yourapplication.fcgi", line 4, in <module>
     ImportError: No module named yourapplication
 
-In this case the error seems to be "yourapplication" not being on the
-python path.  Common problems are:
+此时的情况错误看起来表明 "yourapplication" 没有在 python 路径上。
+共性的问题都是：
 
--   Relative paths being used.  Don't rely on the current working directory.
--   The code depending on environment variables that are not set by the
-    web server.
--   Different python interpreters being used.
+-   使用了相对路径。无法根据当前工作目录来调用。
+-   代码依据的环境变量没有通过网络服务器进行设置。
+-   使用了不同版本的 python 解释器。
 
 .. _nginx: https://nginx.org/
 .. _lighttpd: https://www.lighttpd.net/

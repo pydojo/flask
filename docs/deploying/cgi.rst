@@ -1,30 +1,27 @@
 CGI
 ===
 
-If all other deployment methods do not work, CGI will work for sure.
-CGI is supported by all major servers but usually has a sub-optimal
-performance.
+如果其它全部部署方法都无效的话， CGI 一定没问题。
+CGI 是所有主要服务器都支持的一项功能，但常常具有一种次要理想性能。
 
-This is also the way you can use a Flask application on Google's `App
-Engine`_, where execution happens in a CGI-like environment.
+这也可以让你在 Google's `App Engine`_ 上使用一个 Flask 网络应用，
+其中 Google 执行类似一种 CGI 环境。
 
-.. admonition:: Watch Out
+.. admonition:: 小心
 
-   Please make sure in advance that any ``app.run()`` calls you might
-   have in your application file are inside an ``if __name__ ==
-   '__main__':`` block or moved to a separate file.  Just make sure it's
-   not called because this will always start a local WSGI server which
-   we do not want if we deploy that application to CGI / app engine.
+   一定要确保任何一个 ``app.run()`` 调用放在你的应用文件
+    ``if __name__ == '__main__':`` 习语块中，
+   或者放到一个分开的文件里。只确保不被调用即可，因为总会启动一个本地
+    WSGI 服务器，如果我们把网络应用部署到 CGI / app 引擎上的话，
+   这不是我们想要的现象。
 
-   With CGI, you will also have to make sure that your code does not contain
-   any ``print`` statements, or that ``sys.stdout`` is overridden by something
-   that doesn't write into the HTTP response.
+   使用 CGI，你也要确保你的代码不包含任何一个 ``print`` 语句。
+   或者 ``sys.stdout`` 代码，因为它被覆写时有些内容无法写到 HTTP 响应中。
 
-Creating a `.cgi` file
+建立一个 `.cgi` 文件
 ----------------------
 
-First you need to create the CGI application file.  Let's call it
-:file:`yourapplication.cgi`::
+首先你需要建立一个 CGI 应用文件。此处我们叫它 :file:`yourapplication.cgi`::
 
     #!/usr/bin/python
     from wsgiref.handlers import CGIHandler
@@ -32,23 +29,23 @@ First you need to create the CGI application file.  Let's call it
 
     CGIHandler().run(app)
 
-Server Setup
+服务器配置
 ------------
 
-Usually there are two ways to configure the server.  Either just copy the
-``.cgi`` into a :file:`cgi-bin` (and use `mod_rewrite` or something similar to
-rewrite the URL) or let the server point to the file directly.
+常常有两种方式来配置服务器。一种只是把
+``.cgi`` 拷贝到 :file:`cgi-bin` 目录里（然后使用 `mod_rewrite` 或类似的工具重写 URL 地址），
+另一种是直接让服务器指向 ``.cgi`` 文件。
 
-In Apache for example you can put something like this into the config:
+在 Apache 服务器中，例如你可以把想如下一样指令放到配置文件中：
 
 .. sourcecode:: apache
 
     ScriptAlias /app /path/to/the/application.cgi
 
-On shared webhosting, though, you might not have access to your Apache config.
-In this case, a file called ``.htaccess``, sitting in the public directory you want
-your app to be available, works too but the ``ScriptAlias`` directive won't
-work in that case:
+在分享的网络主机上，尽管你也许没有访问 Apache 配置文件的权限。
+在这种情况下，一个名叫 ``.htaccess`` 文件位于公共目录里，
+这个正式你的网络应用想要使用的文件，同时可以有效的进行服务器配置，
+但 ``ScriptAlias`` 这条指令就无效了，改为:
 
 .. sourcecode:: apache
 
@@ -56,6 +53,6 @@ work in that case:
     RewriteCond %{REQUEST_FILENAME} !-f # Don't interfere with static files
     RewriteRule ^(.*)$ /path/to/the/application.cgi/$1 [L]
 
-For more information consult the documentation of your webserver.
+更多信息咨询你的网络服务器文档内容。
 
 .. _App Engine: https://developers.google.com/appengine/
