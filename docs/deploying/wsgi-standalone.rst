@@ -1,25 +1,25 @@
 .. _deploying-wsgi-standalone:
 
-Standalone WSGI Containers
+独立 WSGI 容器
 ==========================
 
-There are popular servers written in Python that contain WSGI applications and
-serve HTTP.  These servers stand alone when they run; you can proxy to them
-from your web server.  Note the section on :ref:`deploying-proxy-setups` if you
-run into issues.
+有许多受欢迎的服务器都是用 Python 写的，其中包含了 WSGI 应用和 HTTP 服务。
+这些服务都是在运行时独立提供；你可以在你的网络服务器上把它们设置成代理服务器。
+注意如果在运行时遇到问题的话，查看 :ref:`deploying-proxy-setups` 参考文档。
 
 Gunicorn
 --------
 
-`Gunicorn`_ 'Green Unicorn' is a WSGI HTTP Server for UNIX. It's a pre-fork
-worker model ported from Ruby's Unicorn project. It supports both `eventlet`_
-and `greenlet`_. Running a Flask application on this server is quite simple::
+`Gunicorn`_ 'Green Unicorn' 环保独角兽是为 UNIX 提供的一个 WSGI HTTP 服务器。
+它是一种前叉型工作模式，从 Ruby 独角兽项目中移植过来的。
+它即支持 `eventlet`_ 也支持 `greenlet`_ 并发库。
+运行一个 Flask 网络应用在这种服务器上是非常简单的::
 
     $ gunicorn myproject:app
 
-`Gunicorn`_ provides many command-line options -- see ``gunicorn -h``.
-For example, to run a Flask application with 4 worker processes (``-w
-4``) binding to localhost port 4000 (``-b 127.0.0.1:4000``)::
+`Gunicorn`_ 环保独角兽提供了许多命令行选项 -- 查看命令是 ``gunicorn -h``
+例如，要运行一个 Flask 网络应用时使用 4 个工作器进程的命令行选项是
+（ ``-w 4`` ），要绑定到本地服务器端口 4000 的选项是（ ``-b 127.0.0.1:4000`` ）::
 
     $ gunicorn -w 4 -b 127.0.0.1:4000 myproject:app
 
@@ -30,14 +30,14 @@ For example, to run a Flask application with 4 worker processes (``-w
 uWSGI
 --------
 
-`uWSGI`_ is a fast application server written in C. It is very configurable
-which makes it more complicated to setup than gunicorn.
+`uWSGI`_ 是用 C 语言写的一个快速网络应用服务器。
+它的配置写起来要比环保独角兽更复杂。
 
-Running `uWSGI HTTP Router`_::
+运行 `uWSGI HTTP Router`_::
 
     $ uwsgi --http 127.0.0.1:5000 --module myproject:app
 
-For a more optimized setup, see :doc:`configuring uWSGI and NGINX <uwsgi>`.
+对于一个更优化完的配置，查看 :doc:`configuring uWSGI and NGINX <uwsgi>` 文档。
 
 .. _uWSGI: https://uwsgi-docs.readthedocs.io/en/latest/
 .. _uWSGI HTTP Router: https://uwsgi-docs.readthedocs.io/en/latest/HTTP.html#the-uwsgi-http-https-router
@@ -45,9 +45,8 @@ For a more optimized setup, see :doc:`configuring uWSGI and NGINX <uwsgi>`.
 Gevent
 -------
 
-`Gevent`_ is a coroutine-based Python networking library that uses
-`greenlet`_ to provide a high-level synchronous API on top of `libev`_
-event loop::
+`Gevent`_ 是一个基于协程的 Python 网络库，它使用了 `greenlet`_ 
+在 `libev`_ 事件循环顶层提供一种高层同步 API::
 
     from gevent.pywsgi import WSGIServer
     from yourapplication import app
@@ -62,20 +61,20 @@ event loop::
 Twisted Web
 -----------
 
-`Twisted Web`_ is the web server shipped with `Twisted`_, a mature,
-non-blocking event-driven networking library. Twisted Web comes with a
-standard WSGI container which can be controlled from the command line using
-the ``twistd`` utility::
+`Twisted Web`_ 是使用 `Twisted`_ 移植的网络服务器，
+它是一个成熟的、无阻碍事件驱动网络库。
+微调网络库含有一项标准的 WSGI 容器，
+该容器可以从命令行来进行控制，使用的是 ``twistd`` 工具::
 
     $ twistd web --wsgi myproject.app
 
-This example will run a Flask application called ``app`` from a module named
-``myproject``.
+这个示例会运行一个名叫 ``app`` 的 Flask 网络应用，
+ ``myproject`` 是该网络应用所在的模块名。
 
-Twisted Web supports many flags and options, and the ``twistd`` utility does
-as well; see ``twistd -h`` and ``twistd web -h`` for more information. For
-example, to run a Twisted Web server in the foreground, on port 8080, with an
-application from ``myproject``::
+微调网络支持许多旗语和选项，并且 ``twistd`` 工具也是这样工作的；
+查看 ``twistd -h`` 帮助文档，以及查看 ``twistd web -h`` 帮助文档了解更多信息。
+例如，要在前端运行一个微调网络服务器，
+把 ``myproject`` 模块中的网络应用运行在 8080 端口上，命令是::
 
     $ twistd -n web --port tcp:8080 --wsgi myproject.app
 
@@ -84,19 +83,18 @@ application from ``myproject``::
 
 .. _deploying-proxy-setups:
 
-Proxy Setups
+代理配置
 ------------
 
-If you deploy your application using one of these servers behind an HTTP proxy
-you will need to rewrite a few headers in order for the application to work.
-The two problematic values in the WSGI environment usually are ``REMOTE_ADDR``
-and ``HTTP_HOST``.  You can configure your httpd to pass these headers, or you
-can fix them in middleware.  Werkzeug ships a fixer that will solve some common
-setups, but you might want to write your own WSGI middleware for specific
-setups.
+如果你在一个 HTTP 代理后面使用上面这些服务器中的一种来部署你的网络应用的话，
+你会需要重写一点头部配置，这样网络应用才能工作。
+在 WSGI 环境中常常导致问题的两项配置是 ``REMOTE_ADDR`` 和 ``HTTP_HOST`` 内容。
+你可以配置 httpd 时代入这些头部信息，或者你可以在中间件里固化这些信息。
+ Werkzeug 移植了一个固化器来解决一些共性的配置工作，
+但你也许想写在自己的 WSGI 中间件里，给出具体的配置内容。
 
-Here's a simple nginx configuration which proxies to an application served on
-localhost at port 8000, setting appropriate headers:
+这是一个简单的 nginx 配置内容，它在本地服务器 8000 端口上代理了一个网络应用，
+配置了合适的头部信息：
 
 .. sourcecode:: nginx
 
@@ -119,21 +117,19 @@ localhost at port 8000, setting appropriate headers:
         }
     }
 
-If your httpd is not providing these headers, the most common setup invokes the
-host being set from ``X-Forwarded-Host`` and the remote address from
-``X-Forwarded-For``::
+如果你的 httpd 没有提供这些头部信息的话，最共性的配置涉及了
+从 ``X-Forwarded-Host`` 设置主机，
+以及从 ``X-Forwarded-For`` 设置远程地址::
 
     from werkzeug.contrib.fixers import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-.. admonition:: Trusting Headers
+.. admonition:: 信任头部信息
 
-   Please keep in mind that it is a security issue to use such a middleware in
-   a non-proxy setup because it will blindly trust the incoming headers which
-   might be forged by malicious clients.
+   要记住在一个没有代理配置的情况下使用一种中间件是一项安全问题，
+   因为会盲目相信进入的头部信息，而头部信息也许被恶意客户端篡改了。
 
-If you want to rewrite the headers from another header, you might want to
-use a fixer like this::
+如果你想从另一个头部中重写头部信息的话，你也许想要使用一个固化器，就像下面这种::
 
     class CustomProxyFix(object):
 
