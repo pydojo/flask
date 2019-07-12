@@ -1,62 +1,54 @@
 .. _server:
 
-Development Server
+开发服务器
 ==================
 
 .. currentmodule:: flask
 
-Starting with Flask 0.11 there are multiple built-in ways to run a
-development server.  The best one is the :command:`flask` command line utility
-but you can also continue using the :meth:`Flask.run` method.
+从 Flask 0.11 开始有了许多内置方法来运行一个开发服务器。
+最好的一个方法就是 :command:`flask` 命令行工具，
+但你也依然要继续使用 :meth:`Flask.run` 方法。
 
-Command Line
+命令行
 ------------
 
-The :command:`flask` command line script (:ref:`cli`) is strongly
-recommended for development because it provides a superior reload
-experience due to how it loads the application.  The basic usage is like
-this::
+这个 :command:`flask` 命令行脚本 （:ref:`cli` 参考文档）是高度建议用在开发时，
+因为它提供了一种优秀的重载经验，依据的就是它如何加载网络应用。
+基础用法就像下面一样::
 
     $ export FLASK_APP=my_application
     $ export FLASK_ENV=development
     $ flask run
 
-This enables the development environment, including the interactive
-debugger and reloader, and then starts the server on
-*http://localhost:5000/*.
+这种用法开启了开发环境，包括交互式调试器和重载器，
+然后在 *http://localhost:5000/* 上启动服务器。
 
-The individual features of the server can be controlled by passing more
-arguments to the ``run`` option. For instance the reloader can be
-disabled::
+服务器的各个特性可以通过代入更多的参数给 ``run`` 作为命令行选项来进行控制。
+具体来说也可以禁用重载器，使用如下命令::
 
     $ flask run --no-reload
 
-.. note::
+.. 注意::
 
-    Prior to Flask 1.0 the :envvar:`FLASK_ENV` environment variable was
-    not supported and you needed to enable debug mode by exporting
-    ``FLASK_DEBUG=1``. This can still be used to control debug mode, but
-    you should prefer setting the development environment as shown
-    above.
+    在 Flask 1.0 之前的版本中 :envvar:`FLASK_ENV` 环境变量是没有的，
+    并且你需要导出 ``FLASK_DEBUG=1`` 来开启调试模式。
+    这种用法依然可以用来控制调试模式，但你应该最好采用前面所讲的来配置开发环境。
 
-In Code
--------
+代码中的实现
+--------------
 
-The alternative way to start the application is through the
-:meth:`Flask.run` method.  This will immediately launch a local server
-exactly the same way the :command:`flask` script does.
+另外一种启动网络应用的方法是通过 :meth:`Flask.run` 方法来实现。
+这会立即启动一个本地服务器，与 :command:`flask` 脚本方式效果完全一样。
 
-Example::
+示例是::
 
     if __name__ == '__main__':
         app.run()
 
-This works well for the common case but it does not work well for
-development which is why from Flask 0.11 onwards the :command:`flask`
-method is recommended.  The reason for this is that due to how the reload
-mechanism works there are some bizarre side-effects (like executing
-certain code twice, sometimes crashing without message or dying when a
-syntax or import error happens).
+对于共同情况来说这种代码方式工作良好，但对于开发来说工作效果不怎么好了，
+所以这也就是为什么从 Flask 0.11 后为开发推荐使用 :command:`flask` 命令方式。
+这种变更的原因是根据重载机制是如何工作的原理作出的改变，
+其中有一些奇怪的旁路效应（像执行了某代码两次，有时崩溃中缺少消息，
+或者当一个句法或导入语句错误发生时导致服务器挂了）。
 
-It is however still a perfectly valid method for invoking a non automatic
-reloading application.
+不管如何做到的，代码方式在不启用自动重载功能时依然是完美有效的用法。
