@@ -1,91 +1,83 @@
 .. _application-errors:
 
-Application Errors
+网络应用错误
 ==================
 
 .. versionadded:: 0.3
 
-Applications fail, servers fail.  Sooner or later you will see an exception
-in production.  Even if your code is 100% correct, you will still see
-exceptions from time to time.  Why?  Because everything else involved will
-fail.  Here are some situations where perfectly fine code can lead to server
-errors:
+网络应用失败，服务器失败。在生产中立即或稍后你都会看到一个例外出现。
+即使你的代码 100% 正确，你依然在任何时候都会看到各种例外现象。
+为什么会这样？因为有任何其它情况会涉及失败。
+这里有一些完美良好的代码所导致的服务器错误情形：
 
--   the client terminated the request early and the application was still
-    reading from the incoming data
--   the database server was overloaded and could not handle the query
--   a filesystem is full
--   a harddrive crashed
--   a backend server overloaded
--   a programming error in a library you are using
--   network connection of the server to another system failed
+-   客户端提前终止了请求后网络应用依然读取进入的数据
+-   数据库服务器超载后无法处理查询操作
+-   一个文件系统空间占满了
+-   一个硬盘坏了
+-   一个后端服务器超载了
+-   你使用了一个库中的编程错误
+-   服务器网络连接到另一个系统失败了
 
-And that's just a small sample of issues you could be facing.  So how do we
-deal with that sort of problem?  By default if your application runs in
-production mode, Flask will display a very simple page for you and log the
-exception to the :attr:`~flask.Flask.logger`.
+并且这些都只是你可能面对的一小部分问题现象。那么我们如何处理这类问题呢？
+如果你的网络应用运行在生产模式中，默认情况是 Flask 会显示一个非常简单的页面给你，
+然后记录下例外提供给 :attr:`~flask.Flask.logger` 属性。
 
-But there is more you can do, and we will cover some better setups to deal
-with errors.
+但你还有更多要做的，并且我们会介绍一些更好的配置来处理这些错误。
 
-Error Logging Tools
+错误日志工具
 -------------------
 
-Sending error mails, even if just for critical ones, can become
-overwhelming if enough users are hitting the error and log files are
-typically never looked at. This is why we recommend using `Sentry
-<https://sentry.io/>`_ for dealing with application errors.  It's
-available as an Open Source project `on GitHub
-<https://github.com/getsentry/sentry>`_ and is also available as a `hosted version
-<https://sentry.io/signup/>`_ which you can try for free. Sentry
-aggregates duplicate errors, captures the full stack trace and local
-variables for debugging, and sends you mails based on new errors or
-frequency thresholds.
+发送错误信息邮件，即使只对严重的错误发送邮件的话，
+如果足够的用户都造成了错误邮件也会吞没你的视野，
+并且通常都不会去查看日志文件。
+这就是为什么我们要推荐使用 `Sentry <https://sentry.io/>`_ 
+ 来处理网络应用错误。它是一个可用的开源项目，位于
+  `on GitHub <https://github.com/getsentry/sentry>`_ 可以找到。
+并且也可以作为一个 `hosted version <https://sentry.io/signup/>`_ 来使用，
+你可以免费尝试一下。 Sentry 为调试累计了重复的错误，捕获完整的堆栈追踪和本地变量，
+并且根据新错误或频率阀值来给你发送邮件。
 
-To use Sentry you need to install the `sentry-sdk` client with extra `flask` dependencies::
+要使用 Sentry 你需要安装 `sentry-sdk` 客户端，使用 `flask` 外部依赖命令安装::
 
     $ pip install sentry-sdk[flask]
 
-And then add this to your Flask app::
+然后把它的代码增加到你的 Flask 网络应用中::
 
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
     
     sentry_sdk.init('YOUR_DSN_HERE',integrations=[FlaskIntegration()])
 
-The `YOUR_DSN_HERE` value needs to be replaced with the DSN value you get
-from your Sentry installation.
+其中 `YOUR_DSN_HERE` 这个值是要用你安装 Sentry 获得的 DSN 值来替换。
 
-After installation, failures leading to an Internal Server Error are automatically reported to 
-Sentry and from there you can receive error notifications.
+安装之后，导致内部服务器的错误都会自动地报告给 Sentry 后你可以接收到错误提醒。
 
-Follow-up reads:
+继续阅读如下文档：
 
-* Sentry also supports catching errors from your worker queue (RQ, Celery) in a
-  similar fashion.  See the `Python SDK docs
-  <https://docs.sentry.io/platforms/python/>`_ for more information.
+* Sentry 也支持捕获来自你的工作器列队（RQ，Celery）产生的错误，使用的是类似模式。
+  查看 `Python SDK docs <https://docs.sentry.io/platforms/python/>`_ 文档
+  了解更多信息。
 * `Getting started with Sentry <https://docs.sentry.io/quickstart/?platform=python>`_
 * `Flask-specific documentation <https://docs.sentry.io/platforms/python/flask/>`_.
 
 .. _error-handlers:
 
-Error handlers
+错误处理器
 --------------
 
-You might want to show custom error pages to the user when an error occurs.
-This can be done by registering error handlers.
+当一个错误发生时，你也许想要显示自定义错误页面给用户。
+通过注册错误处理器就可以实现。
 
-An error handler is a normal view function that returns a response, but instead
-of being registered for a route, it is registered for an exception or HTTP
-status code that would be raised while trying to handle a request.
+一个错误处理器是一种正常的视图函数，它返回一个响应，而代替注册一个路由，
+注册一个错误处理器是针对一个例外或一个 HTTP 状态代号，
+它在尝试处理一个请求时会抛出这个 HTTP 状态代号。
 
-Registering
+注册
 ```````````
 
-Register handlers by decorating a function with
-:meth:`~flask.Flask.errorhandler`. Or use
-:meth:`~flask.Flask.register_error_handler` to register the function later.
-Remember to set the error code when returning the response. ::
+注册处理器通过装饰器句法使用 :meth:`~flask.Flask.errorhandler` 方法注册一个函数来实现。
+或者无装饰器句法使用 :meth:`~flask.Flask.register_error_handler` 方法来稍后注册函数。
+记住当返回响应时要设置 HTTP 错误代号。 ::
 
     @app.errorhandler(werkzeug.exceptions.BadRequest)
     def handle_bad_request(e):
@@ -94,14 +86,14 @@ Remember to set the error code when returning the response. ::
     # or, without the decorator
     app.register_error_handler(400, handle_bad_request)
 
-:exc:`werkzeug.exceptions.HTTPException` subclasses like
-:exc:`~werkzeug.exceptions.BadRequest` and their HTTP codes are interchangeable
-when registering handlers. (``BadRequest.code == 400``)
+当注册处理器时，
+:exc:`werkzeug.exceptions.HTTPException` 例外子类像
+:exc:`~werkzeug.exceptions.BadRequest` 例外和其 HTTP 代号一样都是可互换的。
+ (``BadRequest.code == 400``)
 
-Non-standard HTTP codes cannot be registered by code because they are not known
-by Werkzeug. Instead, define a subclass of
-:class:`~werkzeug.exceptions.HTTPException` with the appropriate code and
-register and raise that exception class. ::
+非标准 HTTP 代号不能通过代号来注册，因为 Werkzeug 不认识它们。
+相反，定义一个 :class:`~werkzeug.exceptions.HTTPException` 的子类
+包含合适的代号和注册器，以及抛出那个例外子类来实现。 ::
 
     class InsufficientStorage(werkzeug.exceptions.HTTPException):
         code = 507
@@ -111,12 +103,11 @@ register and raise that exception class. ::
 
     raise InsufficientStorage()
 
-Handlers can be registered for any exception class, not just
-:exc:`~werkzeug.exceptions.HTTPException` subclasses or HTTP status
-codes. Handlers can be registered for a specific class, or for all subclasses
-of a parent class.
+处理器可以为任何一种例外类别进行注册，不只是
+ :exc:`~werkzeug.exceptions.HTTPException` 例外子类或 HTTP 状态代号。
+处理器可以针对一个具体的类来进行注册，或者对一个父类的所有子类进行注册。
 
-Handling
+处理
 ````````
 
 When an exception is caught by Flask while handling a request, it is first
