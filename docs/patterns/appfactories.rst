@@ -1,30 +1,26 @@
 .. _app-factories:
 
-Application Factories
+网络应用工厂模式
 =====================
 
-If you are already using packages and blueprints for your application
-(:ref:`blueprints`) there are a couple of really nice ways to further improve
-the experience.  A common pattern is creating the application object when
-the blueprint is imported.  But if you move the creation of this object
-into a function, you can then create multiple instances of this app later.
+如果你已经正在对你的网络应用使用包和蓝图技术的话（:ref:`blueprints` 参考文档），
+这里有一组真正良好的方法来进一步提升你的经验。
+一个共同采用的模式就是，当蓝图导入后的时候建立网络应用对象。
+但如果你把这个对象的建立移动到一个函数中去的话，你可以稍后建立这个应用的多个实例。
 
-So why would you want to do this?
+那么为什么你想要这样做呢？
 
-1.  Testing.  You can have instances of the application with different
-    settings to test every case.
-2.  Multiple instances.  Imagine you want to run different versions of the
-    same application.  Of course you could have multiple instances with
-    different configs set up in your webserver, but if you use factories,
-    you can have multiple instances of the same application running in the
-    same application process which can be handy.
+1.  测试。你可以用不同的设置来测试每种情况，因为你可以建立许多网络应用的实例。
+2.  多种实例。想象一下，你想要运行同一个网络应用的不同版本时。
+    当然你需要有多种实例，在你的网络服务器里含有不同的配置，但如果你使用了工厂模式的话，
+    你就可以对一个应用建立多种实例，运行在同一个应用进程中，这样就很上手了。
 
-So how would you then actually implement that?
+那么你如何实际地部署工厂模式呢？
 
-Basic Factories
+基础工厂
 ---------------
 
-The idea is to set up the application in a function.  Like this::
+在一个函数中配置网络应用的思路是如下这样::
 
     def create_app(config_filename):
         app = Flask(__name__)
@@ -40,10 +36,10 @@ The idea is to set up the application in a function.  Like this::
 
         return app
 
-The downside is that you cannot use the application object in the blueprints
-at import time.  You can however use it from within a request.  How do you
-get access to the application with the config?  Use
-:data:`~flask.current_app`::
+工厂模式的缺点是在蓝图导入的时候你不能使用网络应用对象。
+不管如何做到的，你要在一个请求中来使用网络应用对象。
+你如何使用配置来访问网络应用呢？
+使用 :data:`~flask.current_app` 数据::
 
     from flask import current_app, Blueprint, render_template
     admin = Blueprint('admin', __name__, url_prefix='/admin')
@@ -52,16 +48,15 @@ get access to the application with the config?  Use
     def index():
         return render_template(current_app.config['INDEX_TEMPLATE'])
 
-Here we look up the name of a template in the config.
+这就是我们以配置的方式来查询一个模版的名字。
 
-Factories & Extensions
+工厂模式与扩展件
 ----------------------
 
-It's preferable to create your extensions and app factories so that the
-extension object does not initially get bound to the application.
+最好就是建立你的扩展件和应用工厂，这样扩展件对象不会在初始化时就绑定到应用上。
 
-Using `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/>`_,
-as an example, you should not do something along those lines::
+使用 `Flask-SQLAlchemy <http://flask-sqlalchemy.pocoo.org/>`_ 作为一个例子，
+如下这些行代码你不应该添加任何内容::
 
     def create_app(config_filename):
         app = Flask(__name__)
@@ -69,11 +64,11 @@ as an example, you should not do something along those lines::
 
         db = SQLAlchemy(app)
 
-But, rather, in model.py (or equivalent)::
+但是在 model.py （或相同形式中）里::
 
     db = SQLAlchemy()
 
-and in your application.py (or equivalent)::
+之后在你的 application.py (或相同形式中）里::
 
     def create_app(config_filename):
         app = Flask(__name__)
@@ -82,36 +77,34 @@ and in your application.py (or equivalent)::
         from yourapplication.model import db
         db.init_app(app)
 
-Using this design pattern, no application-specific state is stored on the
-extension object, so one extension object can be used for multiple apps.
-For more information about the design of extensions refer to :doc:`/extensiondev`.
+就需要使用这种设计模式了，无应用具体的状态存储在扩展件对象上，
+所以一个扩展件对象可以给多个应用使用。
+关于扩展件的设计参考 :doc:`/extensiondev` 文档了解更多信息。
 
-Using Applications
+使用网络应用
 ------------------
 
-To run such an application, you can use the :command:`flask` command::
+要运行这样一种网络应用，你可以使用命令行 :command:`flask` 命令::
 
     $ export FLASK_APP=myapp
     $ flask run
     
-Flask will automatically detect the factory (``create_app`` or ``make_app``) 
-in ``myapp``. You can also pass arguments to the factory like this::
+Flask 会自动地在 ``myapp`` 中检测到工厂模式 (``create_app`` 或 ``make_app``)。
+你也可以把参数代入到工厂函数里，想如下这样::
 
     $ export FLASK_APP="myapp:create_app('dev')"
     $ flask run
     
-Then the ``create_app`` factory in ``myapp`` is called with the string
-``'dev'`` as the argument. See :doc:`/cli` for more detail.
+那么在 ``myapp`` 里的 ``create_app`` 工厂函数会带着字符串
+ ``'dev'`` 作为参数值被调用。查看 :doc:`/cli` 文档了解更多细节。
 
-Factory Improvements
+工厂模式的改善
 --------------------
 
-The factory function above is not very clever, but you can improve it.
-The following changes are straightforward to implement:
+工厂函数不是非常聪明，但你可以改善工厂函数。
+下面的变更都是直接部署：
 
-1.  Make it possible to pass in configuration values for unit tests so that
-    you don't have to create config files on the filesystem.
-2.  Call a function from a blueprint when the application is setting up so
-    that you have a place to modify attributes of the application (like
-    hooking in before/after request handlers etc.)
-3.  Add in WSGI middlewares when the application is being created if necessary.
+1.  对于单元测试来说，让工厂函数可以代入配置值，这样你就不用在文件系统上建立配置文件了。
+2.  当网络应用被配置的时候，从一个蓝图来调用一个工厂函数，
+    这样你就有了一个修改网络应用属性的地方（就像在请求处理器等等，之前/之后应用钩子一样）。
+3.  如果需要的话，当建立网络应用的时候，把工厂函数加入到 WSGI 中间件里去。
