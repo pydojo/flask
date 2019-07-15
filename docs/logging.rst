@@ -1,12 +1,12 @@
 .. _logging:
 
-Logging
+日志
 =======
 
-Flask uses standard Python :mod:`logging`. All Flask-related messages are
-logged under the ``'flask'`` logger namespace.
-:meth:`Flask.logger <flask.Flask.logger>` returns the logger named
-``'flask.app'``, and can be used to log messages for your application. ::
+Flask 使用了标准的 Python :mod:`logging` 模块。所有与 Flask 相关的消息
+都记录在 ``'flask'`` 日志器命名空间里。
+:meth:`Flask.logger <flask.Flask.logger>` 方法返回日志器名字
+ ``'flask.app'`` 后可以用来记录你的网络应用消息。 ::
 
     @app.route('/login', methods=['POST'])
     def login():
@@ -21,16 +21,15 @@ logged under the ``'flask'`` logger namespace.
             abort(401)
 
 
-Basic Configuration
+基础配置
 -------------------
 
-When you want to configure logging for your project, you should do it as soon
-as possible when the program starts. If :meth:`app.logger <flask.Flask.logger>`
-is accessed before logging is configured, it will add a default handler. If
-possible, configure logging before creating the application object.
+当你想要为你的项目配置日志时，你应该在程序启动时尽可能实现完。
+如果在日志配置完之前访问了 :meth:`app.logger <flask.Flask.logger>` 方法，
+它会增加一个默认处理器。如果可能的话，在建立网络应用对象之前就完成配置日志工作。
 
-This example uses :func:`~logging.config.dictConfig` to create a logging
-configuration similar to Flask's default, except for all logs::
+本示例使用了 :func:`~logging.config.dictConfig` 函数来建立一个日志配置，
+类似 Flask 的默认配置，不包括所有的日志记录项::
 
     from logging.config import dictConfig
 
@@ -53,39 +52,37 @@ configuration similar to Flask's default, except for all logs::
     app = Flask(__name__)
 
 
-Default Configuration
+默认配置
 `````````````````````
 
-If you do not configure logging yourself, Flask will add a
-:class:`~logging.StreamHandler` to :meth:`app.logger <flask.Flask.logger>`
-automatically. During requests, it will write to the stream specified by the
-WSGI server in ``environ['wsgi.errors']`` (which is usually
-:data:`sys.stderr`). Outside a request, it will log to :data:`sys.stderr`.
+如果你自己不做配置日志的话， Flask 会自动把一个
+:class:`~logging.StreamHandler` 类增加到 :meth:`app.logger <flask.Flask.logger>`
+ 方法上。在请求期间，它会写到由 WSGI 服务器所描述的 ``environ['wsgi.errors']`` 流里去
+ （它常常是 :data:`sys.stderr` 数据流）。)
+ 在请求以外，它会记录到 :data:`sys.stderr` 数据流中。
 
 
-Removing the Default Handler
+移除默认的处理器
 ````````````````````````````
 
-If you configured logging after accessing
-:meth:`app.logger <flask.Flask.logger>`, and need to remove the default
-handler, you can import and remove it::
+如果你在访问 :meth:`app.logger <flask.Flask.logger>` 方法之后配置日志的话，
+那么需要移除默认的处理器，你可以导入后移除它::
 
     from flask.logging import default_handler
 
     app.logger.removeHandler(default_handler)
 
 
-Email Errors to Admins
-----------------------
+用邮件发送错误信息给管理员
+------------------------------
 
-When running the application on a remote server for production, you probably
-won't be looking at the log messages very often. The WSGI server will probably
-send log messages to a file, and you'll only check that file if a user tells
-you something went wrong.
+当为生产在一台远程服务器上运行网络应用时，你可能无法经常看到日志消息。
+也许 WSGI 服务器会把日志消息发送到一个文件中去，
+然后如果一名用户告诉你有什么错误时，你只可以检查那个日志文件。
 
-To be proactive about discovering and fixing bugs, you can configure a
-:class:`logging.handlers.SMTPHandler` to send an email when errors and higher
-are logged. ::
+要想主动发现并修复 bugs 的话，你可以配置一个
+ :class:`logging.handlers.SMTPHandler` 类在
+错误和更高级别的日志记录完时发送邮件。 ::
 
     import logging
     from logging.handlers import SMTPHandler
@@ -104,18 +101,18 @@ are logged. ::
     if not app.debug:
         app.logger.addHandler(mail_handler)
 
-This requires that you have an SMTP server set up on the same server. See the
-Python docs for more information about configuring the handler.
+发送邮件需要你有一个 SMTP 服务器配置在相同服务器上。
+查看 Python 文档了解关于配置处理器的更多信息。
 
 
-Injecting Request Information
+注射请求信息
 -----------------------------
 
-Seeing more information about the request, such as the IP address, may help
-debugging some errors. You can subclass :class:`logging.Formatter` to inject
-your own fields that can be used in messages. You can change the formatter for
-Flask's default handler, the mail handler defined above, or any other
-handler. ::
+关于请求的更多信息，例如 IP 地址，也许帮助调试一些错误。
+你可以建立一个 :class:`logging.Formatter` 类的子类来
+注射你自己的区域，这样你自己的区域可以用在消息中。
+你可以自定义 Flask 默认处理器的格式化器，
+定义在上面的邮件处理器，或者任何其它一个处理器。::
 
     from flask import request
     from flask.logging import default_handler
@@ -134,12 +131,11 @@ handler. ::
     mail_handler.setFormatter(formatter)
 
 
-Other Libraries
+其它库
 ---------------
 
-Other libraries may use logging extensively, and you want to see relevant
-messages from those logs too. The simplest way to do this is to add handlers
-to the root logger instead of only the app logger. ::
+其它的库也许用来扩展日志功能，并且你也想要看到来自那些日志的相关消息。
+最简单的方法就是增加处理器到根日志器，而不是只增加到网络应用日志器中。 ::
 
     from flask.logging import default_handler
 
@@ -147,8 +143,8 @@ to the root logger instead of only the app logger. ::
     root.addHandler(default_handler)
     root.addHandler(mail_handler)
 
-Depending on your project, it may be more useful to configure each logger you
-care about separately, instead of configuring only the root logger. ::
+根据你的项目，分别配置每个你在意的日志器也许更有用，
+而不是只配置根日志器 ::
 
     for logger in (
         app.logger,
@@ -162,14 +158,14 @@ care about separately, instead of configuring only the root logger. ::
 Werkzeug
 ````````
 
-Werkzeug logs basic request/response information to the ``'werkzeug'`` logger.
-If the root logger has no handlers configured, Werkzeug adds a
-:class:`~logging.StreamHandler` to its logger.
+Werkzeug 把基础的请求/响应信息记录到 ``'werkzeug'`` 日志器。
+如果根日志器没有处理器配置的话， Werkzeug 会增加一个
+ :class:`~logging.StreamHandler` 类处理器。
 
 
-Flask Extensions
+Flask 扩展
 ````````````````
 
-Depending on the situation, an extension may choose to log to
-:meth:`app.logger <flask.Flask.logger>` or its own named logger. Consult each
-extension's documentation for details.
+根据情况来定，一个扩展也许选择记录日志到
+ :meth:`app.logger <flask.Flask.logger>` 方法上，或者记录到自己命名的日志器上。
+咨询每个扩展的文档了解细节。
