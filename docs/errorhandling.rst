@@ -110,86 +110,80 @@
 处理
 ````````
 
-When an exception is caught by Flask while handling a request, it is first
-looked up by code. If no handler is registered for the code, it is looked up
-by its class hierarchy; the most specific handler is chosen. If no handler is
-registered, :class:`~werkzeug.exceptions.HTTPException` subclasses show a
-generic message about their code, while other exceptions are converted to a
-generic 500 Internal Server Error.
+当 Flask 处理一个请求时，一个例外被其捕获的时候，Flask 会先查看代码。
+如果代码中没有注册一个处理器的话， 通过例外的类垂直关系来查看例外；
+会选择最具体的一个处理器。如果没有注册处理器的话，
+ :class:`~werkzeug.exceptions.HTTPException` 例外子类显示关于代码
+的一个普通消息，同时其它的例外都转换到一个普通的 500 内部服务器错误。
 
-For example, if an instance of :exc:`ConnectionRefusedError` is raised, and a handler
-is registered for :exc:`ConnectionError` and :exc:`ConnectionRefusedError`,
-the more specific :exc:`ConnectionRefusedError` handler is called with the
-exception instance to generate the response.
+例如，如果抛出一个 :exc:`ConnectionRefusedError` 例外实例的话，
+并且有一个处理器注册 :exc:`ConnectionError` 例外和
+ :exc:`ConnectionRefusedError` 例外，
+更具体的 :exc:`ConnectionRefusedError` 例外处理器
+会带着例外实例被调用来生成其响应。
 
-Handlers registered on the blueprint take precedence over those registered
-globally on the application, assuming a blueprint is handling the request that
-raises the exception. However, the blueprint cannot handle 404 routing errors
-because the 404 occurs at the routing level before the blueprint can be
-determined.
+注册在蓝图上的处理器获得优先权，要比那些注册在全局范围上的网络应用先获得处理，
+假设一个蓝图正在处理请求时，会先抛出例外。
+不管如何做到的，蓝图不能处理 404 路由错误，因为在蓝图确定之前 404 发生在路由层。
 
 .. versionchanged:: 0.11
 
-   Handlers are prioritized by specificity of the exception classes they are
-   registered for instead of the order they are registered in.
+   处理器优先权是通过例外类注册的具体顺序来计算，而不是根据处理器注册的顺序。
 
-Logging
+日志
 -------
 
-See :ref:`logging` for information on how to log exceptions, such as by
-emailing them to admins.
+查看 :ref:`logging` 参考内容了解如何记录例外的，
+例如天通过邮件发送给管理员。
 
 
-Debugging Application Errors
+调试网络应用错误
 ============================
 
-For production applications, configure your application with logging and
-notifications as described in :ref:`application-errors`.  This section provides
-pointers when debugging deployment configuration and digging deeper with a
-full-featured Python debugger.
+对于生产中的网络应用来说，配置含有日志和提醒的网络应用，
+描述在 :ref:`application-errors` 参考内容中。
+本部分提供许多指导，作为调试开发配置和更深入了解完整特性的 Python 调试器。
 
 
-When in Doubt, Run Manually
+不清楚的时候手动运行
 ---------------------------
 
-Having problems getting your application configured for production?  If you
-have shell access to your host, verify that you can run your application
-manually from the shell in the deployment environment.  Be sure to run under
-the same user account as the configured deployment to troubleshoot permission
-issues.  You can use Flask's builtin development server with `debug=True` on
-your production host, which is helpful in catching configuration issues, but
-**be sure to do this temporarily in a controlled environment.** Do not run in
-production with `debug=True`.
+对于生产环境你的网络应用是不是有许多问题？
+如果你用终端访问你的主机的话，验证一下你
+可以在部署环境中手动运行你的网络应用。
+确保使用一样的部署配置和相同的用户权限来运行，这样可以解决权限许可问题。
+你可以在生产主机上使用 Flask 的内置开发服务器包含 `debug=True` 配置，
+这样在捕获配置问题中是有帮助的，
+但 **一定要确保在一个控制的环境中临时性这样做。** 
+不要在生产中带着 `debug=True` 运行网络应用。
 
 
 .. _working-with-debuggers:
 
-Working with Debuggers
+与调试器一起工作
 ----------------------
 
-To dig deeper, possibly to trace code execution, Flask provides a debugger out
-of the box (see :ref:`debug-mode`).  If you would like to use another Python
-debugger, note that debuggers interfere with each other.  You have to set some
-options in order to use your favorite debugger:
+要更深入了解情况，可能要追踪代码的执行， Flask 提供了一种盒外调试器
+（查看 :ref:`debug-mode` 参考内容）。如果你喜欢使用另一个 Python 调试器的话，
+注意彼此之间的调试器接口。你需要设置一些选项才可以使用你喜欢的调试器：
 
-* ``debug``        - whether to enable debug mode and catch exceptions
-* ``use_debugger`` - whether to use the internal Flask debugger
-* ``use_reloader`` - whether to reload and fork the process if modules were changed
+* ``debug``        - 是否要开启调试模式并且捕获例外
+* ``use_debugger`` - 是否要使用内部 Flask 调试器
+* ``use_reloader`` - 如果模块保存了变更的话，是否要重载和叉起进程
 
-``debug`` must be True (i.e., exceptions must be caught) in order for the other
-two options to have any value.
+``debug`` 必须设置成 True （例如，例外必须要被捕获）这样对于其它两个选项才会有任何一种值设置。
 
-If you're using Aptana/Eclipse for debugging you'll need to set both
-``use_debugger`` and ``use_reloader`` to False.
+如果你正在使用 Aptana/Eclipse 文本编辑器做调试的话，你会需要把
+ ``use_debugger`` 和 ``use_reloader`` 都设置成 False 值才可以。
 
-A possible useful pattern for configuration is to set the following in your
-config.yaml (change the block as appropriate for your application, of course)::
+对于配置来说一种可能有用的模式是在你的 `config.yaml` 文件中设置
+（当然为你的网络应用更新合适的配置块内容）::
 
    FLASK:
        DEBUG: True
        DEBUG_WITH_APTANA: True
 
-Then in your application's entry-point (main.py), you could have something like::
+然后在你的网络应用的入口点（main.py），你可以增加如下这些内容::
 
    if __name__ == "__main__":
        # To allow aptana to receive errors, set use_debugger=False
