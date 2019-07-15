@@ -2,23 +2,24 @@
 
 .. _cli:
 
-Command Line Interface
+命令行接口
 ======================
 
-Installing Flask installs the ``flask`` script, a `Click`_ command line
-interface, in your virtualenv. Executed from the terminal, this script gives
-access to built-in, extension, and application-defined commands. The ``--help``
-option will give more information about any commands and options.
+在你的虚拟环境中安装 Flask 过程中安装了 ``flask`` 脚本，
+这是一个 `Click`_ 命令行接口。
+用来在终端里执行程序，这个脚本给了许多访问内置、扩展，和定义完的网络应用命令。
+它的 ``--help`` 命令行选项会给你更多关于其它命令和选项的信息。
 
 .. _Click: http://click.pocoo.org/
 
 
-Application Discovery
+发现网络应用
 ---------------------
 
-The ``flask`` command is installed by Flask, not your application; it must be
-told where to find your application in order to use it. The ``FLASK_APP``
-environment variable is used to specify how to load the application.
+此 ``flask`` 命令是由 Flask 安装的，而不是由你的网络应用来安装；
+那么就必须告诉 ``flask`` 命令到哪里可以找到你的网络应用，
+这样才能在终端里启动网络应用。
+其 ``FLASK_APP`` 环境变量是用来描述如何加载网络应用的。
 
 Unix Bash (Linux, Mac, etc.)::
 
@@ -35,71 +36,67 @@ Windows PowerShell::
     > $env:FLASK_APP = "hello"
     > flask run
 
-While ``FLASK_APP`` supports a variety of options for specifying your
-application, most use cases should be simple. Here are the typical values:
+同时 ``FLASK_APP`` 支持许多各种选项来描述你的网络应用，大多数用起来都是简单直接。
+下面是一些典型的值描述：
 
-(nothing)
-    The file :file:`wsgi.py` is imported, automatically detecting an app
-    (``app``). This provides an easy way to create an app from a factory with
-    extra arguments.
+（什么都不描述）
+    当 :file:`wsgi.py` 导入后，自动地检测一个网络应用（ ``app`` ）。
+    这样提供了一种容易的方法带着许多额外的参数从一个工厂函数建立一个网络应用。
 
 ``FLASK_APP=hello``
-    The name is imported, automatically detecting an app (``app``) or factory
-    (``create_app``).
+    导入名字后，自动地检测一个网络应用（ ``app`` ）或工厂函数（ ``create_app`` ）。
 
-----
+``FLASK_APP`` 环境变量
+----------------------------
 
-``FLASK_APP`` has three parts: an optional path that sets the current working
-directory, a Python file or dotted import path, and an optional variable
-name of the instance or factory. If the name is a factory, it can optionally
-be followed by arguments in parentheses. The following values demonstrate these
-parts:
+``FLASK_APP`` 环境变量有三个部分：
+一个可选路径，是设置当前工作目录，一个 Python文件或句号导入部分，
+和一个可选的应用实例或工厂函数变量名。
+如果名字是一个工厂函数的名字，那么就可以在圆括号对儿中代入参数。
+如下例子示范了这些部分的用法：
 
 ``FLASK_APP=src/hello``
-    Sets the current working directory to ``src`` then imports ``hello``.
+    设置当前工作目录为 ``src`` 后导入 ``hello`` 。
 
 ``FLASK_APP=hello.web``
-    Imports the path ``hello.web``.
+    设置导入路径 ``hello.web`` 。
 
 ``FLASK_APP=hello:app2``
-    Uses the ``app2`` Flask instance in ``hello``.
+    设置导入 ``hello`` 中 ``app2`` Flask 实例作为网络应用。
 
 ``FLASK_APP="hello:create_app('dev')"``
-    The ``create_app`` factory in ``hello`` is called with the string ``'dev'``
-    as the argument.
+    设置 ``hello`` 中的 ``create_app`` 工厂函数调用时带着字符串 ``'dev'`` 作为参数值。
 
-If ``FLASK_APP`` is not set, the command will look for a file called
-:file:`wsgi.py` or :file:`app.py` and try to detect an application instance or
-factory.
+如果 ``FLASK_APP`` 环境变量没有进行设置的话， ``flask`` 命令会寻找名叫
+ :file:`wsgi.py` 的文件，或者寻找名叫 :file:`app.py` 的文件，
+然后尝试检测一个网络应用实例或一个工厂函数。
 
-Within the given import, the command looks for an application instance named
-``app`` or ``application``, then any application instance. If no instance is
-found, the command looks for a factory function named ``create_app`` or
-``make_app`` that returns an instance.
+在导入的内容里， ``flask`` 命令会查找名叫 ``app`` 或 ``application`` 的网络应用实例，
+或者再查找任何一个网络应用实例。如果找不到一个实例的话，命令会去查找一个能够返回一个实例的名叫
+ ``create_app`` 或 ``make_app`` 的工厂函数。
 
-When calling an application factory, if the factory takes an argument named
-``script_info``, then the :class:`~cli.ScriptInfo` instance is passed as a
-keyword argument. If the application factory takes only one argument and no
-parentheses follow the factory name, the :class:`~cli.ScriptInfo` instance
-is passed as a positional argument. If parentheses follow the factory name,
-their contents are parsed as Python literals and passes as arguments to the
-function. This means that strings must still be in quotes.
+当调用一个网络应用工厂函数时，如果工厂函数得到一个名叫 ``script_info`` 的参数，
+那么 :class:`~cli.ScriptInfo` 类的实例会代入成一个关键字参数。
+如果网络应用工厂函数只得到一个参数并且工厂函数名后没有圆括号对儿的话，
+ :class:`~cli.ScriptInfo` 类的实例会代入成一个位置参数。
+如果圆括号对儿在工厂函数名后的话，其中的内容会由 Python 逐字分析后
+作为参数代入到工厂函数中。这就意味着必须使用字符串。
 
 
-Run the Development Server
+运行开发服务器
 --------------------------
 
-The :func:`run <cli.run_command>` command will start the development server. It
-replaces the :meth:`Flask.run` method in most cases. ::
+用 :func:`run <cli.run_command>` 这个函数命令启动开发服务器。
+大多数情况中它代替了 :meth:`Flask.run` 方法。 ::
 
     $ flask run
      * Serving Flask app "hello"
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
 
-.. warning:: Do not use this command to run your application in production.
-    Only use the development server during development. The development server
-    is provided for convenience, but is not designed to be particularly secure,
-    stable, or efficient. See :ref:`deployment` for how to run in production.
+.. 警告:: 不要在生产环境中来使用这个命令。
+    只用在开发期间来启动开发服务器。开发服务器是为了开发方便，
+    没有为特殊安全、稳定或效率进行设计。
+    查看 :ref:`deployment` 参考文档了解生产中如何开启服务器。
 
 
 Open a Shell
