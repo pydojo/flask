@@ -99,12 +99,12 @@ Windows PowerShell::
     查看 :ref:`deployment` 参考文档了解生产中如何开启服务器。
 
 
-Open a Shell
+打开一个REPL
 ------------
 
-To explore the data in your application, you can start an interactive Python
-shell with the :func:`shell <cli.shell_command>` command. An application
-context will be active, and the app instance will be imported. ::
+要揭露你的网络应用中的数据，你可以用 :func:`shell <cli.shell_command>` 函数命令
+启动一个 Python 的互动环境。一个网络应用的环境也会被激活，
+然后 app 实例会导入到这种 REPL 里。 ::
 
     $ flask shell
     Python 3.6.2 (default, Jul 20 2017, 03:52:27)
@@ -113,23 +113,21 @@ context will be active, and the app instance will be imported. ::
     Instance: /home/user/Projects/hello/instance
     >>>
 
-Use :meth:`~Flask.shell_context_processor` to add other automatic imports.
+使用 :meth:`~Flask.shell_context_processor` 方法来增加其它自动导入项。
 
 
-Environments
+环境
 ------------
 
 .. versionadded:: 1.0
 
-The environment in which the Flask app runs is set by the
-:envvar:`FLASK_ENV` environment variable. If not set it defaults to
-``production``. The other recognized environment is ``development``.
-Flask and extensions may choose to enable behaviors based on the
-environment.
+环境中的 Flask 网络应用运行是通过 :envvar:`FLASK_ENV` 环境变量来设置的。
+如果没有设置的话，环境变量默认为 ``production`` 生产环境。
+其它可以识别的环境变量值是 ``development`` 开发环境。
+Flask 和扩展件根据环境来选择开启哪些行为表现。
 
-If the env is set to ``development``, the ``flask`` command will enable
-debug mode and ``flask run`` will enable the interactive debugger and
-reloader.
+如果环境变量设置成 ``development`` 开发的话，命令行 ``flask`` 命令会开启调试模式，
+并且 ``flask run`` 会开启交互式调试器和重载器。
 
 ::
 
@@ -143,52 +141,50 @@ reloader.
      * Debugger PIN: 223-456-919
 
 
-Debug Mode
+调试模式
 ----------
 
-Debug mode will be enabled when :envvar:`FLASK_ENV` is ``development``,
-as described above. If you want to control debug mode separately, use
-:envvar:`FLASK_DEBUG`. The value ``1`` enables it, ``0`` disables it.
+当 :envvar:`FLASK_ENV` 环境变量值是 ``development`` 的时候才会开启调试模式，
+如果你想要分开控制调试模式的话，使用 :envvar:`FLASK_DEBUG` 环境变量。
+值为 ``1`` 是开启调试模式，值为 ``0`` 禁用调试模式。
 
 
 .. _dotenv:
 
-Environment Variables From dotenv
+来自 dotenv 的环境变量
 ---------------------------------
 
-Rather than setting ``FLASK_APP`` each time you open a new terminal, you can
-use Flask's dotenv support to set environment variables automatically.
+比起每次打开新的终端来设置 ``FLASK_APP`` 环境变量，你可以使用
+ Flask 的 dotenv 支持来自动化设置环境变量。
 
-If `python-dotenv`_ is installed, running the ``flask`` command will set
-environment variables defined in the files :file:`.env` and :file:`.flaskenv`.
-This can be used to avoid having to set ``FLASK_APP`` manually every time you
-open a new terminal, and to set configuration using environment variables
-similar to how some deployment services work.
+如果 `python-dotenv`_ 安装完毕的话，运行 ``flask`` 命令会设置定义在
+ :file:`.env` 和 :file:`.flaskenv` 文件中的环境变量。
+这种方式可以用来避免每次的手动设置 ``FLASK_APP`` 环境变量，
+而且这种配置文件的设置用起来与有些开发服务工作原理是类似的。
 
-Variables set on the command line are used over those set in :file:`.env`,
-which are used over those set in :file:`.flaskenv`. :file:`.flaskenv` should be
-used for public variables, such as ``FLASK_APP``, while :file:`.env` should not
-be committed to your repository so that it can set private variables.
+把许多需要在命令行中设置的变量配置在 :file:`.env` 文件中，
+都会被配置到 :file:`.flaskenv` 文件里去。
+那么 :file:`.flaskenv` 文件应该用做公共变量，
+例如 ``FLASK_APP`` 环境变量，同时 :file:`.env` 文件
+不应该提交到你的仓库中，所以可以用来设置私有变量。
 
-Directories are scanned upwards from the directory you call ``flask``
-from to locate the files. The current working directory will be set to the
-location of the file, with the assumption that that is the top level project
-directory.
+扫描目录都是从你调用 ``flask`` 命令所在的目录向上扫描来分配文件。
+当前工作目录会被设置成文件所在位置，并假设成项目顶层目录。
 
-The files are only loaded by the ``flask`` command or calling
-:meth:`~Flask.run`. If you would like to load these files when running in
-production, you should call :func:`~cli.load_dotenv` manually.
+只有通过 ``flask`` 命令或调用 :meth:`~Flask.run` 方法才能加载文件。
+如果在生产环境中你想要加载这些文件的话，
+你应该手动调用 :func:`~cli.load_dotenv` 函数。
 
 .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 
 
-Setting Command Options
+设置命令选项
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Click is configured to load default values for command options from
-environment variables. The variables use the pattern
-``FLASK_COMMAND_OPTION``. For example, to set the port for the run
-command, instead of ``flask run --port 8000``:
+Click 被配置成从环境变量加载命令行选项默认值。
+这些变量使用了 ``FLASK_COMMAND_OPTION`` 模式。
+例如，要设置 ``run`` 命令的端口的话，而不是使用
+ ``flask run --port 8000`` 来运行网络应用，就是：
 
 .. code-block:: none
 
@@ -196,27 +192,25 @@ command, instead of ``flask run --port 8000``:
     $ flask run
      * Running on http://127.0.0.1:8000/
 
-These can be added to the ``.flaskenv`` file just like ``FLASK_APP`` to
-control default command options.
+这些命令选项可以增加到 ``.flaskenv`` 文件中去，
+就像 ``FLASK_APP`` 控制默认命令选项一样。
 
 
-Disable dotenv
+禁用 dotenv
 ~~~~~~~~~~~~~~
 
-The ``flask`` command will show a message if it detects dotenv files but
-python-dotenv is not installed.
+如果 ``flask`` 命令检测到 dotenv 文件但没有安装 python-dotenv 的话，
+命令行 ``flask`` 命令会显示一个消息。
 
 .. code-block:: none
 
     $ flask run
      * Tip: There are .env files present. Do "pip install python-dotenv" to use them.
 
-You can tell Flask not to load dotenv files even when python-dotenv is
-installed by setting the ``FLASK_SKIP_DOTENV`` environment variable.
-This can be useful if you want to load them manually, or if you're using
-a project runner that loads them already. Keep in mind that the
-environment variables must be set before the app loads or it won't
-configure as expected.
+你可以告诉 Flask 不加载 dotenv 文件，即使安装了 python-dotenv 后设置了
+ ``FLASK_SKIP_DOTENV`` 环境变量。
+如果你想要手动加载它们的话这是有用的，或者如果你正使用一个项目运行器加载它们的话，
+这也是有用的。记住环境变量必须在网络应用加载之前设置好，或者没有如期配置好之前。
 
 .. code-block:: none
 
@@ -224,12 +218,12 @@ configure as expected.
     $ flask run
 
 
-Environment Variables From virtualenv
+来自 virtualenv 的环境变量
 -------------------------------------
 
-If you do not want to install dotenv support, you can still set environment
-variables by adding them to the end of the virtualenv's :file:`activate`
-script. Activating the virtualenv will set the variables.
+如果你不想安装 dotenv 支持的话，你依然可以通过把环境变量增加到
+virtualenv :file:`activate` 虚拟环境激活脚本中来设置环境变量。
+激活虚拟环境时会设置 Flask 的环境变量。
 
 Unix Bash, :file:`venv/bin/activate`::
 
@@ -239,19 +233,17 @@ Windows CMD, :file:`venv\\Scripts\\activate.bat`::
 
     > set FLASK_APP=hello
 
-It is preferred to use dotenv support over this, since :file:`.flaskenv` can be
-committed to the repository so that it works automatically wherever the project
-is checked out.
+最好是使用 dotenv 支持来配置环境变量，因为 :file:`.flaskenv` 可以
+提交到仓库中，如此一来不管什么时候检查项目时都会实现自动化工作。
 
 
-Custom Commands
+自定义命令
 ---------------
 
-The ``flask`` command is implemented using `Click`_. See that project's
-documentation for full information about writing commands.
+部署 ``flask`` 命令使用的是 `Click`_ 模块。
+查看项目文档了解书写命令的完整信息。
 
-This example adds the command ``create_user`` that takes the argument
-``name``. ::
+这里的例子是增加 ``create_user`` 命令，它可以接受 ``name`` 参数。 ::
 
     import click
     from flask import Flask
@@ -267,8 +259,9 @@ This example adds the command ``create_user`` that takes the argument
 
     $ flask create_user admin
 
-This example adds the same command, but as ``user create``, a command in a
-group. This is useful if you want to organize multiple related commands. ::
+下面的例子是增加相同的命令，但用法是 ``user create`` 形式，
+使用命令组中的一个命令方式。如果你想要对多个相关的命令进行组织的话，
+这是有用的技术 ::
 
     import click
     from flask import Flask
@@ -288,19 +281,18 @@ group. This is useful if you want to organize multiple related commands. ::
 
     $ flask user create demo
 
-See :ref:`testing-cli` for an overview of how to test your custom
-commands.
+查看 :ref:`testing-cli` 参考文档可以对如何测试你的自定义命令有一种概况认识。
 
 
-Application Context
+网络应用语境
 ~~~~~~~~~~~~~~~~~~~
 
-Commands added using the Flask app's :attr:`~Flask.cli`
-:meth:`~cli.AppGroup.command` decorator will be executed with an application
-context pushed, so your command and extensions have access to the app and its
-configuration. If you create a command using the Click :func:`~click.command`
-decorator instead of the Flask decorator, you can use
-:func:`~cli.with_appcontext` to get the same behavior. ::
+使用 Flask 网络应用的 :attr:`~Flask.cli` 属性
+ :meth:`~cli.AppGroup.command` 方法装饰器增加的命令会带着一个推送的网络应用语境来执行，
+所以你的命令和扩展件可以访问网络应用，以及访问网络应用的配置。
+如果你使用 Click 模块的  :func:`~click.command` 函数装饰器建立一个命令，
+而不是使用 Flask 装饰器来建立命令的话，你可以使用
+ :func:`~cli.with_appcontext` 函数来获得一样的表现。 ::
 
     import click
     from flask.cli import with_appcontext
@@ -312,19 +304,19 @@ decorator instead of the Flask decorator, you can use
 
     app.cli.add_command(do_work)
 
-If you're sure a command doesn't need the context, you can disable it::
+如果你确定一个命令不需要语境的话，你可以禁用语境::
 
     @app.cli.command(with_appcontext=False)
     def do_work():
         ...
 
 
-Plugins
+插件
 -------
 
-Flask will automatically load commands specified in the ``flask.commands``
-`entry point`_. This is useful for extensions that want to add commands when
-they are installed. Entry points are specified in :file:`setup.py` ::
+Flask 会自动加载描述在 ``flask.commands`` `entry point`_ 入口中的命令。
+这对于扩展件来说是有用的，因为扩展件安装完时想要增加命令。
+入口点都描述在 :file:`setup.py` 文件里::
 
     from setuptools import setup
 
@@ -341,8 +333,7 @@ they are installed. Entry points are specified in :file:`setup.py` ::
 
 .. _entry point: https://packaging.python.org/tutorials/distributing-packages/#entry-points
 
-Inside :file:`flask_my_extension/commands.py` you can then export a Click
-object::
+在 :file:`flask_my_extension/commands.py` 文件里你可以导出一个 Click 模块对象::
 
     import click
 
@@ -350,21 +341,20 @@ object::
     def cli():
         ...
 
-Once that package is installed in the same virtualenv as your Flask project,
-you can run ``flask my-command`` to invoke the command.
+一旦在与你的 Flask 项目相同的虚拟环境中安装完那样的包，
+你可以运行 ``flask my-command`` 来使用命令。
 
 
 .. _custom-scripts:
 
-Custom Scripts
+自定义脚本
 --------------
 
-When you are using the app factory pattern, it may be more convenient to define
-your own Click script. Instead of using ``FLASK_APP`` and letting Flask load
-your application, you can create your own Click object and export it as a
-`console script`_ entry point.
+当你正在使用网络应用工厂模式时，定义你自己的 Click 脚本也许更方便。
+而不是使用 ``FLASK_APP`` 环境变量后让 Flask 加载你的网络应用，
+你可以建立你自己的 Click 对象后导出成一个 `console script`_ 控制台脚本入口点。
 
-Create an instance of :class:`~cli.FlaskGroup` and pass it the factory::
+建立一个 :class:`~cli.FlaskGroup` 类的实例后代入到工厂函数里::
 
     import click
     from flask import Flask
@@ -379,7 +369,7 @@ Create an instance of :class:`~cli.FlaskGroup` and pass it the factory::
     def cli():
         """Management script for the Wiki application."""
 
-Define the entry point in :file:`setup.py`::
+在 :file:`setup.py` 文件中定义入口点::
 
     from setuptools import setup
 
@@ -393,73 +383,67 @@ Define the entry point in :file:`setup.py`::
         },
     )
 
-Install the application in the virtualenv in editable mode and the custom
-script is available. Note that you don't need to set ``FLASK_APP``. ::
+在虚拟环境中以可编辑模式来安装网络应用，并且自定义脚本是可用的。
+注意你不需要设置 ``FLASK_APP`` 环境变量了 ::
 
     $ pip install -e .
     $ wiki run
 
-.. admonition:: Errors in Custom Scripts
+.. admonition:: 自定义脚本中的错误
 
-    When using a custom script, if you introduce an error in your
-    module-level code, the reloader will fail because it can no longer
-    load the entry point.
+    当使用一个自定义脚本的时候，如果你在模块层代码中介绍了一项错误的话，
+    重载器会失败，因为重载器不再加载入口点。
 
-    The ``flask`` command, being separate from your code, does not have
-    this issue and is recommended in most cases.
+    那么 ``flask`` 命令，要从你的代码中分离出来，
+    这样就没这种问题了，并且大多数案例中都推荐这样解决。
 
 .. _console script: https://packaging.python.org/tutorials/distributing-packages/#console-scripts
 
 
-PyCharm Integration
+PyCharm 集成
 -------------------
 
-Prior to PyCharm 2018.1, the Flask CLI features weren't yet fully
-integrated into PyCharm. We have to do a few tweaks to get them working
-smoothly. These instructions should be similar for any other IDE you
-might want to use.
+PyCharm 2018.1 以前的版本都没有集成 Flask CLI 特性。
+我们要做点微调工作来让 CLI 特性工作起来顺畅。
+这些指导应该类似你使用的其它任何一个 IDE 集成环境。
 
-In PyCharm, with your project open, click on *Run* from the menu bar and
-go to *Edit Configurations*. You'll be greeted by a screen similar to
-this:
+在 PyCharm 中， 使用你的项目打开，点击菜单栏上的 *Run* 运行按钮后进入
+ *Edit Configurations* 编辑配置。与下面的截图类似：
 
 .. image:: _static/pycharm-runconfig.png
     :align: center
     :class: screenshot
     :alt: screenshot of pycharm's run configuration settings
 
-There's quite a few options to change, but once we've done it for one
-command, we can easily copy the entire configuration and make a single
-tweak to give us access to other commands, including any custom ones you
-may implement yourself.
+这里有几个选项要改变一下，一旦我们完成一个命令的配置后，
+我们可以轻易地复制整个配置后只做单项微调就完成另一个命令的配置，
+包括任何一个你自己部署的自定义命令。
 
-Click the + (*Add New Configuration*) button and select *Python*. Give
-the configuration a good descriptive name such as "Run Flask Server".
-For the ``flask run`` command, check "Single instance only" since you
-can't run the server more than once at the same time.
+点击 + (*Add New Configuration*) 加号按钮后选择 *Python* 选项。
+给配置起一个良好的名字，例如 "Run Flask Server" 达到顾名思义的效果。
+对于 ``flask run`` 命令来说，勾选 "Single instance only" 选项，
+因为你同一个时间不能运行多于一次的服务器。
 
-Select *Module name* from the dropdown (**A**) then input ``flask``.
+从下拉菜单 (**A**) 选择 *Module name* 后输入 ``flask`` 内容。
 
-The *Parameters* field (**B**) is set to the CLI command to execute
-(with any arguments). In this example we use ``run``, which will run
-the development server.
+参数 *Parameters* 区域 (**B**) 设置成要执行的命令行命令
+(可以带任意数量的参数)。在这里的例子中我们使用 ``run`` 这个命令，
+它会运行开发服务器。
 
-You can skip this next step if you're using :ref:`dotenv`. We need to
-add an environment variable (**C**) to identify our application. Click
-on the browse button and add an entry with ``FLASK_APP`` on the left and
-the Python import or file on the right (``hello`` for example).
+如果你正在使用 :ref:`dotenv` 参考文档的话，你可以跳过这里，进入下一步骤。
+我们需要增加一个环境变量 (**C**) 来识别我们的网络应用。
+单击浏览按钮后在左边增加一个 ``FLASK_APP`` 入口后，
+在右边增加 Python 导入的入口或文件 ( 例如 ``hello`` )。
 
-Next we need to set the working directory (**D**) to be the folder where
-our application resides.
+下一步我们需要设置工作目录 (**D**) 就是我们网络应用所在的文件夹。
 
-If you have installed your project as a package in your virtualenv, you
-may untick the *PYTHONPATH* options (**E**). This will more accurately
-match how you deploy the app later.
+如果你在虚拟环境里把你的项目安装成一个包的话，
+你不要勾选 *PYTHONPATH* 选项 (**E**)。
+这会与你稍后如何部署的网络应用更准确地匹配上。
 
-Click *Apply* to save the configuration, or *OK* to save and close the
-window. Select the configuration in the main PyCharm window and click
-the play button next to it to run the server.
+单击 *Apply* 来保持配置，或点击 *OK* 来保存，然后关闭窗口。
+在 PyCharm 主窗口选择配置后点击 play 按钮来运行服务器。
 
-Now that we have a configuration which runs ``flask run`` from within
-PyCharm, we can copy that configuration and alter the *Script* argument
-to run a different CLI command, e.g. ``flask shell``.
+至此我们在 PyCharm 中有了一个配置运行 ``flask run`` 的命令，
+我们可以复制这个配置后在 *Script* 参数改变不同的命令行命令，
+例如， ``flask shell`` 命令即可。
