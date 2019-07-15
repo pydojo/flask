@@ -156,94 +156,93 @@ Released on April 29th 2018
     (`#1621`_)
 -   把 :data:`APPLICATION_ROOT` 默认设置成 ``'/'`` 值。当设置成 ``None`` 值时，
     隐含的默认值也是 ``'/'``
--   :data:`TRAP_BAD_REQUEST_ERRORS` is enabled by default in debug mode.
-    ``BadRequestKeyError`` has a message with the bad key in debug mode
-    instead of the generic bad request message. (`#2348`_)
--   Allow registering new tags with
-    :class:`~json.tag.TaggedJSONSerializer` to support storing other
-    types in the session cookie. (`#2352`_)
--   Only open the session if the request has not been pushed onto the
-    context stack yet. This allows :func:`~stream_with_context`
-    generators to access the same session that the containing view uses.
-    (`#2354`_)
--   Add ``json`` keyword argument for the test client request methods.
-    This will dump the given object as JSON and set the appropriate
-    content type. (`#2358`_)
--   Extract JSON handling to a mixin applied to both the
-    :class:`Request` and :class:`Response` classes. This adds the
-    :meth:`~Response.is_json` and :meth:`~Response.get_json` methods to
-    the response to make testing JSON response much easier. (`#2358`_)
--   Removed error handler caching because it caused unexpected results
-    for some exception inheritance hierarchies. Register handlers
-    explicitly for each exception if you want to avoid traversing the
-    MRO. (`#2362`_)
--   Fix incorrect JSON encoding of aware, non-UTC datetimes. (`#2374`_)
--   Template auto reloading will honor debug mode even even if
-    :attr:`~Flask.jinja_env` was already accessed. (`#2373`_)
--   The following old deprecated code was removed. (`#2385`_)
+-   在调试模式中 :data:`TRAP_BAD_REQUEST_ERRORS` 是默认开启的。
+    在调试模式中 ``BadRequestKeyError`` 有一个消息含带败坏的键代替
+    普通的败坏请求消息。 (`#2348`_)
+-   允许用 :class:`~json.tag.TaggedJSONSerializer` 类来注册新标签，
+    这样支持把其它类型存储到会话 cookie 中。 (`#2352`_)
+-   如果请求还没有推送到语境堆栈上的话，只打开会话。
+    这样允许 :func:`~stream_with_context` 函数生成器来访问
+    含有使用视图函数的相同会话。 (`#2354`_)
+-   为测试客户端请求方法增加 ``json`` 关键字参数。
+    这会把提供的对象倾倒成 JSON 后配置合适的内容类型。 (`#2358`_)
+-   把 JSON 处理提取到一个盲目应用到
+    :class:`Request` 类和 :class:`Response` 类。这样增加了
+     :meth:`~Response.is_json` 方法和 :meth:`~Response.get_json` 方法到
+    响应对象上，从而让测试 JSON 响应更容易了。 (`#2358`_)
+-   移除错误处理器缓存，因为它对某些例外继承树导致了不期望的结果。
+    如果你想要避免跨过 MRO 的话，对于每个例外来说，要明确地注册处理器。
+     (`#2362`_)
+-   修复已知的不正确 JSON 编码， non-UTC 时间。 (`#2374`_)
+-   模版自动重载会尊重调试模式，即使
+    :attr:`~Flask.jinja_env` 属性已经访问。 (`#2373`_)
+-   如下陈旧的淘汰代码已经删除。 (`#2385`_)
 
-    -   ``flask.ext`` - import extensions directly by their name instead
-        of through the ``flask.ext`` namespace. For example,
-        ``import flask.ext.sqlalchemy`` becomes
-        ``import flask_sqlalchemy``.
-    -   ``Flask.init_jinja_globals`` - extend
-        :meth:`Flask.create_jinja_environment` instead.
-    -   ``Flask.error_handlers`` - tracked by
-        :attr:`Flask.error_handler_spec`, use :meth:`Flask.errorhandler`
-        to register handlers.
-    -   ``Flask.request_globals_class`` - use
-        :attr:`Flask.app_ctx_globals_class` instead.
-    -   ``Flask.static_path`` - use :attr:`Flask.static_url_path`
-        instead.
-    -   ``Request.module`` - use :attr:`Request.blueprint` instead.
+    -   ``flask.ext`` - 通过扩展名直接导入扩展件，而不是再通过
+         ``flask.ext`` 命名空间来导入了。例如，
+        ``import flask.ext.sqlalchemy`` 变成了
+        ``import flask_sqlalchemy``
+    -   ``Flask.init_jinja_globals`` - 更新为
+        :meth:`Flask.create_jinja_environment` 方法。
+    -   曾经通过 :attr:`Flask.error_handler_spec` 属性
+        追踪 ``Flask.error_handlers`` 已经改为使用
+         :meth:`Flask.errorhandler` 方法来注册处理器。
+    -   ``Flask.request_globals_class`` - 更新为使用
+        :attr:`Flask.app_ctx_globals_class` 属性。
+    -   ``Flask.static_path`` - 更新为使用
+        :attr:`Flask.static_url_path` 属性。
+    -   ``Request.module`` - 更新为使用
+        :attr:`Request.blueprint` 属性。
 
--   The :attr:`Request.json` property is no longer deprecated.
+-   财产项 :attr:`Request.json` 属性不再淘汰了。
     (`#1421`_)
--   Support passing a :class:`~werkzeug.test.EnvironBuilder` or
-    ``dict`` to :meth:`test_client.open <werkzeug.test.Client.open>`.
+-   支持把一个 :class:`~werkzeug.test.EnvironBuilder` 类或者
+    ``dict`` 字典代入到
+    :meth:`test_client.open <werkzeug.test.Client.open>` 方法中。
     (`#2412`_)
--   The ``flask`` command and :meth:`Flask.run` will load environment
-    variables from ``.env`` and ``.flaskenv`` files if python-dotenv is
-    installed. (`#2416`_)
--   When passing a full URL to the test client, the scheme in the URL is
-    used instead of :data:`PREFERRED_URL_SCHEME`. (`#2430`_)
--   :attr:`Flask.logger` has been simplified. ``LOGGER_NAME`` and
-    ``LOGGER_HANDLER_POLICY`` config was removed. The logger is always
-    named ``flask.app``. The level is only set on first access, it
-    doesn't check :attr:`Flask.debug` each time. Only one format is
-    used, not different ones depending on :attr:`Flask.debug`. No
-    handlers are removed, and a handler is only added if no handlers are
-    already configured. (`#2436`_)
--   Blueprint view function names may not contain dots. (`#2450`_)
--   Fix a ``ValueError`` caused by invalid ``Range`` requests in some
-    cases. (`#2526`_)
--   The development server uses threads by default. (`#2529`_)
--   Loading config files with ``silent=True`` will ignore
-    :data:`~errno.ENOTDIR` errors. (`#2581`_)
--   Pass ``--cert`` and ``--key`` options to ``flask run`` to run the
-    development server over HTTPS. (`#2606`_)
--   Added :data:`SESSION_COOKIE_SAMESITE` to control the ``SameSite``
-    attribute on the session cookie. (`#2607`_)
--   Added :meth:`~flask.Flask.test_cli_runner` to create a Click runner
-    that can invoke Flask CLI commands for testing. (`#2636`_)
--   Subdomain matching is disabled by default and setting
-    :data:`SERVER_NAME` does not implicitly enable it. It can be enabled
-    by passing ``subdomain_matching=True`` to the ``Flask`` constructor.
+-   如果 python-dotenv 已经安装的话，
+    命令行 ``flask`` 命令和 :meth:`Flask.run` 方法会从
+    ``.env`` 文件和 ``.flaskenv`` 文件加载环境变量。
+     (`#2416`_)
+-   当把一个完整的 URL 地址代入到测试客户端时，
+    使用 URL 中的计划方案，而不是使用
+    :data:`PREFERRED_URL_SCHEME` 数据了。 (`#2430`_)
+-   简化了 :attr:`Flask.logger` 属性。已经删除了 ``LOGGER_NAME`` 和
+    ``LOGGER_HANDLER_POLICY`` 配置项。日志器一直叫做
+     ``flask.app`` 名字。级别只设置在第一次访问上，
+    它不每次都检查 :attr:`Flask.debug` 属性。
+    只使用一种格式，根据 :attr:`Flask.debug` 属性格式。
+    无处理器移除，并且如果配置了无处理器的话只会增加一个处理器。
+     (`#2436`_)
+-   蓝图技术下的视图函数名不包含句号。(`#2450`_)
+-   修复在某些情况中通过非法 ``Range`` 请求导致的一项 ``ValueError`` 例外。
+     (`#2526`_)
+-   开发服务器默认使用多线程。 (`#2529`_)
+-   使用 ``silent=True`` 加载配置文件会忽略
+    :data:`~errno.ENOTDIR` 数据错误。 (`#2581`_)
+-   把 ``--cert`` 和 ``--key`` 选项代入到 ``flask run`` 能够让开发服务器
+    运行在 HTTPS 上。 (`#2606`_)
+-   已加入 :data:`SESSION_COOKIE_SAMESITE` 数据来控制会话 cookie 上的
+     ``SameSite`` 属性。 (`#2607`_)
+-   已加入 :meth:`~flask.Flask.test_cli_runner` 方法来建立一个 Click 
+    运行器，该运行器可以在 Flask 命令行中用来测试。 (`#2636`_)
+-   子域匹配默认被禁用，并且设置 :data:`SERVER_NAME` 数据不再隐含地开启。
+    它可以通过把 ``subdomain_matching=True`` 代入到 ``Flask`` 构造器中来开启。
     (`#2635`_)
--   A single trailing slash is stripped from the blueprint
-    ``url_prefix`` when it is registered with the app. (`#2629`_)
--   :meth:`Request.get_json` doesn't cache the
-    result if parsing fails when ``silent`` is true. (`#2651`_)
--   :func:`Request.get_json` no longer accepts arbitrary encodings.
-    Incoming JSON should be encoded using UTF-8 per :rfc:`8259`, but
-    Flask will autodetect UTF-8, -16, or -32. (`#2691`_)
--   Added :data:`MAX_COOKIE_SIZE` and :attr:`Response.max_cookie_size`
-    to control when Werkzeug warns about large cookies that browsers may
-    ignore. (`#2693`_)
--   Updated documentation theme to make docs look better in small
-    windows. (`#2709`_)
--   Rewrote the tutorial docs and example project to take a more
-    structured approach to help new users avoid common pitfalls.
+-   当用网络应用注册一个蓝图时，单个斜杠结尾会从蓝图 ``url_prefix`` 中剥离掉。
+     (`#2629`_)
+-   当 ``silent`` 设置成 ``True`` 时，如果语法分析失败的话，
+    :meth:`Request.get_json` 方法不缓存结果。 (`#2651`_)
+-   :func:`Request.get_json` 函数不再接受任意编码。
+    进入的 JSON 应该每次都使用 UTF-8 进行编码 :rfc:`8259` ，但
+    Flask 会自动检测 UTF-8, -16, 或 -32 三种编码。 (`#2691`_)
+-   已加入 :data:`MAX_COOKIE_SIZE` 数据和 :attr:`Response.max_cookie_size`
+    属性来控制 Werkzeug 关于大型 cookies 的警告，浏览器也许会忽略这一点。
+     (`#2693`_)
+-   更新文档主题来让文档在小窗口中看起来更好一些。
+     (`#2709`_)
+-   重写了教程文档和项目示例，获得一种更结构化实现，
+    从而帮助新用户避免共同遇到的痛苦。
     (`#2676`_)
 
 .. _pallets/meta#24: https://github.com/pallets/meta/issues/24
