@@ -1,9 +1,9 @@
-Subclassing Flask
+Flask 子类
 =================
 
-The :class:`~flask.Flask` class is designed for subclassing.
+对于 :class:`~flask.Flask` 类来说是为子类而设计的。
 
-For example, you may want to override how request parameters are handled to preserve their order::
+例如，你也许想要覆写请求参数都是如何处理的，以此来保护参数的顺序::
 
     from flask import Flask, Request
     from werkzeug.datastructures import ImmutableOrderedMultiDict
@@ -14,4 +14,4 @@ For example, you may want to override how request parameters are handled to pres
         """Flask subclass using the custom request class"""
         request_class = MyRequest
 
-This is the recommended approach for overriding or augmenting Flask's internal functionality.
+对于覆写或参数化 Flask 内部功能来说，这里的示例是推荐的实现方法。
