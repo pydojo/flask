@@ -1,20 +1,15 @@
 Copyright (c) 2010 by Armin Ronacher.
 
-Some rights reserved.
+保留部分权力。
 
-This logo or a modified version may be used by anyone to refer to the
-Flask project, but does not indicate endorsement by the project.
+本商标或一种修改过的版本可以由任何人使用在 Flask 项目中，但不能由项目来进行背书。
 
-Redistribution and use in source (the SVG file) and binary forms (rendered
-PNG files etc.) of the image, with or without modification, are permitted
-provided that the following conditions are met:
+再次分发和使用要以源代码（ SVG 文件格式）和图片的二进制格式（ 翻译成 PNG 等文件），
+不管是修改还是未做修改，都要经过许可，许可条件必须符合如下条款：
 
-* Redistributions of source code must retain the above copyright
-  notice and this list of conditions.
+* 源代码的再次分发必须保留最上面的版权提醒内容，以及本条件清单。
 
-* The names of the contributors to the Flask software (see AUTHORS) may
-  not be used to endorse or promote products derived from this software
-  without specific prior written permission.
+* 对 Flask 软件贡献者的名单（查看 AUTHORS 文件）也可以不被用来背书或宣传衍生自本软件的产品，
+  不需要具体的书面授权。
 
-Note: we would appreciate that you make the image a link to
-http://flask.pocoo.org/ if you use it on a web page.
+注意: 如果你在网页上使用商标的话，我们会感谢你把图片的超链接到 http://flask.pocoo.org/ 官方站点。
