@@ -1,71 +1,64 @@
 .. _errorpages:
 
-Custom Error Pages
+自定义错误页面
 ==================
 
-Flask comes with a handy :func:`~flask.abort` function that aborts a
-request with an HTTP error code early.  It will also provide a plain black
-and white error page for you with a basic description, but nothing fancy.
+Flask 伴随着一个好用的 :func:`~flask.abort` 函数，它提前终止一个含有一个 HTTP 错误
+代号的请求。它也会提供提供一个纯黑白错误页面给你，含带着一种基础描述，但外观一般。
 
-Depending on the error code it is less or more likely for the user to
-actually see such an error.
+依据错误代号，或多或少为用户提供实际所看到的一项错误。
 
-Common Error Codes
+共性的错误代号
 ------------------
 
-The following error codes are some that are often displayed to the user,
-even if the application behaves correctly:
+下面这些错误代号都是常常显示给用户的，即使网络应用作出了正确的表现：
 
 *404 Not Found*
-    The good old "chap, you made a mistake typing that URL" message.  So
-    common that even novices to the internet know that 404 means: damn,
-    the thing I was looking for is not there.  It's a very good idea to
-    make sure there is actually something useful on a 404 page, at least a
-    link back to the index.
+    良好的老旧消息，意思是“小伙子，你输入的 URL 网址打错了。”
+    所以对于访问互联网的新手来说这是一项共同犯的错，404 的意思就是：
+    “该死，我在找的东西不在这里。”
+    那么确保在一个 404 页面上给出点实际意思是非常良好的想法，
+    至少要给一个返回主页的链接。
 
 *403 Forbidden*
-    If you have some kind of access control on your website, you will have
-    to send a 403 code for disallowed resources.  So make sure the user
-    is not lost when they try to access a forbidden resource.
+    如果你在你的网站上有一些访问控制的话，你要发送一个 403 代号给无权访问资源这种情况。
+    所以确保用户不会糊涂，在他们尝试访问一个禁止访问的资源时给出实际的反馈表达。
 
 *410 Gone*
-    Did you know that there the "404 Not Found" has a brother named "410
-    Gone"?  Few people actually implement that, but the idea is that
-    resources that previously existed and got deleted answer with 410
-    instead of 404.  If you are not deleting documents permanently from
-    the database but just mark them as deleted, do the user a favour and
-    use the 410 code instead and display a message that what they were
-    looking for was deleted for all eternity.
+    你知道 "404 Not Found" 还有一个兄弟，名叫 "410 Gone" 吗？
+    很少有人去部署这项错误代号，意思是以前资源存在，但资源被删除了。
+    所以要用 410 来代替 404 给出明确的反馈。
+    如果你们没有从数据库中永久删除一些文档资源的话，只是给做了已删除的标记，
+    那么就帮用户一把，要使用 410 代号来显示一个反馈消息，
+    消息要表明用户们正在寻找的资源全部永久删除了。
 
 *500 Internal Server Error*
-    Usually happens on programming errors or if the server is overloaded.
-    A terribly good idea is to have a nice page there, because your
-    application *will* fail sooner or later (see also:
-    :ref:`application-errors`).
+    常常发生在编程中导致的错误，或者如果服务器超载了的话也会出现这个错误代号。
+    有一个漂亮的页面提供出来是非常非常良好的思想，因为你的网络应用 *将要*
+    产生失败，或者稍后会失败。（也要查看： :ref:`application-errors` 参考文档）。
 
 
-Error Handlers
+错误处理器
 --------------
 
-An error handler is a function that returns a response when a type of error is
-raised, similar to how a view is a function that returns a response when a
-request URL is matched. It is passed the instance of the error being handled,
-which is most likely a :exc:`~werkzeug.exceptions.HTTPException`. An error
-handler for "500 Internal Server Error" will be passed uncaught exceptions in
-addition to explicit 500 errors.
+一个错误处理器就是一个函数，该函数在一个错误类型被抛出的时候返回一个响应，
+类似一个视图函数在一个请求 URL 匹配时返回一个响应一样。
+它需要接受一个正在处理的错误实例，该实例最可能就是一个
+:exc:`~werkzeug.exceptions.HTTPException` 例外实例。
+一个错误处理器对于 "500 Internal Server Error" 错误情况会忽略不去捕获，
+除非明确地指明 500 错误代号。
 
-An error handler is registered with the :meth:`~flask.Flask.errorhandler`
-decorator or the :meth:`~flask.Flask.register_error_handler` method. A handler
-can be registered for a status code, like 404, or for an exception class.
+一个错误处理器是使用 :meth:`~flask.Flask.errorhandler` 方法装饰器来进行注册，
+或者用 :meth:`~flask.Flask.register_error_handler` 方法进行注册。
+一个处理器可以注册一个状态代号，像 404，或者为一个例外类来进行注册。
 
-The status code of the response will not be set to the handler's code. Make
-sure to provide the appropriate HTTP status code when returning a response from
-a handler.
+响应的状态代号不会被设置成处理器的代号。确保从一个处理器返回一个响应时，
+提供合适的 HTTP 状态代号。
 
-A handler for "500 Internal Server Error" will not be used when running in
-debug mode. Instead, the interactive debugger will be shown.
+对于 "500 Internal Server Error" 来说，在运行调试模式时，
+不会使用一个 500 处理器。相反，交互式调试器会使用并显示处理结果。
 
-Here is an example implementation for a "404 Page Not Found" exception::
+对于一个 "404 Page Not Found" 例外来说，如下是一个部署示例::
 
     from flask import render_template
 
@@ -74,7 +67,8 @@ Here is an example implementation for a "404 Page Not Found" exception::
         # note that we set the 404 status explicitly
         return render_template('404.html'), 404
 
-When using the :ref:`application factory pattern <app-factories>`::
+当使用 :ref:`application factory pattern <app-factories>`
+网络应用工厂模式时会部署成如下形式::
 
     from flask import Flask, render_template
 
@@ -86,7 +80,7 @@ When using the :ref:`application factory pattern <app-factories>`::
         app.register_error_handler(404, page_not_found)
         return app
 
-An example template might be this:
+在模版中部署的一个示例可能如下这样:
 
 .. sourcecode:: html+jinja
 
