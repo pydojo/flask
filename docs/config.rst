@@ -1,42 +1,36 @@
 .. _config:
 
-Configuration Handling
+配置处理
 ======================
 
-Applications need some kind of configuration.  There are different settings
-you might want to change depending on the application environment like
-toggling the debug mode, setting the secret key, and other such
-environment-specific things.
+网络应用需要某种配置类型。有许多不同的配置你也许想要根据网络应用环境来改变，
+像切换调试模式、设置密钥，和其它这类环境描述配置。
 
-The way Flask is designed usually requires the configuration to be
-available when the application starts up.  You can hardcode the
-configuration in the code, which for many small applications is not
-actually that bad, but there are better ways.
+方法就是 Flask 常常设计成启动网络应用时需要配置才可用。
+你可以在代码中硬编码配置，对于许多小型网络应用来说还不坏，
+但这里有一些更好的方法。
 
-Independent of how you load your config, there is a config object
-available which holds the loaded configuration values:
-The :attr:`~flask.Flask.config` attribute of the :class:`~flask.Flask`
-object.  This is the place where Flask itself puts certain configuration
-values and also where extensions can put their configuration values.  But
-this is also where you can have your own configuration.
+如何独立加载你的配置文件，这里有一个配置对象可用，它保存了被加载的配置值：
+:class:`~flask.Flask` 对象的 :attr:`~flask.Flask.config` 属性。
+这个属性就是用来放置 Flask 自身某些配置值的地方，并且也可以放置扩展件的配置值。
+而且这个属性也可以放置你自己的配置值。
 
 
-Configuration Basics
+基础配置
 --------------------
 
-The :attr:`~flask.Flask.config` is actually a subclass of a dictionary and
-can be modified just like any dictionary::
+这个 :attr:`~flask.Flask.config` 属性实际上是一个字典的子类，
+并且可以像任何一个字典数据一样支持修改操作::
 
     app = Flask(__name__)
     app.config['TESTING'] = True
 
-Certain configuration values are also forwarded to the
-:attr:`~flask.Flask` object so you can read and write them from there::
+某些配置值也都是直接提供给 :attr:`~flask.Flask` 对象，
+所以你可以直接读写它们::
 
     app.testing = True
 
-To update multiple keys at once you can use the :meth:`dict.update`
-method::
+要一次性更新多个键，你可以使用 :meth:`dict.update` 字典方法::
 
     app.config.update(
         TESTING=True,
@@ -44,310 +38,291 @@ method::
     )
 
 
-Environment and Debug Features
+环境与调试特性
 ------------------------------
 
-The :data:`ENV` and :data:`DEBUG` config values are special because they
-may behave inconsistently if changed after the app has begun setting up.
-In order to set the environment and debug mode reliably, Flask uses
-environment variables.
+对于 :data:`ENV` 和 :data:`DEBUG` 配置值来说都是特殊的，
+因为如果值的改变是在网络应用已经完成配置之后，它们两个可能表现不一样。
+为了可靠地设置环境和调试模式， Flask 使用了环境变量。
 
-The environment is used to indicate to Flask, extensions, and other
-programs, like Sentry, what context Flask is running in. It is
-controlled with the :envvar:`FLASK_ENV` environment variable and
-defaults to ``production``.
+环境变量是用来指明 Flask、扩展件，和其它程序的，就像 Sentry 在
+Flask 所运行的语境一样。使用 :envvar:`FLASK_ENV` 环境变量来控制运行语境，
+并且默认值是 ``production`` 。
 
-Setting :envvar:`FLASK_ENV` to ``development`` will enable debug mode.
-``flask run`` will use the interactive debugger and reloader by default
-in debug mode. To control this separately from the environment, use the
-:envvar:`FLASK_DEBUG` flag.
+把 :envvar:`FLASK_ENV` 环境变量设置成 ``development`` 会开启调试模式。
+``flask run`` 命令会在调试模式中默认使用交互式调试器和重载器。
+要从环境中分开控制调试模式，使用 :envvar:`FLASK_DEBUG` 旗语环境变量。
 
 .. versionchanged:: 1.0
-    Added :envvar:`FLASK_ENV` to control the environment separately
-    from debug mode. The development environment enables debug mode.
+    已加入 :envvar:`FLASK_ENV` 环境变量来分别控制开发环境和调试模式。
+    开发环境开启调试模式。
 
-To switch Flask to the development environment and enable debug mode,
-set :envvar:`FLASK_ENV`::
+要把 Flask 切换到开发环境和开启调试模式，把 :envvar:`FLASK_ENV` 设置成::
 
     $ export FLASK_ENV=development
     $ flask run
 
-(On Windows, use ``set`` instead of ``export``.)
+(在 Windows 系统上，使用 ``set`` 命令而不是 ``export`` 命令。)
 
-Using the environment variables as described above is recommended. While
-it is possible to set :data:`ENV` and :data:`DEBUG` in your config or
-code, this is strongly discouraged. They can't be read early by the
-``flask`` command, and some systems or extensions may have already
-configured themselves based on a previous value.
+上面的环境变量描述用法是推荐的方式。同时把 :data:`ENV` 和 :data:`DEBUG` 
+设置在你的配置文件中也是可能的，或者设置在代码中，非常不鼓励你这样做。
+因为它们无法通过 ``flask`` 命令提前读取，并且有的系统或扩展件已经根据
+前面推荐的配置方法把值配置好了。
 
 
-Builtin Configuration Values
+内置配置值
 ----------------------------
 
-The following configuration values are used internally by Flask:
+下面的配置值都是 Flask 内部使用的：
 
 .. py:data:: ENV
 
-    What environment the app is running in. Flask and extensions may
-    enable behaviors based on the environment, such as enabling debug
-    mode. The :attr:`~flask.Flask.env` attribute maps to this config
-    key. This is set by the :envvar:`FLASK_ENV` environment variable and
-    may not behave as expected if set in code.
+    网络应用运行在什么环境中。Flask 和 扩展件根据环境也许开启各种行为表现，
+    例如开启调试模式。 :attr:`~flask.Flask.env` 属性映射到这种配置的键上。
+    通过 :envvar:`FLASK_ENV` 环境变量这种设置方法与在代码中设置也许有不同的表现。
 
-    **Do not enable development when deploying in production.**
+    **当部署在生成环境中不要开启开发环境。**
 
-    Default: ``'production'``
+    默认值是： ``'production'``
 
     .. versionadded:: 1.0
 
 .. py:data:: DEBUG
 
-    Whether debug mode is enabled. When using ``flask run`` to start the
-    development server, an interactive debugger will be shown for
-    unhandled exceptions, and the server will be reloaded when code
-    changes. The :attr:`~flask.Flask.debug` attribute maps to this
-    config key. This is enabled when :data:`ENV` is ``'development'``
-    and is overridden by the ``FLASK_DEBUG`` environment variable. It
-    may not behave as expected if set in code.
+    是否开启调试模式。当使用 ``flask run`` 命令来启动开发服务器时，
+    一个交互式调试器会为无法处理的例外显示信息，而且当代码变更保存后会
+    重新加载服务器。 :attr:`~flask.Flask.debug` 属性映射到这个配置键上。
+    当 :data:`ENV` 配置成 ``'development'`` 时调试模式就开启了，
+    然后通过 ``FLASK_DEBUG`` 环境变量来覆写属性值。如果在代码中配置也许有不同的表现。
 
-    **Do not enable debug mode when deploying in production.**
+    **当部署在生成环境中不要开启调试模式。**
 
-    Default: ``True`` if :data:`ENV` is ``'development'``, or ``False``
-    otherwise.
+    默认值是：如果 :data:`ENV` 是 ``'development'`` 的话，值是 ``True`` ，
+    否则是 ``False``
 
 .. py:data:: TESTING
 
-    Enable testing mode. Exceptions are propagated rather than handled by the
-    the app's error handlers. Extensions may also change their behavior to
-    facilitate easier testing. You should enable this in your own tests.
+    开启测试模式。例外都会被广播，这要比通过网络应用错误处理器来处理好。
+    扩展件也可能改变其行为表现，对于测试来说就更容易了。
+    你应该在你自己的测试中来开启。
 
-    Default: ``False``
+    默认值是： ``False``
 
 .. py:data:: PROPAGATE_EXCEPTIONS
 
-    Exceptions are re-raised rather than being handled by the app's error
-    handlers. If not set, this is implicitly true if ``TESTING`` or ``DEBUG``
-    is enabled.
+    例外都会被二次抛出，这要比通过网络应用错误处理器来处理好。
+    如果不配置这项配置值的话，如果开启 ``TESTING`` 或 ``DEBUG`` 的话，
+    值会隐含为 ``True``
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: PRESERVE_CONTEXT_ON_EXCEPTION
 
-    Don't pop the request context when an exception occurs. If not set, this
-    is true if ``DEBUG`` is true. This allows debuggers to introspect the
-    request data on errors, and should normally not need to be set directly.
+    当一项例外发生时不删除请求语境。如果没有设置的话，开启 ``DEBUG`` 时它的值
+    是 ``True`` 。这允许调试器在错误上反省请求数据，并且正常应该不需要直接进行设置。
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: TRAP_HTTP_EXCEPTIONS
 
-    If there is no handler for an ``HTTPException``-type exception, re-raise it
-    to be handled by the interactive debugger instead of returning it as a
-    simple error response.
+    对于一个 ``HTTPException`` 例外类型来说没有一个处理器的话，
+    会二次抛出被交互式调试器来处理，而不是返回成一个简答的错误响应。
 
-    Default: ``False``
+    默认值是： ``False``
 
 .. py:data:: TRAP_BAD_REQUEST_ERRORS
 
-    Trying to access a key that doesn't exist from request dicts like ``args``
-    and ``form`` will return a 400 Bad Request error page. Enable this to treat
-    the error as an unhandled exception instead so that you get the interactive
-    debugger. This is a more specific version of ``TRAP_HTTP_EXCEPTIONS``. If
-    unset, it is enabled in debug mode.
+    尝试访问一个像 ``args`` 和 ``form`` 请求字典中没有的键时，
+    会返回一个 400 败坏的请求错误页面。开启这项配置会把错误处理成
+    一个未处理的例外，所以你会得到交互式调试器处理结果。这就是一个
+    ``TRAP_HTTP_EXCEPTIONS`` 的更具体版本。如果没有设置此项，
+    在调试模式中会被开启。
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: SECRET_KEY
 
-    A secret key that will be used for securely signing the session cookie
-    and can be used for any other security related needs by extensions or your
-    application. It should be a long random string of bytes, although unicode
-    is accepted too. For example, copy the output of this to your config::
+    一个密钥会用来安全地发送给会话 cookie 信号，然后可以被例外或你的网络应用
+    用来给其它任何安全相关的需求使用。它应该是一个长字节随机字符串，而且也接受
+    unicode 编码。例如，把如下输出结果拷贝到你的配置项中::
 
         $ python -c 'import os; print(os.urandom(16))'
         b'_5#y2L"F4Q8z\n\xec]/'
 
-    **Do not reveal the secret key when posting questions or committing code.**
+    **当发布问题或提交代码时不要暴露密钥内容。**
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: SESSION_COOKIE_NAME
 
-    The name of the session cookie. Can be changed in case you already have a
-    cookie with the same name.
+    会话 cookie 的名字。值可以变成你已经有相同名字的一个 cookie。
 
-    Default: ``'session'``
+    默认值是： ``'session'``
 
 .. py:data:: SESSION_COOKIE_DOMAIN
 
-    The domain match rule that the session cookie will be valid for. If not
-    set, the cookie will be valid for all subdomains of :data:`SERVER_NAME`.
-    If ``False``, the cookie's domain will not be set.
+    会是合法的会话 cookie 域名匹配规则。如果没有设置此项，
+    cookie 对于 :data:`SERVER_NAME` 的所有子域名会是合法的。
+    如果值是 ``False`` 的话，cookie 的域名不会被设置。
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: SESSION_COOKIE_PATH
 
-    The path that the session cookie will be valid for. If not set, the cookie
-    will be valid underneath ``APPLICATION_ROOT`` or ``/`` if that is not set.
+    会是合法的会话 cookie 路径。如果没设置此项，会根据 ``APPLICATION_ROOT`` 或
+     ``/`` 来判断 cookie 是合法的。
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: SESSION_COOKIE_HTTPONLY
 
-    Browsers will not allow JavaScript access to cookies marked as "HTTP only"
-    for security.
+    浏览器不会允许 JavaScript 访问标记成 "HTTP only" 的 cookies 来实现安全部署。
 
-    Default: ``True``
+    默认值是： ``True``
 
 .. py:data:: SESSION_COOKIE_SECURE
 
-    Browsers will only send cookies with requests over HTTPS if the cookie is
-    marked "secure". The application must be served over HTTPS for this to make
-    sense.
+    如果 cookie 标记了 "secure" 的话，浏览器只发送建立在 HTTPS 上的含有请求的 cookies。
+    网络应用必须是部署在 HTTPS 上此项才有效。
 
-    Default: ``False``
+    默认值是： ``False``
 
 .. py:data:: SESSION_COOKIE_SAMESITE
 
-    Restrict how cookies are sent with requests from external sites. Can
-    be set to ``'Lax'`` (recommended) or ``'Strict'``.
-    See :ref:`security-cookie`.
+    限制含有来自外部站点请求的 cookies 是如何被发送的。
+    可以设置成 ``'Lax'`` （推荐值）或者设置成 ``'Strict'`` 。
+    查看 :ref:`security-cookie` 参考文档。
 
-    Default: ``None``
+    默认值是： ``None``
 
     .. versionadded:: 1.0
 
 .. py:data:: PERMANENT_SESSION_LIFETIME
 
-    If ``session.permanent`` is true, the cookie's expiration will be set this
-    number of seconds in the future. Can either be a
-    :class:`datetime.timedelta` or an ``int``.
+    如果 ``session.permanent`` 值是 ``True`` 的话，
+    cookies 的过期时间会在未来设置成此项秒数值。既可以使用
+    一个 :class:`datetime.timedelta` 值，也可以使用一个 ``int`` 值。
 
-    Flask's default cookie implementation validates that the cryptographic
-    signature is not older than this value.
+    Flask 的默认 cookie 部署验证加密签名不能大于此项配置值。
 
-    Default: ``timedelta(days=31)`` (``2678400`` seconds)
+    默认值是： ``timedelta(days=31)`` (``2678400`` seconds)
 
 .. py:data:: SESSION_REFRESH_EACH_REQUEST
 
-    Control whether the cookie is sent with every response when
-    ``session.permanent`` is true. Sending the cookie every time (the default)
-    can more reliably keep the session from expiring, but uses more bandwidth.
-    Non-permanent sessions are not affected.
+    当 ``session.permanent`` 值是 ``True`` 的时候，控制 cookie 是否带着
+    每个响应被发送出去。每次发送 cookie 的时候（默认）更依赖所保存的会话过期值，
+    但使用更多带宽。无永久会话不会被此项影响。
 
-    Default: ``True``
+    默认值是： ``True``
 
 .. py:data:: USE_X_SENDFILE
 
-    When serving files, set the ``X-Sendfile`` header instead of serving the
-    data with Flask. Some web servers, such as Apache, recognize this and serve
-    the data more efficiently. This only makes sense when using such a server.
+    当服务文件时，设置 ``X-Sendfile`` 头部项配置，而不是设置含有 Flask 的服务数据。
+    一些网络服务器，例如 Apache，认识此项配置并且服务数据更有效率。
+    此项只在使用这种网络服务器时才有效。
 
-    Default: ``False``
+    默认值是： ``False``
 
 .. py:data:: SEND_FILE_MAX_AGE_DEFAULT
 
-    When serving files, set the cache control max age to this number of
-    seconds.  Can either be a :class:`datetime.timedelta` or an ``int``.
-    Override this value on a per-file basis using
-    :meth:`~flask.Flask.get_send_file_max_age` on the application or blueprint.
+    当服务文件时，设置缓存控制最大时间给此项配置秒数值。
+    既可以是一个 :class:`datetime.timedelta` 值，
+    也可以是一个 ``int`` 值。在每个文件基础上来覆写这个值，
+    在网络应用上或蓝图上使用 :meth:`~flask.Flask.get_send_file_max_age` 方法。
 
-    Default: ``timedelta(hours=12)`` (``43200`` seconds)
+    默认值是： ``timedelta(hours=12)`` (``43200`` seconds)
 
 .. py:data:: SERVER_NAME
 
-    Inform the application what host and port it is bound to. Required
-    for subdomain route matching support.
+    告诉网络应用要绑定到的主机地址和端口信息。
+    对于子域名路由匹配支持是所需要的配置项。
 
-    If set, will be used for the session cookie domain if
-    :data:`SESSION_COOKIE_DOMAIN` is not set. Modern web browsers will
-    not allow setting cookies for domains without a dot. To use a domain
-    locally, add any names that should route to the app to your
-    ``hosts`` file. ::
+    如何设置的话，如果 :data:`SESSION_COOKIE_DOMAIN` 没设置，
+    会用做会话 cookie 域名。现代的网络浏览器不会允许为没有一个句号
+    的域名设置 cookies 。要使用一个本地域名，把任何一个应该路由到
+    网络应用的名字增加到 ``hosts`` 文件中，例如 ::
 
         127.0.0.1 localhost.dev
 
-    If set, ``url_for`` can generate external URLs with only an application
-    context instead of a request context.
+    如何设置的话， ``url_for`` 函数可以生成只含有一个网络应用语境的
+    外部 URLs 网址，而不是生成一个请求语境。
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: APPLICATION_ROOT
 
-    Inform the application what path it is mounted under by the application /
-    web server.
+    告诉网络应用挂载在网络服务器的什么路径上，
+    也就是网络应用的 / 根路径代表了服务器上的那个路径。
 
-    Will be used for the session cookie path if ``SESSION_COOKIE_PATH`` is not
-    set.
+    如果 ``SESSION_COOKIE_PATH`` 没有设置的话，会用给会话 cookie 路径。
 
-    Default: ``'/'``
+    默认值是： ``'/'``
 
 .. py:data:: PREFERRED_URL_SCHEME
 
-    Use this scheme for generating external URLs when not in a request context.
+    当没有在一个请求语境中的时候，使用此项计划来生成外部 URLs 地址。
 
-    Default: ``'http'``
+    默认值是： ``'http'``
 
 .. py:data:: MAX_CONTENT_LENGTH
 
-    Don't read more than this many bytes from the incoming request data. If not
-    set and the request does not specify a ``CONTENT_LENGTH``, no data will be
-    read for security.
+    来自进入请求数据的字节读取不会超过此项配置值。
+    如果没有设置此项并且请求没有描述一个 ``CONTENT_LENGTH`` 值的话，
+    为了安全没有数据会被读取。
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: JSON_AS_ASCII
 
-    Serialize objects to ASCII-encoded JSON. If this is disabled, the JSON
-    will be returned as a Unicode string, or encoded as ``UTF-8`` by
-    ``jsonify``. This has security implications when rendering the JSON into
-    JavaScript in templates, and should typically remain enabled.
+    把对象序列化成 ASCII 编码过的 JSON 对象。如果此项被禁用的话，
+    JSON 对象会被返回成一个 unicode 字符串，或者通过 ``jsonify``
+    编码成 ``UTF-8`` 内容。当在模版中把 JSON 翻译到 JavaScript 时
+    此项设置涉及安全，并且应该典型保留开启状态。
 
-    Default: ``True``
+    默认值是： ``True``
 
 .. py:data:: JSON_SORT_KEYS
 
-    Sort the keys of JSON objects alphabetically. This is useful for caching
-    because it ensures the data is serialized the same way no matter what
-    Python's hash seed is. While not recommended, you can disable this for a
-    possible performance improvement at the cost of caching.
+    根据字母来排序 JSON 对象的键。此项对于缓存来说是有用的，
+    因为它确保了数据是序列化的，不在乎 Python 的哈希种子值是什么。
+    同时此项设置也不是推荐使用的，因为你可以禁用此项配置来提升缓存成本上的性能。
 
-    Default: ``True``
+    默认值是： ``True``
 
 .. py:data:: JSONIFY_PRETTYPRINT_REGULAR
 
-    ``jsonify`` responses will be output with newlines, spaces, and indentation
-    for easier reading by humans. Always enabled in debug mode.
+    ``jsonify`` 响应结果会含有新行、空格，和缩进字符，对于人类阅读来说更容易。
+    在调试模式中总是开启的。
 
-    Default: ``False``
+    默认值是： ``False``
 
 .. py:data:: JSONIFY_MIMETYPE
 
-    The mimetype of ``jsonify`` responses.
+    ``jsonify`` 响应的媒体类型。
 
-    Default: ``'application/json'``
+    默认值是： ``'application/json'``
 
 .. py:data:: TEMPLATES_AUTO_RELOAD
 
-    Reload templates when they are changed. If not set, it will be enabled in
-    debug mode.
+    当模版变更保存后重载模版。如果没设置此项，
+    在调试模式中会被开启。
 
-    Default: ``None``
+    默认值是： ``None``
 
 .. py:data:: EXPLAIN_TEMPLATE_LOADING
 
-    Log debugging information tracing how a template file was loaded. This can
-    be useful to figure out why a template was not loaded or the wrong file
-    appears to be loaded.
+    记录调试信息追踪一个模版文件是如何被加载的。
+    这对于弄清楚为什么一个模版没被加载是有用的，
+    或者弄清楚加载了错误的文件。
 
-    Default: ``False``
+    默认值是： ``False``
 
 .. py:data:: MAX_COOKIE_SIZE
 
-    Warn if cookie headers are larger than this many bytes. Defaults to
-    ``4093``. Larger cookies may be silently ignored by browsers. Set to
-    ``0`` to disable the warning.
+    如果 cookie 头部比此项字节配置值还大的话，发出警告。
+    默认字节大小是 ``4093`` 。
+    比这大的 cookies 也许会被浏览器默不作声的忽略。
+    设置成 ``0`` 是禁用警告。
 
 .. versionadded:: 0.4
    ``LOGGER_NAME``
@@ -378,74 +353,66 @@ The following configuration values are used internally by Flask:
    ``LOGGER_HANDLER_POLICY``, ``EXPLAIN_TEMPLATE_LOADING``
 
 .. versionchanged:: 1.0
-    ``LOGGER_NAME`` and ``LOGGER_HANDLER_POLICY`` were removed. See
-    :ref:`logging` for information about configuration.
+    ``LOGGER_NAME`` and ``LOGGER_HANDLER_POLICY`` 被移除。
+    查看 :ref:`logging` 参考文档了解关于此配置项的信息。
 
-    Added :data:`ENV` to reflect the :envvar:`FLASK_ENV` environment
-    variable.
+    已加入 :data:`ENV` 配置项来反映 :envvar:`FLASK_ENV` 环境变量。
 
-    Added :data:`SESSION_COOKIE_SAMESITE` to control the session
-    cookie's ``SameSite`` option.
+    已加入 :data:`SESSION_COOKIE_SAMESITE` 配置项来控制
+    会话 cookie 的 ``SameSite`` 选项。
 
-    Added :data:`MAX_COOKIE_SIZE` to control a warning from Werkzeug.
+    已加入 :data:`MAX_COOKIE_SIZE` 配置项来控制来自 Werkzeug 的一项警告。
 
 
-Configuring from Files
+从文件进行配置
 ----------------------
 
-Configuration becomes more useful if you can store it in a separate file,
-ideally located outside the actual application package. This makes
-packaging and distributing your application possible via various package
-handling tools (:ref:`distribute-deployment`) and finally modifying the
-configuration file afterwards.
+如果你存储在分开的一个文件中，配置就变得更加有用了，
+单独的配置文件理想位置是在网络应用包之外。
+这让通过各种打包工具来打包和分发你的网络应用变成可能
+（:ref:`distribute-deployment` 参考文档）以及
+以后再修改配置文件都变成可能了。
 
-So a common pattern is this::
+所以一个共同的模式就是如下形式::
 
     app = Flask(__name__)
     app.config.from_object('yourapplication.default_settings')
     app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 
-This first loads the configuration from the
-`yourapplication.default_settings` module and then overrides the values
-with the contents of the file the :envvar:`YOURAPPLICATION_SETTINGS`
-environment variable points to.  This environment variable can be set on
-Linux or OS X with the export command in the shell before starting the
-server::
+首先从 `yourapplication.default_settings` 模块加载配置，
+然后用 :envvar:`YOURAPPLICATION_SETTINGS` 环境变量指向的配置文件来覆写配置项的值。
+在启动网络服务器之前，这个环境变量可以在 Linux 或 OS X 系统上的 export 命令来设置::
 
     $ export YOURAPPLICATION_SETTINGS=/path/to/settings.cfg
     $ python run-app.py
      * Running on http://127.0.0.1:5000/
      * Restarting with reloader...
 
-On Windows systems use the `set` builtin instead::
+在 Windows 系统上使用 `set` 内置命令来设置环境变量::
 
     > set YOURAPPLICATION_SETTINGS=\path\to\settings.cfg
 
-The configuration files themselves are actual Python files.  Only values
-in uppercase are actually stored in the config object later on.  So make
-sure to use uppercase letters for your config keys.
+配置文件自身都要是真正的 Python 文件。
+只有全大写的变量名的值才会稍后存储到配置对象中去。
+所以确保使用全大写字母来写变量名作为配置的键名。
 
-Here is an example of a configuration file::
+如下是一个配置文件内容的示例::
 
     # Example configuration
     DEBUG = False
     SECRET_KEY = b'_5#y2L"F4Q8z\n\xec]/'
 
-Make sure to load the configuration very early on, so that extensions have
-the ability to access the configuration when starting up.  There are other
-methods on the config object as well to load from individual files.  For a
-complete reference, read the :class:`~flask.Config` object's
-documentation.
+确保要非常早的加载配置，这样当启动时扩展件才有能力访问配置。
+在配置对象上也有其它的一些方法来从单独的文件加载配置。
+对于一个完整的参考，阅读 :class:`~flask.Config` 类对象的文档。
 
-Configuring from Environment Variables
+从环境变量进行配置
 --------------------------------------
 
-In addition to pointing to configuration files using environment variables, you
-may find it useful (or necessary) to control your configuration values directly
-from the environment.
+另外就是使用环境变量来指向配置文件，你也许发现要从环境中直接控制你的配置项的值
+是有用的（或者是需要的）。
 
-Environment variables can be set on Linux or OS X with the export command in
-the shell before starting the server::
+在启动网络服务器之前，环境变量可以在 Linux 或 OS X 系统上用 `export` 命令来设置::
 
     $ export SECRET_KEY='5f352379324c22463451387a0aec5d2f'
     $ export DEBUG=False
@@ -453,16 +420,15 @@ the shell before starting the server::
      * Running on http://127.0.0.1:5000/
      * Restarting with reloader...
 
-On Windows systems use the `set` builtin instead::
+在 Windows 系统上使用内置命令 `set` 来设置::
 
     > set SECRET_KEY='5f352379324c22463451387a0aec5d2f'
     > set DEBUG=False
 
-While this approach is straightforward to use, it is important to remember that
-environment variables are strings -- they are not automatically deserialized
-into Python types.
+同时这种实现方式是直接生效，重要的是记住环境变量值都是字符串，
+它们都不是自动地解序成 Python 类型。
 
-Here is an example of a configuration file that uses environment variables::
+如下是在一个配置文件中使用环境变量来写配置的示例::
 
     # Example configuration
     import os
@@ -477,62 +443,51 @@ Here is an example of a configuration file that uses environment variables::
         raise ValueError("No secret key set for Flask application")
 
 
-Notice that any value besides an empty string will be interpreted as a boolean
-``True`` value in Python, which requires care if an environment explicitly sets
-values intended to be ``False``.
+注意任何一个字符串值会解释成一个布尔 ``True`` 值，在 Python 中除了空字符串，
+这点要注意一个环境变量要明确地设置成 ``False`` 值，不能用空字符串来代替。
 
-Make sure to load the configuration very early on, so that extensions have the
-ability to access the configuration when starting up.  There are other methods
-on the config object as well to load from individual files.  For a complete
-reference, read the :class:`~flask.Config` class documentation.
+确保最早来加载配置，所以当启动时扩展件才有能力访问配置。
+在配置对象上也有其它的一些方法来从单独的文件加载配置。
+对于一个完整的参考，阅读 :class:`~flask.Config` 类对象的文档。
 
-Configuration Best Practices
+配置的最好实行法
 ----------------------------
 
-The downside with the approach mentioned earlier is that it makes testing
-a little harder.  There is no single 100% solution for this problem in
-general, but there are a couple of things you can keep in mind to improve
-that experience:
+前面所提到的独立配置文件方法的缺点就是让测试变得有点困难。
+对于这种问题通常没有一个 100% 的解决方案，但这里有两件事
+你可以记住来提升经验:
 
-1.  Create your application in a function and register blueprints on it.
-    That way you can create multiple instances of your application with
-    different configurations attached which makes unittesting a lot
-    easier.  You can use this to pass in configuration as needed.
+1.  把你的网络应用建立在一个函数里，然后用在函数上注册蓝图的技术。
+    这样你可以用不同的配置文件来建立你的网络应用多种实例，
+    其中一种配置方案就是为单元测试提供的，这就容易多了。
+    你可以使用这种方案来根据需要来代入配置。
 
-2.  Do not write code that needs the configuration at import time.  If you
-    limit yourself to request-only accesses to the configuration you can
-    reconfigure the object later on as needed.
+2.  不要写导入时需要的配置代码。如果你限制了你自己只请求访问配置的话，
+    你可以稍后根据需要重新配置对象。
 
 .. _config-dev-prod:
 
-Development / Production
+开发与生产
 ------------------------
 
-Most applications need more than one configuration.  There should be at
-least separate configurations for the production server and the one used
-during development.  The easiest way to handle this is to use a default
-configuration that is always loaded and part of the version control, and a
-separate configuration that overrides the values as necessary as mentioned
-in the example above::
+大多数网络应用需要更多的配置文件。这也是对生产服务器来说应该至少要采用分离配置思路，
+而且一种配置使用在开发期间的。最容易的处理这种方法就是使用一个总会被加载的默认配置，
+以及版本控制部分，和一个单独的配置文件根据需要来覆写配置项，如同上面示例所提示的::
 
     app = Flask(__name__)
     app.config.from_object('yourapplication.default_settings')
     app.config.from_envvar('YOURAPPLICATION_SETTINGS')
 
-Then you just have to add a separate :file:`config.py` file and export
-``YOURAPPLICATION_SETTINGS=/path/to/config.py`` and you are done.  However
-there are alternative ways as well.  For example you could use imports or
-subclassing.
+然后你就增加一个单独的 :file:`config.py` 配置文件后使用 `export` 来
+``YOURAPPLICATION_SETTINGS=/path/to/config.py`` 设置配置文件路径，
+就这样全都实现了。不管如何做到的，这里也有另外的可选方法。例如你可以使用导入或子类来实现。
 
-What is very popular in the Django world is to make the import explicit in
-the config file by adding ``from yourapplication.default_settings
-import *`` to the top of the file and then overriding the changes by hand.
-You could also inspect an environment variable like
-``YOURAPPLICATION_MODE`` and set that to `production`, `development` etc
-and import different hardcoded files based on that.
+在 Django 世界中非常受欢迎的就是在配置文件中实现明确地导入方式，
+通过增加 ``from yourapplication.default_settings import *`` 语句在文件的顶部，
+然后手动覆写那些变更配置项。你也可以检查一项环境变量，例如 ``YOURAPPLICATION_MODE`` 
+后设置成 `production` 或 `development` 等等操作，然后根据这个导入不同的硬编码配置文件。
 
-An interesting pattern is also to use classes and inheritance for
-configuration::
+一种有趣的模式就是也会使用类和继承机制来写配置::
 
     class Config(object):
         DEBUG = False
@@ -548,14 +503,13 @@ configuration::
     class TestingConfig(Config):
         TESTING = True
 
-To enable such a config you just have to call into
-:meth:`~flask.Config.from_object`::
+要启用这种配置，你只要把类调用到 :meth:`~flask.Config.from_object` 方法中::
 
     app.config.from_object('configmodule.ProductionConfig')
 
-Note that :meth:`~flask.Config.from_object` does not instantiate the class
-object. If you need to instantiate the class, such as to access a property,
-then you must do so before calling :meth:`~flask.Config.from_object`::
+注意 :meth:`~flask.Config.from_object` 方法不实例化类对象。
+如果你需要实例化类，例如访问一个财产项一样，那么你必须在调用
+:meth:`~flask.Config.from_object` 方法之前来实现::
 
     from configmodule import ProductionConfig
     app.config.from_object(ProductionConfig())
@@ -565,8 +519,7 @@ then you must do so before calling :meth:`~flask.Config.from_object`::
     cfg = import_string('configmodule.ProductionConfig')()
     app.config.from_object(cfg)
 
-Instantiating the configuration object allows you to use ``@property`` in
-your configuration classes::
+实例化配置对象允许你在你的配置类内部使用 ``@property`` 财产装饰器::
 
     class Config(object):
         """Base config, uses staging database server."""
@@ -591,101 +544,88 @@ your configuration classes::
         DEBUG = True
         DATABASE_URI = 'sqlite:///:memory:'
 
-There are many different ways and it's up to you how you want to manage
-your configuration files.  However here a list of good recommendations:
+这里有许多不同的方法，并且是根据你想要如何管理你的配置文件来决定。
+不管如何做到的，如下是一份良好的建议清单：
 
--   Keep a default configuration in version control.  Either populate the
-    config with this default configuration or import it in your own
-    configuration files before overriding values.
--   Use an environment variable to switch between the configurations.
-    This can be done from outside the Python interpreter and makes
-    development and deployment much easier because you can quickly and
-    easily switch between different configs without having to touch the
-    code at all.  If you are working often on different projects you can
-    even create your own script for sourcing that activates a virtualenv
-    and exports the development configuration for you.
--   Use a tool like `fabric`_ in production to push code and
-    configurations separately to the production server(s).  For some
-    details about how to do that, head over to the
-    :ref:`fabric-deployment` pattern.
+-   保留一份版本控制中的默认配置文件。用此默认配置文件来生产新的配置，
+    或者在覆写配置项值之前导入到你自己的配置文件中。
+-   使用一个环境变量来切换配置文件。这种方法可以在 Python 解释器之外来实现，
+    并且让开发和部署非常容易，因为你可以快速地、容易地切换不同的配置文件，
+    还不触碰任何代码。如果你常常工作在不同的项目上，你甚至建立你自己的脚本来
+    激活一个虚拟环境后为你导出开发版的配置文件。
+-   在生产中使用一个像 `fabric`_ 一样的工具来分开推送代码和配置到生产服务器上。
+    对于如何实现的一些细节，回顾 :ref:`fabric-deployment` 模式参考内容。
 
 .. _fabric: https://www.fabfile.org/
 
 
 .. _instance-folders:
 
-Instance Folders
+实例文件夹
 ----------------
 
 .. versionadded:: 0.8
 
-Flask 0.8 introduces instance folders.  Flask for a long time made it
-possible to refer to paths relative to the application's folder directly
-(via :attr:`Flask.root_path`).  This was also how many developers loaded
-configurations stored next to the application.  Unfortunately however this
-only works well if applications are not packages in which case the root
-path refers to the contents of the package.
+Flask 0.8 介绍了实例文件夹。让 Flask 很长一段时间可以直接指向相对于网络应用目录
+的路径变成可能（通过 :attr:`Flask.root_path` 属性来实现）。
+这也曾是许多开发者如何加载存储在网络应用边上的配置。不幸的是，不管如何做到的，
+这种技术只在如果网络应用不是放在包中才工作良好，在非包网络应用情况中根路径指向包内容。
 
-With Flask 0.8 a new attribute was introduced:
-:attr:`Flask.instance_path`.  It refers to a new concept called the
-“instance folder”.  The instance folder is designed to not be under
-version control and be deployment specific.  It's the perfect place to
-drop things that either change at runtime or configuration files.
+在 Flask 0.8 中有一个新的属性被介绍到：
+:attr:`Flask.instance_path` 属性。它指明了一个新的概念，名叫实例文件夹。
+实例文件夹被设计成不在版本控制之下，并且要具体部署。实例文件夹是放置运行时的变化
+或者配置文件的最好地方。
 
-You can either explicitly provide the path of the instance folder when
-creating the Flask application or you can let Flask autodetect the
-instance folder.  For explicit configuration use the `instance_path`
-parameter::
+你既可以在建立 Flask 网络应用时明确地提供实例文件夹的路径，
+也可以让 Flask 自动检测实例文件夹。对于明确地配置来说，使用
+`instance_path` 参数::
 
     app = Flask(__name__, instance_path='/path/to/instance/folder')
 
-Please keep in mind that this path *must* be absolute when provided.
+请记住提供这个路径的时候 *必须* 是绝对路径。
 
-If the `instance_path` parameter is not provided the following default
-locations are used:
+如果 `instance_path` 参数没使用的话，会默认使用如下位置:
 
--   Uninstalled module::
+-   无安装的模块结构::
 
         /myapp.py
         /instance
 
--   Uninstalled package::
+-   无安装的包结构::
 
         /myapp
             /__init__.py
         /instance
 
--   Installed module or package::
+-   安装的模块或包结构::
 
         $PREFIX/lib/python2.X/site-packages/myapp
         $PREFIX/var/myapp-instance
 
-    ``$PREFIX`` is the prefix of your Python installation.  This can be
-    ``/usr`` or the path to your virtualenv.  You can print the value of
-    ``sys.prefix`` to see what the prefix is set to.
+    ``$PREFIX`` 是 Python 安装的前缀。这可以是
+    ``/usr`` 或你的虚拟环境中的安装路径。你可以输出
+    ``sys.prefix`` 的值来查看要设置的前缀内容是什么。
 
-Since the config object provided loading of configuration files from
-relative filenames we made it possible to change the loading via filenames
-to be relative to the instance path if wanted.  The behavior of relative
-paths in config files can be flipped between “relative to the application
-root” (the default) to “relative to instance folder” via the
-`instance_relative_config` switch to the application constructor::
+由于配置对象提供了配置文件的加载，配置文件来自相对的文件名，
+如果我们想要通过相对于实例路径的文件名来加载变更就变成可能了，
+在配置文件中的相对路径的行为可以在“相对于网络应用根路径（默认）”
+与“相对于实例文件夹”之间切换，相对于实例文件夹的切换通过把
+`instance_relative_config` 参数代入到网络应用构造器中来实现::
 
     app = Flask(__name__, instance_relative_config=True)
 
-Here is a full example of how to configure Flask to preload the config
-from a module and then override the config from a file in the instance
-folder if it exists::
+如下是一个完整的示例，如何配置 Flask 从一个模块来提前加载配置，
+然后从一个实例文件夹中的一个配置文件来覆写配置::
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object('yourapplication.default_settings')
     app.config.from_pyfile('application.cfg', silent=True)
 
-The path to the instance folder can be found via the
-:attr:`Flask.instance_path`.  Flask also provides a shortcut to open a
-file from the instance folder with :meth:`Flask.open_instance_resource`.
+到实例文件夹的路径可以通过 :attr:`Flask.instance_path` 属性找到。
+Flask 也提供了一个快捷方法来打开实例文件夹中的一个配置文件，使用的就是
+ :meth:`Flask.open_instance_resource` 方法。
 
-Example usage for both::
+这两种用法示例如下::
 
     filename = os.path.join(app.instance_path, 'application.cfg')
     with open(filename) as f:
