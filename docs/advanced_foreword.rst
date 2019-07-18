@@ -1,47 +1,38 @@
 .. _advanced_foreword:
 
-Foreword for Experienced Programmers
+对有经验的编程者开门见山
 ====================================
 
-Thread-Locals in Flask
+Flask 中的线程本地化
 ----------------------
 
-One of the design decisions in Flask was that simple tasks should be simple;
-they should not take a lot of code and yet they should not limit you. Because
-of that, Flask has a few design choices that some people might find surprising or
-unorthodox. For example, Flask uses thread-local objects internally so that you
-don’t have to pass objects around from function to function within a request in
-order to stay threadsafe. This approach is convenient, but requires a valid
-request context for dependency injection or when attempting to reuse code which
-uses a value pegged to the request.  The Flask project is honest about
-thread-locals, does not hide them, and calls out in the code and documentation
-where they are used.
+Flask 中设计决策之一是简化许多应该是简单的众多任务；
+这些任务不需要大量代码，并且也不应该限制你们。
+基于这一点，Flask 有了较少的设计选项，有些人也许发现
+不可思议或不够正统。例如，Flask 内部使用了线程本地化对象，
+所以你们不用被迫把函数中的许多对象按顺序代入到一个请求函数中来保持线程安全。
+这种方法是一种惯例，但需要一个合法的请求语境给依赖注射，
+或者当想要重复使用代码时，让复用代码使用一个值挂到请求上去。
+Flask 项目对待线程本地化是诚实的，不像其它框架会隐藏它们，
+所以存在安全隐患，并且在代码中来调用本地化对象和所用位置的文档。
 
-Develop for the Web with Caution
+对于网络开发来说要心存谨慎
 --------------------------------
 
-Always keep security in mind when building web applications.
+当建立网络应用时总要把安全性记在心里。
 
-If you write a web application, you are probably allowing users to register
-and leave their data on your server.  The users are entrusting you with data.
-And even if you are the only user that might leave data in your application,
-you still want that data to be stored securely.
+如果你写了一个网络应用的话，你可能正在运行用户注册并把他们当数据保留在你的服务器上。
+用户们信任你所含有的数据。即使你们只让用户把数据保存在你的网络应用中，你依然要安全地存储数据。
 
-Unfortunately, there are many ways the security of a web application can be
-compromised.  Flask protects you against one of the most common security
-problems of modern web applications: cross-site scripting (XSS).  Unless you
-deliberately mark insecure HTML as secure, Flask and the underlying Jinja2
-template engine have you covered.  But there are many more ways to cause
-security problems.
+不幸的是，一个网络应用的安全性上有太多方法可以让其妥协。Flask 保护你远离大多数共性的
+安全问题，现代网络应用的安全问题例如：跨站脚本（XSS）。除非你故意地把缺少安全地 HTML
+标记成安全，Flask 和 核心 Jinja2 模版引擎罩着你。但依然有更多的方法来导致安全问题。
 
-The documentation will warn you about aspects of web development that require
-attention to security.  Some of these security concerns are far more complex
-than one might think, and we all sometimes underestimate the likelihood that a
-vulnerability will be exploited - until a clever attacker figures out a way to
-exploit our applications.  And don't think that your application is not
-important enough to attract an attacker.  Depending on the kind of attack,
-chances are that automated bots are probing for ways to fill your database with
-spam, links to malicious software, and the like.
+文档会警告你关于网络开发方面需要注意的安全。有些安全考虑的都是更多层化的想法，
+并且我们有时候都是低估了可能会暴露的漏洞 - 直到一名聪明的攻击者指出一个方法
+来揭露我们的网络应用。并且不要想着你的网络应用对于那些攻击者来说不重要。
+根据攻击的类型，那些自动化机器人的变化都正在探索许多方法来用垃圾来填充你的数据库，
+千奇百改的恶意软件超链接，以及诸如此类的事情。
 
-Flask is no different from any other framework in that you the developer must
-build with caution, watching for exploits when building to your requirements.
+Flask 与其它任何一个框架在安全领域中没有什么不同，作为开发者的你必须在建造时心存谨慎，
+当建立你的需求时要针对曝光问题思考一番。
