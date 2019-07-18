@@ -1,24 +1,24 @@
 .. _design:
 
-Design Decisions in Flask
+Flask 中的设计决策
 =========================
 
-If you are curious why Flask does certain things the way it does and not
-differently, this section is for you.  This should give you an idea about
-some of the design decisions that may appear arbitrary and surprising at
-first, especially in direct comparison with other frameworks.
+如果你正在好奇为什么 Flask 所做的某些事情的方式与众不同，
+这部分的内容就会给你最好的解答。本文档会给你一些设计决策
+方面的一个思路，那就是在许多设计决策上也许出现的任意的，
+以及令人意想不到的那些内容，尤其是直接与其它框架组合时。
 
 
-The Explicit Application Object
+明确的网络应用对象
 -------------------------------
 
-A Python web application based on WSGI has to have one central callable
-object that implements the actual application.  In Flask this is an
-instance of the :class:`~flask.Flask` class.  Each Flask application has
-to create an instance of this class itself and pass it the name of the
-module, but why can't Flask do that itself?
+一个基于 WSGI 的 Python 网络应用都要有一个中心可调用的对象，
+中心对象用来部署实际的应用。在 Flask 中就是一个
+:class:`~flask.Flask` 类的实例对象。每个 Flask 网络应用都
+要建立一个该类的实例后把模块名变量代入其中，但为什么 Flask 自己
+不能做为一个网络应用呢？
 
-Without such an explicit application object the following code::
+这种明确的网络应用对象的代码会是如下样式::
 
     from flask import Flask
     app = Flask(__name__)
@@ -27,7 +27,7 @@ Without such an explicit application object the following code::
     def index():
         return 'Hello World!'
 
-Would look like this instead::
+没有明确的网络应用对象代码反而会是如下样式::
 
     from hypothetical_flask import route
 
@@ -35,157 +35,123 @@ Would look like this instead::
     def index():
         return 'Hello World!'
 
-There are three major reasons for this.  The most important one is that
-implicit application objects require that there may only be one instance at
-the time.  There are ways to fake multiple applications with a single
-application object, like maintaining a stack of applications, but this
-causes some problems I won't outline here in detail.  Now the question is:
-when does a microframework need more than one application at the same
-time?  A good example for this is unittesting.  When you want to test
-something it can be very helpful to create a minimal application to test
-specific behavior.  When the application object is deleted everything it
-allocated will be freed again.
+这里主要有三个原因。最重要的一个原因就是隐含的网络应用对象在一个时间点上只能有一个实例。
+那么就有许多方法用单个应用对象去冒充多个网络应用，就像维护许多应用的一种堆栈技术一样，
+但这会导致一些问题，我不会在这里列出细节。现在的问题是：
+作为一个微框架来说需要在一个时间点上有多个网络应用吗？
+一个良好的示例就是在单元测试中确实需要多个网络应用。当你想要一些测试时，它就可以建立一个
+迷你网络应用来测试具体的行为表现，届时你就体会到这是非常有帮助的一件事情了。
+当网络应用对象被删除后，被分配给它的每件事物都不会再被束缚了。
 
-Another thing that becomes possible when you have an explicit object lying
-around in your code is that you can subclass the base class
-(:class:`~flask.Flask`) to alter specific behavior.  This would not be
-possible without hacks if the object were created ahead of time for you
-based on a class that is not exposed to you.
+另一件事就是当你有了一个明确的对象位于你的代码中就变成可能的事情，那就是你可以根据
+基类（:class:`~flask.Flask`）来建立子类来改变具体的行为表现。
+没有这样的黑客技术你就做不到这点，如果基类不曝光给你的话，你就无法建立这样的对象。
 
-But there is another very important reason why Flask depends on an
-explicit instantiation of that class: the package name.  Whenever you
-create a Flask instance you usually pass it `__name__` as package name.
-Flask depends on that information to properly load resources relative
-to your module.  With Python's outstanding support for reflection it can
-then access the package to figure out where the templates and static files
-are stored (see :meth:`~flask.Flask.open_resource`).  Now obviously there
-are frameworks around that do not need any configuration and will still be
-able to load templates relative to your application module.  But they have
-to use the current working directory for that, which is a very unreliable
-way to determine where the application is.  The current working directory
-is process-wide and if you are running multiple applications in one
-process (which could happen in a webserver without you knowing) the paths
-will be off.  Worse: many webservers do not set the working directory to
-the directory of your application but to the document root which does not
-have to be the same folder.
+还有另外一个非常重要的原因就是，为什么 Flask 依据一个明确的类实例：包名。
+不管什么时候，你建立一个 Flask 实例，你常常要把 dunder name 变量代入其中作为包名。
+Flask 依据 dunder name 上的信息来正确地加载相对于你的模块资源。
+使用了 Python 的杰出反射技术，然后它可以访问包来弄清楚模版和静态文件存储的位置（
+查看 :meth:`~flask.Flask.open_resource` 方法）。此时显然有许多框架都在采用此项
+技术，从而不需要任何配置依然会加载相对于网络应用模块的模版。但那些框架都被迫使用当前
+工作目录来实现，那样的决策是非常不可靠的方式去确定网络应用的位置。当前工作目录是一种松散
+进程，并且如果你们都在一个进程中运行多个网络应用的话（在一个网络服务器中会发生你所不知道
+的事情）许多路径会被关闭。
+更糟糕的是：许多网络服务器都不设置工作目录指向你的网络应用目录，
+除了会指向根本不同的文档根路径。
 
-The third reason is "explicit is better than implicit".  That object is
-your WSGI application, you don't have to remember anything else.  If you
-want to apply a WSGI middleware, just wrap it and you're done (though
-there are better ways to do that so that you do not lose the reference
-to the application object :meth:`~flask.Flask.wsgi_app`).
+第三个原因就是 Python 理念中的 *明确要比隐含好*。那个对象就是你的 WSGI 应用，
+你无需记住额外的任何事情。如果你想要应用一个 WSGI 中间件的话，只需要打包一下，
+然后你就搞定了（尽管还有许多更好的方法来实现，所以别弄散指向的网络应用对象
+ :meth:`~flask.Flask.wsgi_app` 方法）。
 
-Furthermore this design makes it possible to use a factory function to
-create the application which is very helpful for unittesting and similar
-things (:ref:`app-factories`).
+更进一步来说，这种设计让使用一种工厂模式来建立网络应用就变成可能的事情了，
+工厂模式建立的网络应用对单元测试和模拟来说是非常有帮助的（参考
+ :ref:`app-factories` 文档内容）。
 
-The Routing System
+路由系统
 ------------------
 
-Flask uses the Werkzeug routing system which was designed to
-automatically order routes by complexity.  This means that you can declare
-routes in arbitrary order and they will still work as expected.  This is a
-requirement if you want to properly implement decorator based routing
-since decorators could be fired in undefined order when the application is
-split into multiple modules.
+Flask 使用了 Werkzeug 路由系统，该系统设计成自动化通过多层化排序路由。
+这意味着你任意顺序声明路由后它们都会依然如其所望地工作着。
+如果你想要根据路由正确地部署装饰器，这个系统就是一项需求，因为当一个网络应用
+分解成多个模块的时候，装饰器会在无定义顺序中成为易燃装置。
 
-Another design decision with the Werkzeug routing system is that routes
-in Werkzeug try to ensure that URLs are unique.  Werkzeug will go quite far
-with that in that it will automatically redirect to a canonical URL if a route
-is ambiguous.
+另一项使用 Werkzeug 路由系统的设计决策就是，在 Werkzeug 中的路由都是尽力
+确保 URLs 地址都具有唯一性。 Werkzeug 会一直保持这种唯一性，如果有一条
+路由有歧义的话，它会自动化重定向到一个权威性的 URL 地址上。
 
 
-One Template Engine
+一个模版引擎
 -------------------
 
-Flask decides on one template engine: Jinja2.  Why doesn't Flask have a
-pluggable template engine interface?  You can obviously use a different
-template engine, but Flask will still configure Jinja2 for you.  While
-that limitation that Jinja2 is *always* configured will probably go away,
-the decision to bundle one template engine and use that will not.
+Flask 决定的一个模版引擎就是： Jinja2。为什么 Flask 不弄个可插拔的模版引擎接口呢？
+显然你可以使用一个不同类型的模版引擎，但 Flask 会一直为你配置 Jinja2 模版引擎。
+同时约束 Jinja2 是 *一直* 被配置才可能继续运转，绑定一个模版引擎的决策后就不会出现意外。
 
-Template engines are like programming languages and each of those engines
-has a certain understanding about how things work.  On the surface they
-all work the same: you tell the engine to evaluate a template with a set
-of variables and take the return value as string.
+许多模版引擎都像众多编程语言一样，并且每个引擎都有一项如何工作的理解。表面来看，
+它们工作都是一样的：你告诉引擎评估一个模版，模版中含有变量集合，然后把得到的返回值
+作为字符串数据类型。
 
-But that's about where similarities end.  Jinja2 for example has an
-extensive filter system, a certain way to do template inheritance, support
-for reusable blocks (macros) that can be used from inside templates and
-also from Python code, uses Unicode for all operations, supports
-iterative template rendering, configurable syntax and more.  On the other
-hand an engine like Genshi is based on XML stream evaluation, template
-inheritance by taking the availability of XPath into account and more.
-Mako on the other hand treats templates similar to Python modules.
+除了结束位置上具有相似性。例如 Jinja2 具有一种扩展的过滤器系统；一种实现模版继承机制；
+支持可复用块（宏命令）功能，该功能在模版内部使用以及也可以在Python 代码中使用；
+对所有的操作都适用 unicode 编码；支持迭代模版翻译；可配置的句法，等等特性。
+另一个，像 Genshi 这样的引擎是基于 XML 流数据评估，模版继承通过把 XPath 的可用性
+带到账户中，以及更多特性。另一个，Mako 引擎是把模版处理成类似 Python 模块来对待。
 
-When it comes to connecting a template engine with an application or
-framework there is more than just rendering templates.  For instance,
-Flask uses Jinja2's extensive autoescaping support.  Also it provides
-ways to access macros from Jinja2 templates.
+当用一个网络应用或一个框架连接到一个模版引擎时，不只是翻译模版那么简单。
+例如，Flask 使用 Jinja2 的扩展自动化转义支持。也提供了许多方法从 Jinja2 模版中
+来访问宏命令。
 
-A template abstraction layer that would not take the unique features of
-the template engines away is a science on its own and a too large
-undertaking for a microframework like Flask.
+一个模版抽象层不会取用各种模版引擎的唯一特性集于一身，而且对于像 Flask 这种微框架
+来说导致太大变成了一种沉重的负担。
 
-Furthermore extensions can then easily depend on one template language
-being present.  You can easily use your own templating language, but an
-extension could still depend on Jinja itself.
+更进一步来说，扩展件就可以容易地依据一个模版语言来呈现。你可以容易地使用你自己的模版语言，
+而一个扩展件依然可以依据 Jinja 自身模版语言。
 
 
-Micro with Dependencies
+最小化依赖关系
 -----------------------
 
-Why does Flask call itself a microframework and yet it depends on two
-libraries (namely Werkzeug and Jinja2).  Why shouldn't it?  If we look
-over to the Ruby side of web development there we have a protocol very
-similar to WSGI.  Just that it's called Rack there, but besides that it
-looks very much like a WSGI rendition for Ruby.  But nearly all
-applications in Ruby land do not work with Rack directly, but on top of a
-library with the same name.  This Rack library has two equivalents in
-Python: WebOb (formerly Paste) and Werkzeug.  Paste is still around but
-from my understanding it's sort of deprecated in favour of WebOb.  The
-development of WebOb and Werkzeug started side by side with similar ideas
-in mind: be a good implementation of WSGI for other applications to take
-advantage.
+为什么 Flask 称自己是一个微框架，也是因为只依赖 2 个库（ Werkzeug 和 Jinja2）。
+难道不应该最小化依赖关系吗？如果我们看了许多 Ruby 那边的网络开发项目，我们有一个
+非常类似 WSGI 的协议。就是名叫 Rack 的家伙，而且它看起来对 Ruby 来说非常像一个
+ WSGI 的演绎版本。而且几乎所有 Ruby 中的网络应用无法直接与 Rack 接轨，而只是在
+ 一个库的顶层重名而已。真正的 Rack 库在 Python 中有 2 个装备：
+WebOb (正式名字叫 Paste) 和 Werkzeug。 Paste 依然还在但从我的理解来看它是一种
+淘汰了的 WebOb 。WebOb 的开发和 Werkzeug 启动成功在思想上都是环环相扣的类似。
+记住：成为一个良好的 WSGI 部署，对于其它网络应用来说要能从 WSGI 中获得优势。
 
-Flask is a framework that takes advantage of the work already done by
-Werkzeug to properly interface WSGI (which can be a complex task at
-times).  Thanks to recent developments in the Python package
-infrastructure, packages with dependencies are no longer an issue and
-there are very few reasons against having libraries that depend on others.
+Flask 是一个获得了优势的工作成果，通过 Werkzeug 正确地接入 WSGI （这样就可以
+在任何时候变成一种多层化任务架构）。感谢 Python 包基础设施上的最近开发成果，
+含有多依赖关系的众多包都不再是问题了，并且只有非常少的依赖问题，例如回路问题。
 
 
-Thread Locals
+本地多线程
 -------------
 
-Flask uses thread local objects (context local objects in fact, they
-support greenlet contexts as well) for request, session and an extra
-object you can put your own things on (:data:`~flask.g`).  Why is that and
-isn't that a bad idea?
+Flask 使用了线程来本地化对象（实际上就是本地语境对象，这些对象也都支持 greenlet 语境），
+针对请求、会话和一个你可以把自己的事物置于其中的外部对象（:data:`~flask.g`）。
+为什么要有一个外部对象呢？而且这不是一种败坏的想法吗？
 
-Yes it is usually not such a bright idea to use thread locals.  They cause
-troubles for servers that are not based on the concept of threads and make
-large applications harder to maintain.  However Flask is just not designed
-for large applications or asynchronous servers.  Flask wants to make it
-quick and easy to write a traditional web application.
+确实，在使用线程本地化时，这常常不是一种明智的思想。它会导致许多服务器方面的问题，
+服务器都不是根据多线程概念而设计的，并且让许多大型网络应用维护起来更加困难。
+不管如何做到的，Flask不只是为大型网络应用而设计的，也是为许多异步服务器而设计的。
+Flask 想要让写一个传统的网络应用变得快速和容易，从而提升效率。
 
-Also see the :ref:`becomingbig` section of the documentation for some
-inspiration for larger applications based on Flask.
+同时也要查看 :ref:`becomingbig` 文档部分来了解在 Flask 上建立更大型的网络应用灵感。
 
 
-What Flask is, What Flask is Not
+Flask 是什么？ Flask 不是什么？
 --------------------------------
 
-Flask will never have a database layer.  It will not have a form library
-or anything else in that direction.  Flask itself just bridges to Werkzeug
-to implement a proper WSGI application and to Jinja2 to handle templating.
-It also binds to a few common standard library packages such as logging.
-Everything else is up for extensions.
+Flask 永远不会有一个数据库层。Flask 在数据库方面不会有一个固化的库或其它什么东西。
+Flask 自身只是在 Werkzeug 和 部署一个正确的 WSGI 应用之间架起了一座友谊的桥梁，
+而且这座彩虹桥也连接到了 Jinja2 处理模版化过程。
+Flask 也绑定了较少的共性标准库，例如，日志。剩下的事情就交给扩展件来决定了。
 
-Why is this the case?  Because people have different preferences and
-requirements and Flask could not meet those if it would force any of this
-into the core.  The majority of web applications will need a template
-engine in some sort.  However not every application needs a SQL database.
+为什么 Flask 会是这个样子？因为人民具有不同的爱好和需求，而且 Flask 不会去曲意逢迎。
+否则就会变成强迫任何一个人屈服的独裁者了。许多网络应用的主要特性会需要一个某种类型的模版引擎。
+不管如何做到的，不是每个网络应用都需要一个 SQL 数据库。
 
-The idea of Flask is to build a good foundation for all applications.
-Everything else is up to you or extensions.
+Flask 的核心思想就是要建立一个良好的根基给所有网络应用。
+剩下的事情都有你们或者扩展件来决定。
