@@ -1,76 +1,65 @@
 HTML/XHTML FAQ
 ==============
 
-The Flask documentation and example applications are using HTML5.  You
-may notice that in many situations, when end tags are optional they are
-not used, so that the HTML is cleaner and faster to load.  Because there
-is much confusion about HTML and XHTML among developers, this document tries
-to answer some of the major questions.
+Flask 文档与示例应用程序都是用 HTML5 语言。
+你也许注意到在许多情况中，闭标签都是可选择的，许多都没有使用闭标签，
+所以 HTML 是更清晰而且加载的更快。
+这是因为在 HTML 和 XHTML 开发者中存在许多困惑，
+本文档就是为了回答其中一些主要问题。
 
 
-History of XHTML
+XHTML 历史
 ----------------
 
-For a while, it appeared that HTML was about to be replaced by XHTML.
-However, barely any websites on the Internet are actual XHTML (which is
-HTML processed using XML rules).  There are a couple of major reasons
-why this is the case.  One of them is Internet Explorer's lack of proper
-XHTML support. The XHTML spec states that XHTML must be served with the MIME
-type :mimetype:`application/xhtml+xml`, but Internet Explorer refuses to read files
-with that MIME type.
-While it is relatively easy to configure Web servers to serve XHTML properly,
-few people do.  This is likely because properly using XHTML can be quite
-painful.
+很长一段时间都出现了关于 HTML 要代替 XHTML 语言的论调。
+不管如何做到的，几乎任何一个互联网上的站点实际上都是 XHTML 语言形式
+（ XHTML 语言是 HTML 语言使用了 XML 规则来处理表达的语言）。
+这里主要有 2 个原因会出现这种状况。
+其一是，微软的浏览器不能够正确支持 XHTML 语言。
+XHTML 语言描述的状态必须使用 :mimetype:`application/xhtml+xml` 媒体类型，
+但微软浏览器拒绝读取这种媒体类型。
+然而配置网络服务器正确地服务 XHTML 语言是相对容易的，但实行的人却很少。
+这可能是因为正确地使用 XHTML 语言会十分的痛苦。
 
-One of the most important causes of pain is XML's draconian (strict and
-ruthless) error handling.  When an XML parsing error is encountered,
-the browser is supposed to show the user an ugly error message, instead
-of attempting to recover from the error and display what it can.  Most of
-the (X)HTML generation on the web is based on non-XML template engines
-(such as Jinja, the one used in Flask) which do not protect you from
-accidentally creating invalid XHTML.  There are XML based template engines,
-such as Kid and the popular Genshi, but they often come with a larger
-runtime overhead and are not as straightforward to use because they have
-to obey XML rules.
+最重要的痛苦原因之一就是 XML 语言严苛的错误处理（严谨和无情总会让人望而却步）。
+当遇到一个 XML 语法分析错误时，浏览器误以为显示给用户的错误消息是丑陋的，
+相反想要恢复错误后显示干了什么。网络上大部分生成的 (X)HTML 都是依据非XML 模版引擎
+实现的（例如，Flask使用的Jinja也是非XML模版引擎），非XML模版引擎无法让你远离
+意外地建立非法XHTML内容。有许多基于XML的模版引擎，例如，Kid和受欢迎的Genshi引擎，
+但XML引擎常常伴随着更大的运行负载，而且都不是直接使用，因为要遵循XML规则。
 
-The majority of users, however, assumed they were properly using XHTML.
-They wrote an XHTML doctype at the top of the document and self-closed all
-the necessary tags (``<br>`` becomes ``<br/>`` or ``<br></br>`` in XHTML).
-However, even if the document properly validates as XHTML, what really
-determines XHTML/HTML processing in browsers is the MIME type, which as
-said before is often not set properly. So the valid XHTML was being treated
-as invalid HTML.
+主要的用户们，不管如何做到的，假设用户们能够正确地使用XHTML语言。
+他们在文档顶层写一个XHTML文档类型后，自己都要写所有的关标签，例如
+（在XHTML中 ``<br>`` 要写成 ``<br/>`` 或者 ``<br></br>`` ）。
+不管如何做到的，即使文档正确地验证成XHTML文档，在浏览器中真正确定处理 XHTML/HTML 的
+还是媒体类型，如同前面说过的常常会是设置不正确。所以合法的XHTML都处理成非法的HTML了。
 
-XHTML also changed the way JavaScript is used. To properly work with XHTML,
-programmers have to use the namespaced DOM interface with the XHTML
-namespace to query for HTML elements.
+XHTML 也改变了 JavaScript 的用法。要正确地与 XHTML 一起工作的话，
+编程者们要使用命名空间中的 DOM 接口与 XHTML 命名空间来查询 HTML 语言中的元素内容。
 
-History of HTML5
+HTML5 历史
 ----------------
 
-Development of the HTML5 specification was started in 2004 under the name
-"Web Applications 1.0" by the Web Hypertext Application Technology Working
-Group, or WHATWG (which was formed by the major browser vendors Apple,
-Mozilla, and Opera) with the goal of writing a new and improved HTML
-specification, based on existing browser behavior instead of unrealistic
-and backwards-incompatible specifications.
+HTML5 描述的开发起始于 2004年 "Web Applications 1.0" 项目下，
+该项目是网络超文本应用技术工作组负责，简称 WHATWG（它是由主要浏览器供应商
+Apple、Mozilla，和Opera组成），项目的目标是写一种新改善的HTML描述，
+根据已有的浏览器行为代替那些不现实的，而且不向后兼容的描述用法。
 
-For example, in HTML4 ``<title/Hello/`` theoretically parses exactly the
-same as ``<title>Hello</title>``.  However, since people were using
-XHTML-like tags along the lines of ``<link />``, browser vendors implemented
-the XHTML syntax over the syntax defined by the specification.
+例如，在 HTML4 中 ``<title/Hello/`` 理论上语法分析完全等效于
+ ``<title>Hello</title>`` 写法。不管如何做到的，由于人们正在使用
+像XHTML的标签写法 ``<link />`` ，浏览器供应商在通过描述定义的句法上
+部署了 XHTML 句法。
 
-In 2007, the specification was adopted as the basis of a new HTML
-specification under the umbrella of the W3C, known as HTML5.  Currently,
-it appears that XHTML is losing traction, as the XHTML 2 working group has
-been disbanded and HTML5 is being implemented by all major browser vendors.
+在 2007年，在 W3C 的保护之下，一种新的 HTML描述基础被适应了，那就是 HTML5 语言。
+此时出现的 XHTML 正在失去跟进，作为 XHTML2 工作组也已经解散，并且所有主要浏览器
+供应商正在部署 HTML5 语言。
 
-HTML versus XHTML
+HTML 与 XHTML
 -----------------
 
-The following table gives you a quick overview of features available in
-HTML 4.01, XHTML 1.1 and HTML5. (XHTML 1.0 is not included, as it was
-superseded by XHTML 1.1 and the barely-used XHTML5.)
+下面的表格给你们一个快速概览，了解一下在 HTML 4.01、 XHTML 1.1 和 HTML5 中可用
+的特性。
+（XHTML 1.0 不再包括其中，因为已经被 XHTML 1.1 和 很少使用的 XHTML5 取代了。）
 
 .. tabularcolumns:: |p{9cm}|p{2cm}|p{2cm}|p{2cm}|
 
@@ -101,44 +90,38 @@ superseded by XHTML 1.1 and the barely-used XHTML5.)
 | New semantic tags like ``<article>``    | |N|      | |N|      | |Y|      |
 +-----------------------------------------+----------+----------+----------+
 
-.. [1] This is an obscure feature inherited from SGML. It is usually not
-       supported by browsers, for reasons detailed above.
-.. [2] This is for compatibility with server code that generates XHTML for
-       tags such as ``<br>``.  It should not be used in new code.
-.. [3] XHTML 1.0 is the last XHTML standard that allows to be served
-       as `text/html` for backwards compatibility reasons.
+.. [1] 这是一种继承自 SGML 的复杂特性。浏览器常常不支持这种描述，原因上面已经说过了。
+.. [2] 这是兼容服务器代码为类似 ``<br>`` 标签生成 XHTML 内容。在新代码中 ``<br>`` 不该再使用了。
+.. [3] XHTML 1.0 是最后的 XHTML 标准，它允许服务成 `text/html` 来支持向后兼容。
 
 .. |Y| image:: _static/yes.png
        :alt: Yes
 .. |N| image:: _static/no.png
        :alt: No
 
-What does "strict" mean?
+严谨意味着什么？
 ------------------------
 
-HTML5 has strictly defined parsing rules, but it also specifies exactly
-how a browser should react to parsing errors - unlike XHTML, which simply
-states parsing should abort. Some people are confused by apparently
-invalid syntax that still generates the expected results (for example,
-missing end tags or unquoted attribute values).
+HTML5 具有严谨的语法规则定义，而且也描述了一个浏览器完全应该如何对语法分析错误做出反映。
+这与 XHTML 完全不同，因为XHTML直接对语法分析标记忽略的状态。
+有的人对出现的非法句法而感到困惑，因为非法句法依然产生了期望的结果（例如，
+没有写关标签，或没有用引号包裹着属性值）。
 
-Some of these work because of the lenient error handling most browsers use
-when they encounter a markup error, others are actually specified.  The
-following constructs are optional in HTML5 by standard, but have to be
-supported by browsers:
+由于有些对错误放任的宽松处理，大多数浏览器依然会对非法句法有效，
+当浏览器遇到一个标记错误时，其它的标记都确实描述过了，所以就认为是有效的。
+如下的结构都是在 HTML5 标准中可以选择的用法，但浏览器必须能够支持才可以：
 
--   Wrapping the document in an ``<html>`` tag
--   Wrapping header elements in ``<head>`` or the body elements in
-    ``<body>``
--   Closing the ``<p>``, ``<li>``, ``<dt>``, ``<dd>``, ``<tr>``,
-    ``<td>``, ``<th>``, ``<tbody>``, ``<thead>``, or ``<tfoot>`` tags.
--   Quoting attributes, so long as they contain no whitespace or
-    special characters (like ``<``, ``>``, ``'``, or ``"``).
--   Requiring boolean attributes to have a value.
+-   把文档打包在一个 ``<html>`` 标签里。
+-   把头部元素打包在 ``<head>`` 标签里，或者把主体元素打包在 ``<body>`` 标签里。
+-   如下标签都要有 ``<p>``, ``<li>``, ``<dt>``, ``<dd>``, ``<tr>``,
+    ``<td>``, ``<th>``, ``<tbody>``, ``<thead>``, or ``<tfoot>`` 对应的关标签。
+-   对属性的引用要一直包含没有空白符或特殊字符，
+    （像 ``<``, ``>``, ``'``, 或 ``"``）。
+-   布尔属性必须要有一个明确的值。
 
-This means the following page in HTML5 is perfectly valid:
+这就意味着如下页面代码在 HTML5 中是合法的：
 
-.. sourcecode:: html
+.. sourcecode:: html5
 
     <!doctype html>
     <title>Hello HTML5</title>
@@ -165,43 +148,39 @@ This means the following page in HTML5 is perfectly valid:
     </div>
 
 
-New technologies in HTML5
+HTML5 中的新技术
 -------------------------
 
-HTML5 adds many new features that make Web applications easier to write
-and to use.
+HTML5 增了许多新的特性，这些特性让制作网络应用来说更加容易书写和使用。
 
--   The ``<audio>`` and ``<video>`` tags provide a way to embed audio and
-    video without complicated add-ons like QuickTime or Flash.
--   Semantic elements like ``<article>``, ``<header>``, ``<nav>``, and
-    ``<time>`` that make content easier to understand.
--   The ``<canvas>`` tag, which supports a powerful drawing API, reducing
-    the need for server-generated images to present data graphically.
--   New form control types like ``<input type="date">`` that allow user
-    agents to make entering and validating values easier.
--   Advanced JavaScript APIs like Web Storage, Web Workers, Web Sockets,
-    geolocation, and offline applications.
+-   其中 ``<audio>`` 和 ``<video>`` 标签提供了一种嵌入音频和视频的方法，
+    不需要复杂的插件，像 QuickTime 或 Flash 就可以支持音视频数据。
+-   语义元素中像 ``<article>``, ``<header>``, ``<nav>``, 和
+    ``<time>`` 标签让内容更容易理解。
+-   其中 ``<canvas>`` 标签，支持了一种强力绘图 API 功能，减少了用服务器生成
+    图像来呈现图形化数据的需求。
+-   新的表单控制类型，像 ``<input type="date">`` 可以允许用户端更容易
+    输入和验证数据值。
+-   高级的 JavaScript APIs 像网络存储、网络工作器、网络插槽、地理位置
+    和离线网络应用。
 
-Many other features have been added, as well. A good guide to new features
-in HTML5 is Mark Pilgrim's soon-to-be-published book, `Dive Into HTML5`_.
-Not all of them are supported in browsers yet, however, so use caution.
+许多其它特性也都加入了。对于 HTML5 中的这些新特性来说，一个良好的指导就是
+Mark Pilgrim 即将出版的一本书， `Dive Into HTML5`_ 《深入了解HTML5》。
+在所有浏览器中并没有全部支持 HTML5 语言，不管如何做到的，所以使用的时候要注意。
 
 .. _Dive Into HTML5: http://diveintohtml5.info/table-of-contents.html
 
-What should be used?
+应该用什么？
 --------------------
 
-Currently, the answer is HTML5.  There are very few reasons to use XHTML
-considering the latest developments in Web browsers.  To summarize the
-reasons given above:
+目前来说那就是 HTML5 语言。很少使用 XHTML 的原因就是考虑到网络浏览器最新的开发因素。
+要总结一下上面所说的原因，那就是：
 
--   Internet Explorer (which, sadly, currently leads in market share)
-    has poor support for XHTML.
--   Many JavaScript libraries also do not support XHTML, due to the more
-    complicated namespacing API it requires.
--   HTML5 adds several new features, including semantic tags and the
-    long-awaited ``<audio>`` and ``<video>`` tags.
--   It has the support of most browser vendors behind it.
--   It is much easier to write, and more compact.
+-   微软浏览器对 XHTML 的支持太烂了（在市场份额中却很大，实在是一件悲伤的事情）。
+-   许多 JavaScript 库也不支持 XHTML 语言，因为需要更复杂的命名空间 API 支持。
+-   HTML5 增加了一些新的特性，包括语义标签和久违的 ``<audio>`` 和 ``<video>`` 
+    音视频标签。
+-   HTML5 已经被大多数浏览器供应商支持。
+-   HTML5 写起来更容易，而且更稳固。
 
-For most applications, it is undoubtedly better to use HTML5 than XHTML.
+对于大多数网络应用来说，毫无疑问使用 HTML5 要比使用 XHTML 更好一些。
