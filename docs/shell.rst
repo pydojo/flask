@@ -1,103 +1,89 @@
 .. _shell:
 
-Working with the Shell
+与终端一起工作
 ======================
 
 .. versionadded:: 0.3
 
-One of the reasons everybody loves Python is the interactive shell.  It
-basically allows you to execute Python commands in real time and
-immediately get results back.  Flask itself does not come with an
-interactive shell, because it does not require any specific setup upfront,
-just import your application and start playing around.
+每一个爱 Python 的人其中原因之一就是与终端进行互动。
+基本上允许你实时执行Python的众多命令，并且立即得到结果。
+Flask自身没有一个交互式终端，因为不需要任何一种具体的前端配置，
+只需要导入你的网络应用后就开启互动。
 
-There are however some handy helpers to make playing around in the shell a
-more pleasant experience.  The main issue with interactive console
-sessions is that you're not triggering a request like a browser does which
-means that :data:`~flask.g`, :data:`~flask.request` and others are not
-available.  But the code you want to test might depend on them, so what
-can you do?
+不管如何做到的，这里有一些上手的助手来与终端进行互动，这是令人愉悦的体验。
+与终端会话的主要问题就是你不能一直触发一个请求，像浏览器就可以做到，
+那就是通过 :data:`~flask.g`、 :data:`~flask.request` 数据代理对象，
+而其它的就不可以。但你要测试代码也许要根据这些代理对象，所以你能做什么呢？
 
-This is where some helper functions come in handy.  Keep in mind however
-that these functions are not only there for interactive shell usage, but
-also for unittesting and other situations that require a faked request
-context.
+这里有一些助手函数都是非常上手的。记住，不管如何做到的，这些函数都不只是为了与
+终端互动而使用着，而且也为单元测试和其它需要一种假冒请求语境环境而服务。
 
-Generally it's recommended that you read the :ref:`request-context`
-chapter of the documentation first.
+通用中，建议你阅读 :ref:`request-context` 参考文档先。
 
-Command Line Interface
+命令行接口
 ----------------------
 
-Starting with Flask 0.11 the recommended way to work with the shell is the
-``flask shell`` command which does a lot of this automatically for you.
-For instance the shell is automatically initialized with a loaded
-application context.
+从 Flask 0.11 开始就建议与终端一起工作的命令就是 ``flask shell`` 命令，
+它确实为你自动地做了许多工作。例如，终端自动进行初始化时带着一个加载完的网络应用语境。
 
-For more information see :ref:`cli`.
+更多信息查看 :ref:`cli` 参考文档。
 
-Creating a Request Context
+建立一个请求语境
 --------------------------
 
-The easiest way to create a proper request context from the shell is by
-using the :attr:`~flask.Flask.test_request_context` method which creates
-us a :class:`~flask.ctx.RequestContext`:
+建立一个正确的请求语境最简单的方法就是从终端通过使用
+ :attr:`~flask.Flask.test_request_context` 属性方法来实现，
+它给我们建立了一个 :class:`~flask.ctx.RequestContext` 类：
 
 >>> ctx = app.test_request_context()
 
-Normally you would use the ``with`` statement to make this request object
-active, but in the shell it's easier to use the
-:meth:`~flask.ctx.RequestContext.push` and
-:meth:`~flask.ctx.RequestContext.pop` methods by hand:
+正常情况你会使用 ``with`` 语句来激活这种请求对象，但在终端里更容易，
+只需手动使用 :meth:`~flask.ctx.RequestContext.push` 方法和
+:meth:`~flask.ctx.RequestContext.pop` 方法：
 
 >>> ctx.push()
 
-From that point onwards you can work with the request object until you
-call `pop`:
+执行成功后，你可以与请求对象一起工作了，直到你调用 `pop` 方法删除请求对象：
 
 >>> ctx.pop()
 
-Firing Before/After Request
+请求前后的开关
 ---------------------------
 
-By just creating a request context, you still don't have run the code that
-is normally run before a request.  This might result in your database
-being unavailable if you are connecting to the database in a
-before-request callback or the current user not being stored on the
-:data:`~flask.g` object etc.
+只通过建立一个请求语境，在一个请求之前你依然不具备运行正常代码。
+这也许是你的数据库不可用导致的结果，如果在请求之前回调中你正在
+连接一个数据的话，或者当前用户没有存储在
+:data:`~flask.g` 数据代理对象上，等等情况。
 
-This however can easily be done yourself.  Just call
-:meth:`~flask.Flask.preprocess_request`:
+不管如何做到的，你可以自己容易地实现。只需要调用
+:meth:`~flask.Flask.preprocess_request` 方法：
 
 >>> ctx = app.test_request_context()
 >>> ctx.push()
 >>> app.preprocess_request()
 
-Keep in mind that the :meth:`~flask.Flask.preprocess_request` function
-might return a response object, in that case just ignore it.
+记住， :meth:`~flask.Flask.preprocess_request` 方法可能返回一个响应对象，
+在这种情况不用去管返回的响应对象。
 
-To shutdown a request, you need to trick a bit before the after request
-functions (triggered by :meth:`~flask.Flask.process_response`) operate on
-a response object:
+要关闭一个请求，你需要一个技巧用在一个响应对象上的请求函数操作之后，
+（通过 :meth:`~flask.Flask.process_response` 方法来触发）：
 
 >>> app.process_response(app.response_class())
 <Response 0 bytes [200 OK]>
 >>> ctx.pop()
 
-The functions registered as :meth:`~flask.Flask.teardown_request` are
-automatically called when the context is popped.  So this is the perfect
-place to automatically tear down resources that were needed by the request
-context (such as database connections).
+许多函数注册成 :meth:`~flask.Flask.teardown_request` 方法都是在语境删除时
+自动调用的。所以自动化释放资源的地方就是这里，释放的资源都需要通过请求语境（
+就像数据连接一样）。
 
 
-Further Improving the Shell Experience
+进一步提升终端体验
 --------------------------------------
 
-If you like the idea of experimenting in a shell, create yourself a module
-with stuff you want to star import into your interactive session.  There
-you could also define some more helper methods for common things such as
-initializing the database, dropping tables etc.
+如果你喜欢在终端里实验你的想法的话，自己建立一个模块使用通配符导入句法
+导入到你的交互式会话中。其中你也可以定义一些更有帮助的方法来处理共同事物，
+例如，初始化数据库、删除数据库表，等等任务。
 
-Just put them into a module (like `shelltools`) and import from there:
+只需要把那些代码放到一个模块里（例如， `shelltools` 模块），然后在终端里导入即可：
 
 >>> from shelltools import *
