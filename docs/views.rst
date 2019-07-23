@@ -1,31 +1,29 @@
 .. _views:
 
-Pluggable Views
-===============
+可插拔的视图
+======================
 
 .. versionadded:: 0.7
 
-Flask 0.7 introduces pluggable views inspired by the generic views from
-Django which are based on classes instead of functions.  The main
-intention is that you can replace parts of the implementations and this
-way have customizable pluggable views.
+Flask 0.7 介绍了可插拔的视图，这个灵感来自 Django 的普通视图。
+Django 的普通视图都是根据类来建立的，而不是函数。
+主要目的是你可以替换部署中的一些部分，并且这种方法可以实现自定义可插拔视图。
 
-Basic Principle
+基础原则
 ---------------
 
-Consider you have a function that loads a list of objects from the
-database and renders into a template::
+想象你有一个视图函数，该函数从数据库加载了一系列对象后
+把这些对象翻译到一个模版中去::
 
     @app.route('/users/')
     def show_users(page):
         users = User.query.all()
         return render_template('users.html', users=users)
 
-This is simple and flexible, but if you want to provide this view in a
-generic fashion that can be adapted to other models and templates as well
-you might want more flexibility.  This is where pluggable class-based
-views come into place.  As the first step to convert this into a class
-based view you would do this::
+这就是简单且灵活的原则，但如果你想要把这个视图函数提供到一个普通模式中的话，
+普通模式可以适应其它模型和模版，同时你也想要更具灵活性。
+这就是需要可插拔基于类的视图该放置的地方。
+第一步，要把这个函数转换到一个类的形式中，你要写成如下代码::
 
 
     from flask.views import View
@@ -38,13 +36,12 @@ based view you would do this::
 
     app.add_url_rule('/users/', view_func=ShowUsers.as_view('show_users'))
 
-As you can see what you have to do is to create a subclass of
-:class:`flask.views.View` and implement
-:meth:`~flask.views.View.dispatch_request`.  Then we have to convert that
-class into an actual view function by using the
-:meth:`~flask.views.View.as_view` class method.  The string you pass to
-that function is the name of the endpoint that view will then have.  But
-this by itself is not helpful, so let's refactor the code a bit::
+如你所见一样，你建立了一个 :class:`flask.views.View` 类的子类，然后部署
+:meth:`~flask.views.View.dispatch_request` 方法时用原函数代码进行覆写。
+那么后面我们还要把这个子类转换到一个真正的视图函数，通过使用
+:meth:`~flask.views.View.as_view` 类方法来实现。
+代入到该方法中的字符串是稍后会拥有的视图函数端点名。但这里的例子没有什么帮助，
+所以让我们重构一下代码::
 
 
     from flask.views import View
@@ -69,14 +66,13 @@ this by itself is not helpful, so let's refactor the code a bit::
         def get_objects(self):
             return User.query.all()
 
-This of course is not that helpful for such a small example, but it's good
-enough to explain the basic principle.  When you have a class-based view
-the question comes up what ``self`` points to.  The way this works is that
-whenever the request is dispatched a new instance of the class is created
-and the :meth:`~flask.views.View.dispatch_request` method is called with
-the parameters from the URL rule.  The class itself is instantiated with
-the parameters passed to the :meth:`~flask.views.View.as_view` function.
-For instance you can write a class like this::
+当然对于一个小例子来说不是具有帮助，但作为解释基础原则来说足够好了。
+当你有一个基于类的视图时，问题都来自 ``self`` 指向了什么。
+这种工作方式就是不管什么时候，请求就被调度给一个建立完的新实例，
+然后 :meth:`~flask.views.View.dispatch_request` 方法带着参数
+被调用，参数都是来自 URL 规则中的内容。类自身就是用这些代入到
+:meth:`~flask.views.View.as_view` 方法中的参数进行实例化的。
+对于实例来说，你可以写一个像如下这个类::
 
     class RenderTemplateView(View):
         def __init__(self, template_name):
@@ -84,21 +80,20 @@ For instance you can write a class like this::
         def dispatch_request(self):
             return render_template(self.template_name)
 
-And then you can register it like this::
+然后你可以把实例注册成如下这样::
 
     app.add_url_rule('/about', view_func=RenderTemplateView.as_view(
         'about_page', template_name='about.html'))
 
-Method Hints
-------------
+请求方法提醒
+----------------
 
-Pluggable views are attached to the application like a regular function by
-either using :func:`~flask.Flask.route` or better
-:meth:`~flask.Flask.add_url_rule`.  That however also means that you would
-have to provide the names of the HTTP methods the view supports when you
-attach this.  In order to move that information to the class you can
-provide a :attr:`~flask.views.View.methods` attribute that has this
-information::
+可插拔视图都是附着在网络应用上，就像一个正规的函数既可以使用
+ :func:`~flask.Flask.route` 函数方式，也可以使用更好的
+:meth:`~flask.Flask.add_url_rule` 方法。不管如何做到的，
+那就意味着你要提供 HTTP 方法名给视图。为了把请求方法名信息移动
+到类里，你可以提供一个 :attr:`~flask.views.View.methods` 
+属性拥有这类信息::
 
     class MyView(View):
         methods = ['GET', 'POST']
@@ -110,13 +105,12 @@ information::
 
     app.add_url_rule('/myview', view_func=MyView.as_view('myview'))
 
-Method Based Dispatching
+基于调度的方法
 ------------------------
 
-For RESTful APIs it's especially helpful to execute a different function
-for each HTTP method.  With the :class:`flask.views.MethodView` you can
-easily do that.  Each HTTP method maps to a function with the same name
-(just in lowercase)::
+对于 RESTful APIs 来说，为每个 HTTP 请求方法执行一个不同的函数特别有帮助。
+使用 :class:`flask.views.MethodView` 类你可以容易实现。
+每个 HTTP 请求方法映射到一个同名的函数上（只需要用小写字母即可）::
 
     from flask.views import MethodView
 
@@ -132,17 +126,16 @@ easily do that.  Each HTTP method maps to a function with the same name
 
     app.add_url_rule('/users/', view_func=UserAPI.as_view('users'))
 
-That way you also don't have to provide the
-:attr:`~flask.views.View.methods` attribute.  It's automatically set based
-on the methods defined in the class.
+这种方式你也不用提供 :attr:`~flask.views.View.methods` 属性了。
+它已经自动根据定义在类里的方法设置好了。
 
-Decorating Views
+装饰器视图
 ----------------
 
-Since the view class itself is not the view function that is added to the
-routing system it does not make much sense to decorate the class itself.
-Instead you either have to decorate the return value of
-:meth:`~flask.views.View.as_view` by hand::
+由于视图类自身不是一个视图函数，而视图函数才能加入到路由系统中，
+所以给类自身使用装饰器就没有意义。
+相反你既可以手动装饰
+:meth:`~flask.views.View.as_view` 方法返回的值::
 
     def user_required(f):
         """Checks whether user is logged in or raises error 401."""
@@ -155,25 +148,22 @@ Instead you either have to decorate the return value of
     view = user_required(UserAPI.as_view('users'))
     app.add_url_rule('/users/', view_func=view)
 
-Starting with Flask 0.8 there is also an alternative way where you can
-specify a list of decorators to apply in the class declaration::
+从 Flask 0.8 开始，也有另一种方式，那就是你可以描述一个装饰器列表，
+这个装饰器列表是要写在类中来声明::
 
     class UserAPI(MethodView):
         decorators = [user_required]
 
-Due to the implicit self from the caller's perspective you cannot use
-regular view decorators on the individual methods of the view however,
-keep this in mind.
+由于隐含的 ``self`` 来自调用类时，显然你不能使用正规的视图函数装饰器
+用法放在每个视图方法上，不管如何，你要记住这一点。
 
-Method Views for APIs
----------------------
+针对 APIs 的方法视图
+-------------------------
 
-Web APIs are often working very closely with HTTP verbs so it makes a lot
-of sense to implement such an API based on the
-:class:`~flask.views.MethodView`.  That said, you will notice that the API
-will require different URL rules that go to the same method view most of
-the time.  For instance consider that you are exposing a user object on
-the web:
+网络 APIs 常常与 HTTP 动词紧密合作，所以部署一个这样的 API 根据
+:class:`~flask.views.MethodView` 类实现就包含了大量意义。
+那就是说，你要注意 API 所需要的不同 URL 规则，而这些规则都要有相同
+的方法视图。对于实例来说，想象一下你正在揭露网络上的一个用户对象：
 
 =============== =============== ======================================
 URL             Method          Description
@@ -185,11 +175,10 @@ URL             Method          Description
 ``/users/<id>`` ``DELETE``      Deletes a single user
 =============== =============== ======================================
 
-So how would you go about doing that with the
-:class:`~flask.views.MethodView`?  The trick is to take advantage of the
-fact that you can provide multiple rules to the same view.
+那么你该如何使用 :class:`~flask.views.MethodView` 类来实现那件事呢？
+技巧就是得到你提供给相同视图多个路由规则而获得的优势。
 
-Let's assume for the moment the view would look like this::
+让我们假设此时的视图长如下这个样子::
 
     class UserAPI(MethodView):
 
@@ -213,8 +202,8 @@ Let's assume for the moment the view would look like this::
             # update a single user
             pass
 
-So how do we hook this up with the routing system?  By adding two rules
-and explicitly mentioning the methods for each::
+那么我们如何用钩子做到把这个视图与路由系统连在一起呢？
+通过增加2条规则后明确地提醒每个方法::
 
     user_view = UserAPI.as_view('user_api')
     app.add_url_rule('/users/', defaults={'user_id': None},
@@ -223,8 +212,7 @@ and explicitly mentioning the methods for each::
     app.add_url_rule('/users/<int:user_id>', view_func=user_view,
                      methods=['GET', 'PUT', 'DELETE'])
 
-If you have a lot of APIs that look similar you can refactor that
-registration code::
+如果你有大量 APIs 看起来像你可以重构的那个的话，注册代码就是::
 
     def register_api(view, endpoint, url, pk='id', pk_type='int'):
         view_func = view.as_view(endpoint)
