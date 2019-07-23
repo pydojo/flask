@@ -1,39 +1,36 @@
-Upgrading to Newer Releases
+升级到最新发布版本
 ===========================
 
-Flask itself is changing like any software is changing over time.  Most of
-the changes are the nice kind, the kind where you don't have to change
-anything in your code to profit from a new release.
+Flask 自身也在改变中，像任何一个软件一样随着时间在变化。
+大多数变更都是不断改善的结果，良善的地方不需要你被迫做出改变，
+在你的代码中会从新发布版本中获得益处。
 
-However every once in a while there are changes that do require some
-changes in your code or there are changes that make it possible for you to
-improve your own code quality by taking advantage of new features in
-Flask.
+不管如何做到的，每一次更新都会需要在你的代码中改变一些老旧的代码，
+这样才能够改善你自己的代码质量，从而获得 Flask 中新的高级特性优势。
 
-This section of the documentation enumerates all the changes in Flask from
-release to release and how you can change your code to have a painless
-updating experience.
+本文档部分枚举了所有 Flask 中发布里出现的变化，并且告诉你如何更新
+你的老旧代码，没有任何痛苦就能做到。
 
-Use the :command:`pip` command to upgrade your existing Flask installation by
-providing the ``--upgrade`` parameter::
+使用 :command:`pip` 命令来升级你现有的 Flask 安装版本，通过使用
+ ``--upgrade`` 参数就可以::
 
     $ pip install --upgrade Flask
 
 .. _upgrading-to-012:
 
-Version 0.12
+版本 0.12
 ------------
 
-Changes to send_file
+改变了的 send_file
 ````````````````````
 
-The ``filename`` is no longer automatically inferred from file-like objects.
-This means that the following code will no longer automatically have
-``X-Sendfile`` support, etag generation or MIME-type guessing::
+对于 ``filename`` 不再自动推理成像文件一样的对象。
+这意味着下面的代码不再自动具有
+``X-Sendfile`` 支持， etag 生成或 MIME-type 猜测::
 
     response = send_file(open('/path/to/file.txt'))
 
-Any of the following is functionally equivalent::
+如下任何一段对媒体类型和电子标签的代码块在功能上都是等效的::
 
     fname = '/path/to/file.txt'
 
@@ -49,99 +46,88 @@ Any of the following is functionally equivalent::
     response = send_file(open(fname), attachment_filename=fname)
     response.set_etag(...)
 
-The reason for this is that some file-like objects have an invalid or even
-misleading ``name`` attribute. Silently swallowing errors in such cases was not
-a satisfying solution.
+这次变化的原因是针对有的像文件一样的对象都含有一种非法的或甚至误导的
+ ``name`` 属性。在这种情形中，会出现沉默是金的败坏行为，把错误吞吃掉，
+这样无法找到令人满意的解决方案。
 
-Additionally the default of falling back to ``application/octet-stream`` has
-been restricted. If Flask can't guess one or the user didn't provide one, the
-function fails if no filename information was provided.
+另外默认回滚到 ``application/octet-stream`` 已经被限制住了。
+如果 Flask 不能猜出一个答案或者用户不提供一个信息的话，
+如果没有提供文件名信息的话，这个函数就会失败。
 
 .. _upgrading-to-011:
 
-Version 0.11
+版本 0.11
 ------------
 
-0.11 is an odd release in the Flask release cycle because it was supposed
-to be the 1.0 release.  However because there was such a long lead time up
-to the release we decided to push out a 0.11 release first with some
-changes removed to make the transition easier.  If you have been tracking
-the master branch which was 1.0 you might see some unexpected changes.
+在 0.11 这个奇数发布版本中，被认为作为 Flask 发布周期中 1.0 版本。
+不管如何做到的，由于这种长期作用下，我们决定先发布一个 0.11 版本，其中
+移除了一些变化，这样更容易作为过渡期使用。如果你已经追踪了主干的 1.0 版本，
+你也许会看到一些意外的变化内容。
 
-In case you did track the master branch you will notice that :command:`flask --app`
-is removed now.  You need to use the environment variable to specify an
-application.
+在追踪主干情况中，你要注意 :command:`flask --app` 命令此时已经移除。
+你需要使用环境变量来描述一个网络应用。
 
-Debugging
+调试
 `````````
 
-Flask 0.11 removed the ``debug_log_format`` attribute from Flask
-applications.  Instead the new ``LOGGER_HANDLER_POLICY`` configuration can
-be used to disable the default log handlers and custom log handlers can be
-set up.
+Flask 0.11 移除了网络应用的 ``debug_log_format`` 属性。
+相反新的 ``LOGGER_HANDLER_POLICY`` 配置项可以用来禁用默认的日志处理器，
+以及可以设置自定义日志处理器。
 
-Error handling
+错误处理
 ``````````````
 
-The behavior of error handlers was changed.
-The precedence of handlers used to be based on the decoration/call order of
-:meth:`~flask.Flask.errorhandler` and
-:meth:`~flask.Flask.register_error_handler`, respectively.
-Now the inheritance hierarchy takes precedence and handlers for more
-specific exception classes are executed instead of more general ones.
-See :ref:`error-handlers` for specifics.
+错误处理器的行为已经改变。以前的处理器分别是根据
+:meth:`~flask.Flask.errorhandler` 和
+:meth:`~flask.Flask.register_error_handler`  的 装饰器/调用 顺序来使用。
+现在根据继承的树状图来获得优先级，并且许多处理器对于更具体的例外类都能处理，
+不止是更常见的例外类型。查看 :ref:`error-handlers` 文档了解具体内容。
 
-Trying to register a handler on an instance now raises :exc:`ValueError`.
+尝试把一个处理器注册在一个实例上，现在会抛出 :exc:`ValueError` 例外。
 
-.. note::
+.. 注意::
 
-    There used to be a logic error allowing you to register handlers
-    only for exception *instances*. This was unintended and plain wrong,
-    and therefore was replaced with the intended behavior of registering
-    handlers only using exception classes and HTTP error codes.
+    以前的版本有一个逻辑错误会让你把处理器注册到例外类型的 *实例* 上。
+    这纯属意外，并且因此被只使用例外类和HTTP错误代号注册的处理器替换掉。
 
-Templating
+模版化
 ``````````
 
-The :func:`~flask.templating.render_template_string` function has changed to
-autoescape template variables by default. This better matches the behavior
-of :func:`~flask.templating.render_template`.
+对于 :func:`~flask.templating.render_template_string` 函数已经改变成
+默认自动转义模版变量。这样更好地匹配了
+:func:`~flask.templating.render_template` 函数的行为。
 
-Extension imports
+扩展件导入
 `````````````````
 
-Extension imports of the form ``flask.ext.foo`` are deprecated, you should use
-``flask_foo``.
+扩展件导入的 ``flask.ext.foo`` 形式全部被淘汰，你应该使用 ``flask_foo`` 这种形式。
 
-The old form still works, but Flask will issue a
-``flask.exthook.ExtDeprecationWarning`` for each extension you import the old
-way. We also provide a migration utility called `flask-ext-migrate
-<https://github.com/pallets/flask-ext-migrate>`_ that is supposed to
-automatically rewrite your imports for this.
+老旧的导入形式依然有效，但 Flask 会发布一个警告
+``flask.exthook.ExtDeprecationWarning`` 给每个被淘汰的导入方法。
+我们也提供一个迁移工具，名叫 `flask-ext-migrate
+<https://github.com/pallets/flask-ext-migrate>`_ 它被认为是为此
+自动化重写你的导入语句。
 
 .. _upgrading-to-010:
 
-Version 0.10
+版本 0.10
 ------------
 
-The biggest change going from 0.9 to 0.10 is that the cookie serialization
-format changed from pickle to a specialized JSON format.  This change has
-been done in order to avoid the damage an attacker can do if the secret
-key is leaked.  When you upgrade you will notice two major changes: all
-sessions that were issued before the upgrade are invalidated and you can
-only store a limited amount of types in the session.  The new sessions are
-by design much more restricted to only allow JSON with a few small
-extensions for tuples and strings with HTML markup.
+最大的变化是从 0.9 到 0.10 版本的升级，那就是 cookie 序列化格式从
+pickle 变成了一种具体的 JSON 格式。这种变化的实现是为了避免如果密钥
+泄露而造成的破坏性攻击。当你升级时，你要注意两个主要变化：
+所有发布的会话在没升级这个版本之前都是非法的，并且你在会话中只可以存储
+一个有限的类型数量。新会话都被设计成更严谨的只允许 JSON 存储，使用很少
+的扩展件来针对元组和含有 HTML 装饰标签的字符串。
 
-In order to not break people's sessions it is possible to continue using
-the old session system by using the `Flask-OldSessions`_ extension.
+为了不让人们的会话断裂，继续使用老旧的会话系统可以通过使用
+ `Flask-OldSessions`_ 扩展件来解决。
 
-Flask also started storing the :data:`flask.g` object on the application
-context instead of the request context.  This change should be transparent
-for you but it means that you now can store things on the ``g`` object
-when there is no request context yet but an application context.  The old
-``flask.Flask.request_globals_class`` attribute was renamed to
-:attr:`flask.Flask.app_ctx_globals_class`.
+Flask 也开启了在网络应用语境上存储 :data:`flask.g` 数据代理对象，
+不再使用请求语境来存储它。这个变化有责任向你们曝光，但意味着你们现在
+可以在 ``g`` 数据代理对象上存储东西了，当没有请求语境时也可以，但需要
+一个网络应用语境。老旧的 ``flask.Flask.request_globals_class`` 
+属性名字变成了 :attr:`flask.Flask.app_ctx_globals_class` 属性名。
 
 .. _Flask-OldSessions: https://pythonhosted.org/Flask-OldSessions/
 
