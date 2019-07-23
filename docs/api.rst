@@ -5,12 +5,12 @@ API
 
 .. module:: flask
 
-This part of the documentation covers all the interfaces of Flask.  For
-parts where Flask depends on external libraries, we document the most
-important right here and provide links to the canonical documentation.
+本文档部分涵盖所有 Flask 的接口。
+对于这些部分来说，都是 Flask 依据外部库的内容，
+我们针对最重要的内容进行文档化工作，并且提供了权威文档的连接给你们。
 
 
-Application Object
+网络应用对象
 ------------------
 
 .. autoclass:: Flask
@@ -18,14 +18,14 @@ Application Object
    :inherited-members:
 
 
-Blueprint Objects
+蓝图对象
 -----------------
 
 .. autoclass:: Blueprint
    :members:
    :inherited-members:
 
-Incoming Request Data
+进入的请求数据
 ---------------------
 
 .. autoclass:: Request
@@ -34,7 +34,7 @@ Incoming Request Data
 
    .. attribute:: environ
 
-      The underlying WSGI environment.
+      依据 WSGI 环境。
 
    .. attribute:: path
    .. attribute:: full_path
@@ -43,18 +43,17 @@ Incoming Request Data
    .. attribute:: base_url
    .. attribute:: url_root
 
-      Provides different ways to look at the current `IRI
-      <https://tools.ietf.org/html/rfc3987>`_.  Imagine your application is
-      listening on the following application root::
+      提供了不同的方法来查看当前的 `IRI
+      <https://tools.ietf.org/html/rfc3987>`_ 内容。
+      想象一下你的网络应用正在监听如下网络应用根路径::
 
           http://www.example.com/myapplication
 
-      And a user requests the following URI::
+      并且一名用户对如下 URI 发送了一个请求::
 
           http://www.example.com/myapplication/%CF%80/page.html?x=y
 
-      In this case the values of the above mentioned attributes would be
-      the following:
+      在这种情况中，上面提醒的属性值都要是如下内容：
 
       ============= ======================================================
       `path`        ``u'/π/page.html'``
@@ -68,20 +67,20 @@ Incoming Request Data
 
 .. attribute:: request
 
-   To access incoming request data, you can use the global `request`
-   object.  Flask parses incoming request data for you and gives you
-   access to it through that global object.  Internally Flask makes
-   sure that you always get the correct data for the active thread if you
-   are in a multithreaded environment.
+   要访问进入的请求数据，你可以使用全局 `request` 对象。
+   Flask 为你对进入的请求数据进行语法分析后，
+   通过该全局对象给你访问进入的请求数据权限。
+   如果你处于一种多线程环境中的话，对于激活的线程来说，
+   Flask 在内部确保你一直获得正确的数据。
 
-   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+   这是一个代理。查看 :ref:`notes-on-proxies` 参考内容了解更多信息。
 
-   The request object is an instance of a :class:`~werkzeug.wrappers.Request`
-   subclass and provides all of the attributes Werkzeug defines.  This
-   just shows a quick overview of the most important ones.
+   请求对象是一个 :class:`~werkzeug.wrappers.Request` 子类的实例，
+   并且提供了 Werkzeug 定义的所有属性。
+   这里只展示最重要的一些属性概况。
 
 
-Response Objects
+响应对象
 ----------------
 
 .. autoclass:: flask.Response
@@ -89,48 +88,48 @@ Response Objects
 
    .. attribute:: headers
 
-      A :class:`~werkzeug.datastructures.Headers` object representing the response headers.
+      一个 :class:`~werkzeug.datastructures.Headers` 类对象表示响应头部。
 
    .. attribute:: status
 
-      A string with a response status.
+      含有一个响应状态的字符串。
 
    .. attribute:: status_code
 
-      The response status as integer.
+      整数类型的响应状态。
 
 
-Sessions
+会话
 --------
 
-If you have set :attr:`Flask.secret_key` (or configured it from
-:data:`SECRET_KEY`) you can use sessions in Flask applications. A session makes
-it possible to remember information from one request to another. The way Flask
-does this is by using a signed cookie. The user can look at the session
-contents, but can't modify it unless they know the secret key, so make sure to
-set that to something complex and unguessable.
+如果你设置了 :attr:`Flask.secret_key` 属性
+（或从 :data:`SECRET_KEY` 数据代理对象来配置），
+那么你可以使用 Flask 网络应用中的会话。一个会话
+是记住一个请求到另一个请求的信息用的。Flask 做到
+这点是通过一个签名的 cookie 来实现的。用户可以看
+会话的内容，但不能修改会话内容，除非他们知道密钥，
+所以确保密钥内容设置成多层化的内容和无法猜到的值。
 
-To access the current session you can use the :class:`session` object:
+要访问当前会话，你可以使用 :class:`session` 类对象：
 
 .. class:: session
 
-   The session object works pretty much like an ordinary dict, with the
-   difference that it keeps track of modifications.
+   会话对象工作非常像一个普通的字典数据类型，唯一不同
+   之处就是它保留了修改的追踪信息。
 
-   This is a proxy.  See :ref:`notes-on-proxies` for more information.
+   这是一个代理。查看 :ref:`notes-on-proxies` 参考内容了解更多信息。
 
-   The following attributes are interesting:
+   下面的这些属性都是有趣的：
 
    .. attribute:: new
 
-      ``True`` if the session is new, ``False`` otherwise.
+      如果会话是新的，属性值是 ``True`` ，否则属性值就是 ``False`` 。
 
    .. attribute:: modified
 
-      ``True`` if the session object detected a modification.  Be advised
-      that modifications on mutable structures are not picked up
-      automatically, in that situation you have to explicitly set the
-      attribute to ``True`` yourself.  Here an example::
+      如果会话对象检测到一项修改的话，属性值是 ``True`` 。
+      劝告你在可变的数据类型上发生的修改不会自动选择，在这时
+      你自己要明确地把属性值设置成 ``True`` 。如下是一个例子::
 
           # this change is not picked up because a mutable object (here
           # a list) is changed.
@@ -140,19 +139,19 @@ To access the current session you can use the :class:`session` object:
 
    .. attribute:: permanent
 
-      If set to ``True`` the session lives for
-      :attr:`~flask.Flask.permanent_session_lifetime` seconds.  The
-      default is 31 days.  If set to ``False`` (which is the default) the
-      session will be deleted when the user closes the browser.
+      如果属性值设置成 ``True`` 的话，会话存活时间由
+      :attr:`~flask.Flask.permanent_session_lifetime` 属性秒数值来决定，
+      默认时间值是 31 天。
+      如果此属性值设置成 ``False`` 的话（也是默认值），
+      当用户关闭浏览器的时候会话也被删除。
 
 
-Session Interface
+会话接口
 -----------------
 
 .. versionadded:: 0.8
 
-The session interface provides a simple way to replace the session
-implementation that Flask is using.
+会话接口提供了替换 Flask 正在使用的会话部署的一个直接方法。
 
 .. currentmodule:: flask.sessions
 
@@ -171,16 +170,16 @@ implementation that Flask is using.
 .. autoclass:: SessionMixin
    :members:
 
-.. admonition:: Notice
+.. admonition:: 注意
 
-   The ``PERMANENT_SESSION_LIFETIME`` config key can also be an integer
-   starting with Flask 0.8.  Either catch this down yourself or use
-   the :attr:`~flask.Flask.permanent_session_lifetime` attribute on the
-   app which converts the result to an integer automatically.
+   该 ``PERMANENT_SESSION_LIFETIME`` 配置键也可以是一个整数，
+   从 Flask 0.8 开始可以这样配置。不管是你自己获得这个配置值，还是
+   在网络应用上使用 :attr:`~flask.Flask.permanent_session_lifetime` 
+   属性来配置，都会把配置值结果自动转换成一种整数类型。
 
 
-Test Client
------------
+测试客户端
+--------------
 
 .. currentmodule:: flask.testing
 
@@ -188,8 +187,8 @@ Test Client
    :members:
 
 
-Test CLI Runner
----------------
+测试命令行运行器
+--------------------
 
 .. currentmodule:: flask.testing
 
@@ -197,54 +196,52 @@ Test CLI Runner
     :members:
 
 
-Application Globals
+网络应用全局对象
 -------------------
 
 .. currentmodule:: flask
 
-To share data that is valid for one request only from one function to
-another, a global variable is not good enough because it would break in
-threaded environments.  Flask provides you with a special object that
-ensures it is only valid for the active request and that will return
-different values for each request.  In a nutshell: it does the right
-thing, like it does for :class:`request` and :class:`session`.
+要分享数据，数据对于一个请求来说要是合法的，这个请求只来自一个函数要分享给另一个函数，
+使用一个全局变量还不够好，因为在线程环境中会出现断裂情况。Flask 提供给你一个具体的
+对象，这个对象确保对激活的请求来说是唯一的合法对象，并且该对象会针对每个请求返回不同
+的值。在一个容器中：这个对象才能做正确的事情，就像它针对
+:class:`request` 类和 :class:`session` 类所做的一样。
 
 .. data:: g
 
-    A namespace object that can store data during an
-    :doc:`application context </appcontext>`. This is an instance of
-    :attr:`Flask.app_ctx_globals_class`, which defaults to
-    :class:`ctx._AppCtxGlobals`.
+    一个命名空间对象，它可以存储
+    :doc:`application context </appcontext>` 文档所描述的数据。
+    它是 :attr:`Flask.app_ctx_globals_class` 属性的一个实例，
+    该属性是 :class:`ctx._AppCtxGlobals` 类的默认属性。
 
-    This is a good place to store resources during a request. During
-    testing, you can use the :ref:`faking-resources` pattern to
-    pre-configure such resources.
+    在一个请求期间，这就是良好存储资源的地方。
+    在测试期间，你可以使用 :ref:`faking-resources` 参考文档描述的模式
+    来提前配置好这些资源。
 
-    This is a proxy. See :ref:`notes-on-proxies` for more information.
+    这是一个代理。查看 :ref:`notes-on-proxies` 参考内容了解更多信息。
 
     .. versionchanged:: 0.10
-        Bound to the application context instead of the request context.
+        该全局对象绑定到网络应用语境，而不是请求语境。
 
 .. autoclass:: flask.ctx._AppCtxGlobals
     :members:
 
 
-Useful Functions and Classes
+有用的函数和类
 ----------------------------
 
 .. data:: current_app
 
-    A proxy to the application handling the current request. This is
-    useful to access the application without needing to import it, or if
-    it can't be imported, such as when using the application factory
-    pattern or in blueprints and extensions.
+    网络应用处理当前请求的一个代理。不需要导入网络应用就可以
+    访问网络应用，或者如果网络应用无法导入的话，就像当使用
+    网络应用工厂模式时，或者使用蓝图技术时，以及使用扩展件时。
 
-    This is only available when an
-    :doc:`application context </appcontext>` is pushed. This happens
-    automatically during requests and CLI commands. It can be controlled
-    manually with :meth:`~flask.Flask.app_context`.
+    当 :doc:`application context </appcontext>` 文档
+    所描述的语境推送完时，这个代理才可以使用。在请求期间和
+    命令行命令期间，该代理会自动出现。它可以用
+    :meth:`~flask.Flask.app_context` 方法手动控制。
 
-    This is a proxy. See :ref:`notes-on-proxies` for more information.
+    这是一个代理。查看 :ref:`notes-on-proxies` 参考内容了解更多信息。
 
 .. autofunction:: has_request_context
 
@@ -273,49 +270,46 @@ Useful Functions and Classes
 .. autoclass:: Markup
    :members: escape, unescape, striptags
 
-Message Flashing
+消息闪存
 ----------------
 
 .. autofunction:: flash
 
 .. autofunction:: get_flashed_messages
 
-JSON Support
+JSON 支持
 ------------
 
 .. module:: flask.json
 
-Flask uses ``simplejson`` for the JSON implementation.  Since simplejson
-is provided by both the standard library as well as extension, Flask will
-try simplejson first and then fall back to the stdlib json module.  On top
-of that it will delegate access to the current application's JSON encoders
-and decoders for easier customization.
+Flask 使用 ``simplejson`` 来部署 JSON 支持。因为该模块即是标准库，
+也是扩展件使用的模块，Flask 会先使用这个库，然后回滚到 Python 的标准
+``json`` 库。在顶层上它会委托访问当前的网络应用 JSON 编码器和解码器，
+这样自定义时更容易。
 
-So for starters instead of doing::
+那么对于起始部分要这样做::
 
     try:
         import simplejson as json
     except ImportError:
         import json
 
-You can instead just do this::
+你也可以只这样做::
 
     from flask import json
 
-For usage examples, read the :mod:`json` documentation in the standard
-library.  The following extensions are by default applied to the stdlib's
-JSON module:
+对于用法示例，阅读标准库中的 :mod:`json` 模块文档。如下扩展件都是
+默认应用到 Python 标准库 json 模块上的：
 
-1.  ``datetime`` objects are serialized as :rfc:`822` strings.
-2.  Any object with an ``__html__`` method (like :class:`~flask.Markup`)
-    will have that method called and then the return value is serialized
-    as string.
+1.  ``datetime`` 对象都是序列化成 :rfc:`822` 字符串形式。
+2.  任何一个含有 ``__html__`` 方法的对象（像 :class:`~flask.Markup` 类一样），
+    都会有一个这个方法，调用后返回的值都是序列化成字符串值。
 
-The :func:`~htmlsafe_dumps` function of this json module is also available
-as a filter called ``|tojson`` in Jinja2.  Note that in versions of Flask prior
-to Flask 0.10, you must disable escaping with ``|safe`` if you intend to use
-``|tojson`` output inside ``script`` tags. In Flask 0.10 and above, this
-happens automatically (but it's harmless to include ``|safe`` anyway).
+这个 json 模块的 :func:`~htmlsafe_dumps` 函数也可以用做一个模版过滤器，
+在 Jinja2 中叫做 ``|tojson`` 。注意，如果你要在  ``script``  标签中使用
+``|tojson`` 过滤器输出结果的话，在 Flask 0.10 以前的版本中，你必须带着
+``|safe`` 来禁用转义功能。在 Flask 0.10 以后的版本里，会自动包含安全过滤器
+（但即便使用了 ``|safe`` 也是没有害处的）。
 
 .. sourcecode:: html+jinja
 
@@ -323,14 +317,14 @@ happens automatically (but it's harmless to include ``|safe`` anyway).
         doSomethingWith({{ user.username|tojson|safe }});
     </script>
 
-.. admonition:: Auto-Sort JSON Keys
+.. admonition:: 自动排序 JSON 键
 
-    The configuration variable ``JSON_SORT_KEYS`` (:ref:`config`) can be
-    set to false to stop Flask from auto-sorting keys.  By default sorting
-    is enabled and outside of the app context sorting is turned on.
+    配置变量 ``JSON_SORT_KEYS`` (:ref:`config`) 可以设置成 false 来
+    停用 Flask 自动排序 JSON 键。默认排序是开启的，并且是在网络应用语境之外
+    来开启的。
 
-    Notice that disabling key sorting can cause issues when using content
-    based HTTP caches and Python's hash randomization feature.
+    注意，当使用基于 HTTP 缓存的内容时，和使用 Python 的哈希随机特性时，
+    禁用键排序能导致问题。
 
 .. autofunction:: jsonify
 
@@ -350,7 +344,7 @@ happens automatically (but it's harmless to include ``|safe`` anyway).
 
 .. automodule:: flask.json.tag
 
-Template Rendering
+模版翻译
 ------------------
 
 .. currentmodule:: flask
@@ -361,19 +355,19 @@ Template Rendering
 
 .. autofunction:: get_template_attribute
 
-Configuration
+配置
 -------------
 
 .. autoclass:: Config
    :members:
 
 
-Stream Helpers
+流助手
 --------------
 
 .. autofunction:: stream_with_context
 
-Useful Internals
+有用的内部
 ----------------
 
 .. autoclass:: flask.ctx.RequestContext
@@ -381,34 +375,32 @@ Useful Internals
 
 .. data:: _request_ctx_stack
 
-    The internal :class:`~werkzeug.local.LocalStack` that holds
-    :class:`~flask.ctx.RequestContext` instances. Typically, the
-    :data:`request` and :data:`session` proxies should be accessed
-    instead of the stack. It may be useful to access the stack in
-    extension code.
+    内部 :class:`~werkzeug.local.LocalStack` 类是保存
+    :class:`~flask.ctx.RequestContext` 类实例的。典型
+    :data:`request` 代理和 :data:`session` 代理对象应该
+    被访问，而不是访问堆栈。在扩展件代码中访问堆栈也许是有用的。
 
-    The following attributes are always present on each layer of the
-    stack:
+    如下属性一直出现在堆栈的每一层上：
 
     `app`
-      the active Flask application.
+      激活 Flask 网络应用。
 
     `url_adapter`
-      the URL adapter that was used to match the request.
+      该 URL 适配器（URL猫）是用来匹配请求用的。
 
     `request`
-      the current request object.
+      当前请求对象。
 
     `session`
-      the active session object.
+      激活的会话对象。
 
     `g`
-      an object with all the attributes of the :data:`flask.g` object.
+      含有所有 :data:`flask.g` 代理对象属性的一个对象。
 
     `flashes`
-      an internal cache for the flashed messages.
+      针对闪存消息的一个内部缓存。
 
-    Example usage::
+    示例用法::
 
         from flask import _request_ctx_stack
 
@@ -422,11 +414,11 @@ Useful Internals
 
 .. data:: _app_ctx_stack
 
-    The internal :class:`~werkzeug.local.LocalStack` that holds
-    :class:`~flask.ctx.AppContext` instances. Typically, the
-    :data:`current_app` and :data:`g` proxies should be accessed instead
-    of the stack. Extensions can access the contexts on the stack as a
-    namespace to store data.
+    内部 :class:`~werkzeug.local.LocalStack` 类是保存
+    :class:`~flask.ctx.AppContext` 类实例的。典型来说，
+    :data:`current_app` 代理和 :data:`g` 代理对象应该
+    被访问，而不是访问堆栈。扩展件可以访问堆栈上的内容，作为
+    一个命名空间来存储堆栈中的数据。
 
     .. versionadded:: 0.9
 
@@ -435,25 +427,24 @@ Useful Internals
 
 .. _core-signals-list:
 
-Signals
+信号
 -------
 
 .. versionadded:: 0.6
 
 .. data:: signals.signals_available
 
-   ``True`` if the signaling system is available.  This is the case
-   when `blinker`_ is installed.
+   如果信号系统可用，设置成 ``True`` 值。这种情况只有在安装了
+   `blinker`_ 库时才可以使用。
 
-The following signals exist in Flask:
+如下信号出现在 Flask 中：
 
 .. data:: template_rendered
 
-   This signal is sent when a template was successfully rendered.  The
-   signal is invoked with the instance of the template as `template`
-   and the context as dictionary (named `context`).
+   当一个模版成果翻译完成时，这个信号被发送。该信号被引入时带着
+   把模版实例用做 `template` 和把语境作为字典（名叫 `context`）。
 
-   Example subscriber::
+   订阅者示例::
 
         def log_template_renders(sender, template, context, **extra):
             sender.logger.debug('Rendering template "%s" with context %s',
@@ -466,11 +457,10 @@ The following signals exist in Flask:
 .. data:: flask.before_render_template
    :noindex:
 
-   This signal is sent before template rendering process. The
-   signal is invoked with the instance of the template as `template`
-   and the context as dictionary (named `context`).
+   翻译模版进程之前，这个信号被发送。该信号被引入时带着
+   把模版实例用做 `template` 和把语境作为字典（名叫 `context`）。
 
-   Example subscriber::
+   订阅者示例::
 
         def log_template_renders(sender, template, context, **extra):
             sender.logger.debug('Rendering template "%s" with context %s',
@@ -482,12 +472,11 @@ The following signals exist in Flask:
 
 .. data:: request_started
 
-   This signal is sent when the request context is set up, before
-   any request processing happens.  Because the request context is already
-   bound, the subscriber can access the request with the standard global
-   proxies such as :class:`~flask.request`.
+   当请求语境被设置时，这个信号被发送，而且是在任何一个请求处理发生之前被发送。
+   因为请求语境已经绑定完成，订阅者可以使用标准的全局代理对象访问请求，例如用
+   :class:`~flask.request` 代理对象。
 
-   Example subscriber::
+   订阅者示例::
 
         def log_request(sender, **extra):
             sender.logger.debug('Request context is set up')
@@ -497,10 +486,11 @@ The following signals exist in Flask:
 
 .. data:: request_finished
 
-   This signal is sent right before the response is sent to the client.
-   It is passed the response to be sent named `response`.
+   在响应对象发送给客户端之前，这个信号被发送。
+   信号被代入到响应中，
+   响应对象以 `response` 名字被发送出去。
 
-   Example subscriber::
+   订阅者示例::
 
         def log_response(sender, response, **extra):
             sender.logger.debug('Request context is about to close down.  '
@@ -511,12 +501,12 @@ The following signals exist in Flask:
 
 .. data:: got_request_exception
 
-   This signal is sent when an exception happens during request processing.
-   It is sent *before* the standard exception handling kicks in and even
-   in debug mode, where no exception handling happens.  The exception
-   itself is passed to the subscriber as `exception`.
+   当一个例外在请求处理期间出现时，这个信号被发送。
+   信号是在标准例外处理介入 *之前* 被发送的，并且
+   即使在调试模式中没有例外处理发生也是这样。例外
+   本身作为 `exception` 被传递给订阅者。
 
-   Example subscriber::
+   订阅者示例::
 
         def log_exception(sender, exception, **extra):
             sender.logger.debug('Got exception during processing: %s', exception)
@@ -526,12 +516,12 @@ The following signals exist in Flask:
 
 .. data:: request_tearing_down
 
-   This signal is sent when the request is tearing down.  This is always
-   called, even if an exception is caused.  Currently functions listening
-   to this signal are called after the regular teardown handlers, but this
-   is not something you can rely on.
+   当请求被释放时，这个信号被发送。
+   即使一个例外产生，这个信号一直会被调用。
+   当前监听这个信号的函数都在正规释放处理器之后被调用，
+   而且这不是你可以依赖的东西。
 
-   Example subscriber::
+   订阅者示例::
 
         def close_db_connection(sender, **extra):
             session.close()
@@ -539,18 +529,17 @@ The following signals exist in Flask:
         from flask import request_tearing_down
         request_tearing_down.connect(close_db_connection, app)
 
-   As of Flask 0.9, this will also be passed an `exc` keyword argument
-   that has a reference to the exception that caused the teardown if
-   there was one.
+   作为 Flask 0.9 版本，这个信号也要被代入一个 `exc` 关键字参数，
+   如果有一个例外的话，关键字参数就有一个指向导致释放动作的例外。
 
 .. data:: appcontext_tearing_down
 
-   This signal is sent when the app context is tearing down.  This is always
-   called, even if an exception is caused.  Currently functions listening
-   to this signal are called after the regular teardown handlers, but this
-   is not something you can rely on.
+   当网络应用语境被释放时，这个信号被发送。
+   即使有一个例外发生，这个信号一直会被调用。
+   当前监听这个信号的函数都在正规释放处理器之后被调用，
+   而且这不是你可以依赖的东西。
 
-   Example subscriber::
+   订阅者示例::
 
         def close_db_connection(sender, **extra):
             session.close()
@@ -558,17 +547,17 @@ The following signals exist in Flask:
         from flask import appcontext_tearing_down
         appcontext_tearing_down.connect(close_db_connection, app)
 
-   This will also be passed an `exc` keyword argument that has a reference
-   to the exception that caused the teardown if there was one.
+   这个信号也要被代入一个 `exc` 关键字参数，
+   如果有一个例外的话，关键字参数就有一个指向导致释放动作的例外。
 
 .. data:: appcontext_pushed
 
-   This signal is sent when an application context is pushed.  The sender
-   is the application.  This is usually useful for unittests in order to
-   temporarily hook in information.  For instance it can be used to
-   set a resource early onto the `g` object.
+   当一个网络应用语境被推送时，这个信号被发送。
+   发送者就是网络应用。这对于单元测试来说常常是有用的，
+   因为在信息中为了临时使用钩子。对于实例来说，它可以用来
+   提早设置一个资源到 `g` 代理对象上。
 
-   Example usage::
+   示例用法::
 
         from contextlib import contextmanager
         from flask import appcontext_pushed
@@ -580,7 +569,7 @@ The following signals exist in Flask:
             with appcontext_pushed.connected_to(handler, app):
                 yield
 
-   And in the testcode::
+   并且在测试代码中用法如下::
 
         def test_user_me(self):
             with user_set(app, 'john'):
@@ -592,20 +581,20 @@ The following signals exist in Flask:
 
 .. data:: appcontext_popped
 
-   This signal is sent when an application context is popped.  The sender
-   is the application.  This usually falls in line with the
-   :data:`appcontext_tearing_down` signal.
+   当一个网络应用语境被删除时，这个信号被发送。
+   发送者就是网络应用。
+   这个信号常常与 :data:`appcontext_tearing_down` 信号放在一起。
 
    .. versionadded:: 0.10
 
 
 .. data:: message_flashed
 
-   This signal is sent when the application is flashing a message.  The
-   messages is sent as `message` keyword argument and the category as
-   `category`.
+   当网络应用正在闪存一个消息时，这个信号被发送。
+   消息作为 `message` 关键字参数被发送，并且
+   消息类别作为 `category` 。
 
-   Example subscriber::
+   订阅者示例::
 
         recorded = []
         def record(sender, message, category, **extra):
@@ -618,24 +607,23 @@ The following signals exist in Flask:
 
 .. class:: signals.Namespace
 
-   An alias for :class:`blinker.base.Namespace` if blinker is available,
-   otherwise a dummy class that creates fake signals.  This class is
-   available for Flask extensions that want to provide the same fallback
-   system as Flask itself.
+   如果 blinker 库可用的话，是 :class:`blinker.base.Namespace` 类的别名。
+   否则是建立假信号的替身类。这个类对 Flask 扩展件来说是可用的，因为扩展件想要
+   提供与 Flask 自身相同的回滚系统。
 
    .. method:: signal(name, doc=None)
 
-      Creates a new signal for this namespace if blinker is available,
-      otherwise returns a fake signal that has a send method that will
-      do nothing but will fail with a :exc:`RuntimeError` for all other
-      operations, including connecting.
+      如果 blinker 库可用的话，为这个别名类建立一个新信号，
+      否则返回一个假信号，假信号有一个发送方法，该方法什么也不做，
+      但对所有其它操作会带着一个 :exc:`RuntimeError` 例外失败，
+      包括连接操作。
 
 
 .. _blinker: https://pypi.org/project/blinker/
 
 .. _class-based-views:
 
-Class-Based Views
+基于类的视图
 -----------------
 
 .. versionadded:: 0.7
@@ -650,24 +638,23 @@ Class-Based Views
 
 .. _url-route-registrations:
 
-URL Route Registrations
+URL路由注册
 -----------------------
 
-Generally there are three ways to define rules for the routing system:
+通用中对于路由系统来说有3个方法来定义路由规则：
 
-1.  You can use the :meth:`flask.Flask.route` decorator.
-2.  You can use the :meth:`flask.Flask.add_url_rule` function.
-3.  You can directly access the underlying Werkzeug routing system
-    which is exposed as :attr:`flask.Flask.url_map`.
+1.  你可以使用 :meth:`flask.Flask.route` 方法装饰器。
+2.  你可以使用 :meth:`flask.Flask.add_url_rule` 方法函数。
+3.  你可以直接访问基于 Werkzeug 路由系统，该系统被曝光成
+    :attr:`flask.Flask.url_map` 属性。
 
-Variable parts in the route can be specified with angular brackets
-(``/user/<username>``).  By default a variable part in the URL accepts any
-string without a slash however a different converter can be specified as
-well by using ``<converter:name>``.
+路由中的变量部分可以用尖括号来描述 (``/user/<username>``) 。
+在 URL 中默认的一个变量部分接收任何一个字符串，不能带一个反斜杠，
+不管如何做到的，一个不同的转换器也可以使用 ``<converter:name>`` 来描述。
 
-Variable parts are passed to the view function as keyword arguments.
+许多变量部分都代入到视图函数中作为关键字参数。
 
-The following converters are available:
+下面的这些转换器都是可以使用的：
 
 =========== ===============================================
 `string`    accepts any text without a slash (the default)
@@ -678,9 +665,9 @@ The following converters are available:
 `uuid`      accepts UUID strings
 =========== ===============================================
 
-Custom converters can be defined using :attr:`flask.Flask.url_map`.
+自定义转换器可以使用 :attr:`flask.Flask.url_map` 属性来定义。
 
-Here are some examples::
+如下是一些示例::
 
     @app.route('/')
     def index():
@@ -694,46 +681,42 @@ Here are some examples::
     def show_post(post_id):
         pass
 
-An important detail to keep in mind is how Flask deals with trailing
-slashes.  The idea is to keep each URL unique so the following rules
-apply:
+一个重要的钶细节要记住，那就是 Flask 如何处理以反斜杠结尾的路由。
+思路是保持每个 URL 都是唯一情况，所以要实行如下规则：
 
-1. If a rule ends with a slash and is requested without a slash by the
-   user, the user is automatically redirected to the same page with a
-   trailing slash attached.
-2. If a rule does not end with a trailing slash and the user requests the
-   page with a trailing slash, a 404 not found is raised.
+1. 如果一个规则以一个反斜杠结尾的话，并且用户发送请求时没有使用一个反斜杠的话，
+   用户会自动被重定向到有一个反斜杠的页面地址上。
+2. 如果一个规则没有以一个反斜杠结尾的话，并且用户发送请求时带有一个反斜杠的话，
+   就会抛出一个 404 找不到页面的响应代号。
 
-This is consistent with how web servers deal with static files.  This
-also makes it possible to use relative link targets safely.
+这是与网络服务器如何处理静态文件是一致的。这就让安全地使用相对链接目标变成可能。
 
-You can also define multiple rules for the same function.  They have to be
-unique however.  Defaults can also be specified.  Here for example is a
-definition for a URL that accepts an optional page::
+为相同的视图函数你也可以定义多个路由规则。不管如何做到的，它们都要是唯一的。
+也可以描述默认规则是哪条。这里的示例就是为一个 URL 地址定义接收一种
+可选的页面路由规则::
 
     @app.route('/users/', defaults={'page': 1})
     @app.route('/users/page/<int:page>')
     def show_users(page):
         pass
 
-This specifies that ``/users/`` will be the URL for page one and
-``/users/page/N`` will be the URL for page ``N``.
+这种定义描述了 ``/users/`` 会是第一个页面的 URL 地址，并且
+``/users/page/N`` 会是第 ``N`` 个页面的 URL 地址。
 
-If a URL contains a default value, it will be redirected to its simpler
-form with a 301 redirect. In the above example, ``/users/page/1`` will
-be redirected to ``/users/``. If your route handles ``GET`` and ``POST``
-requests, make sure the default route only handles ``GET``, as redirects
-can't preserve form data. ::
+如果一个 URL 地址含有一项默认值的话，规则会被重定向到含有一个 301 重定向代号
+的更简单形式。例如上面的例子中， ``/users/page/1`` 会被重定向到 ``/users/`` 规则上。
+如果你的路由处理 ``GET`` 和 ``POST`` 请求方法的话，
+确保默认路由只处理 ``GET`` 请求方法，因为重定向不会保护表单数据。 ::
 
    @app.route('/region/', defaults={'id': 1})
    @app.route('/region/<id>', methods=['GET', 'POST'])
    def region(id):
       pass
 
-Here are the parameters that :meth:`~flask.Flask.route` and
-:meth:`~flask.Flask.add_url_rule` accept.  The only difference is that
-with the route parameter the view function is defined with the decorator
-instead of the `view_func` parameter.
+如下这些参数都是 :meth:`~flask.Flask.route` 方法和
+:meth:`~flask.Flask.add_url_rule` 方法接收的参数。
+唯一不同的是含有路由参数的视图函数要用装饰器来定义，
+取代了 `view_func` 参数。
 
 =============== ==========================================================
 `rule`          the URL rule as string
@@ -762,35 +745,32 @@ instead of the `view_func` parameter.
 
 .. _view-func-options:
 
-View Function Options
+视图函数选项
 ---------------------
 
-For internal usage the view functions can have some attributes attached to
-customize behavior the view function would normally not have control over.
-The following attributes can be provided optionally to either override
-some defaults to :meth:`~flask.Flask.add_url_rule` or general behavior:
+对于内部用法来说，视图函数都可以有一些属性附着后来自定义行为，
+视图函数会正常地不具有控制权。
+下面的这些属性可以选择地提供，既可以覆写一些默认行为到
+:meth:`~flask.Flask.add_url_rule` 方法中或者覆写普通行为：
 
--   `__name__`: The name of a function is by default used as endpoint.  If
-    endpoint is provided explicitly this value is used.  Additionally this
-    will be prefixed with the name of the blueprint by default which
-    cannot be customized from the function itself.
+-   `__name__`: 一个函数的名字，默认用做端点。
+    如果明确地提供了端点，这个值就被使用。
+    另外这个值会是默认蓝图的名字前缀，不能在视图函数自身上进行自定义。
 
--   `methods`: If methods are not provided when the URL rule is added,
-    Flask will look on the view function object itself if a `methods`
-    attribute exists.  If it does, it will pull the information for the
-    methods from there.
+-   `methods`: 当 URL 规则增加时，如果方法都没有提供的话，
+    如果一个 `methods` 属性存在的话，Flask 会看视图函数对象自身。
+    如果函数实现了方法，那么就会把方法的信息拉取过来给这个属性值。
 
--   `provide_automatic_options`: if this attribute is set Flask will
-    either force enable or disable the automatic implementation of the
-    HTTP ``OPTIONS`` response.  This can be useful when working with
-    decorators that want to customize the ``OPTIONS`` response on a per-view
-    basis.
+-   `provide_automatic_options`: 如果这个属性被设置的话，Flask 会
+    即可以开启，也可以禁用 HTTP ``OPTIONS`` 响应的自动化部署。
+    当与装饰器一起工作时这是有用的，因为装饰器想要在预先看到基础上
+    自定义 ``OPTIONS`` 响应。
 
--   `required_methods`: if this attribute is set, Flask will always add
-    these methods when registering a URL rule even if the methods were
-    explicitly overridden in the ``route()`` call.
+-   `required_methods`: 如果这个属性被设置的话，Flask 会在注册一个
+    URL 路由规则时一直增加这些方法，即使在 ``route()`` 调用中方法都
+    被覆写了也会增加这些方法。
 
-Full example::
+完整的示例是::
 
     def index():
         if request.method == 'OPTIONS':
@@ -803,9 +783,9 @@ Full example::
     app.add_url_rule('/', index)
 
 .. versionadded:: 0.8
-   The `provide_automatic_options` functionality was added.
+   该 `provide_automatic_options` 功能已加入。
 
-Command Line Interface
+命令行接口
 ----------------------
 
 .. currentmodule:: flask.cli
