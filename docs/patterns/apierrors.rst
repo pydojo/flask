@@ -1,23 +1,20 @@
-Implementing API Exceptions
+部署 API 例外
 ===========================
 
-It's very common to implement RESTful APIs on top of Flask.  One of the
-first things that developers run into is the realization that the builtin
-exceptions are not expressive enough for APIs and that the content type of
-:mimetype:`text/html` they are emitting is not very useful for API consumers.
+在 Flask 顶层部署 RESTful APIs 是非常共同的做法。开发者们首要做的事情之一就是
+实现那些内置例外，对于 APIs 来说例外都是表达不足的，并且 :mimetype:`text/html`
+的内容类型对于 API 用户们来说，发出的信息不是非常有用。
 
-The better solution than using ``abort`` to signal errors for invalid API
-usage is to implement your own exception type and install an error handler
-for it that produces the errors in the format the user is expecting.
+比使用 ``abort`` 给非法 API 用法发出信号错误更好的解决方案就是部署你自己的例外类型，
+然后为自定义例外类型安装一个错误处理器，生成用户期望的错误信息格式。
 
-Simple Exception Class
+简单的例外类
 ----------------------
 
-The basic idea is to introduce a new exception that can take a proper
-human readable message, a status code for the error and some optional
-payload to give more context for the error.
+基本思路是介绍一个新的例外，获得一种让人能读懂的消息，
+错误的状态代号和一些可选的装载信息，提供更适合理解错误的语境。
 
-This is a simple example::
+如下是一个简单的示例::
 
     from flask import jsonify
 
@@ -36,16 +33,15 @@ This is a simple example::
             rv['message'] = self.message
             return rv
 
-A view can now raise that exception with an error message.  Additionally
-some extra payload can be provided as a dictionary through the `payload`
-parameter.
+一个视图现在可以抛出含有一个错误消息的例外。另外，一些额外
+装载信息可以通过 `payload` 参数提供成一个字典数据类型。
 
-Registering an Error Handler
+注册一个错误处理器
 ----------------------------
 
-At that point views can raise that error, but it would immediately result
-in an internal server error.  The reason for this is that there is no
-handler registered for this error class.  That however is easy to add::
+现在视图可以抛出错误，但会立即造成一个内部服务器错误。
+原因就是此时还没有为这个视图错误类注册处理器。
+不管如何做到的，增加处理器是容易的事情::
 
     @app.errorhandler(InvalidUsage)
     def handle_invalid_usage(error):
@@ -53,10 +49,10 @@ handler registered for this error class.  That however is easy to add::
         response.status_code = error.status_code
         return response
 
-Usage in Views
+视图用法
 --------------
 
-Here is how a view can use that functionality::
+下面就是如何使用一个视图错误类功能::
 
     @app.route('/foo')
     def get_foo():
