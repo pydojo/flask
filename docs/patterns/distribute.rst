@@ -1,55 +1,51 @@
 .. _distribute-deployment:
 
-Deploying with Setuptools
+部署安装工具
 =========================
 
-`Setuptools`_, is an extension library that is commonly used to
-distribute Python libraries and extensions. It extends distutils, a basic
-module installation system shipped with Python to also support various more
-complex constructs that make larger applications easier to distribute:
+`Setuptools`_, 是一个扩展库，共同用在分发 Python 库和扩展库。
+它扩展了 distutils 标准库，标准库是随 Python 安装的一个模块，
+也支持各种更多层化结构，这样让更大型的应用程序变得容易分发：
 
-- **support for dependencies**: a library or application can declare a
-  list of other libraries it depends on which will be installed
-  automatically for you.
-- **package registry**: setuptools registers your package with your
-  Python installation.  This makes it possible to query information
-  provided by one package from another package.  The best known feature of
-  this system is the entry point support which allows one package to
-  declare an "entry point" that another package can hook into to extend the
-  other package.
-- **installation manager**: :command:`pip` can install other libraries for you.
+- **支持众多依赖关系**: 一个库或一个应用程序可以声明一份依据
+  其它库的清单，这些其它库都会自动为你安装。
+- **包注册**: setuptools 把你的包注册成 Python 安装形式。
+  这就让从另一个包查询一个包提供的信息变成可能。这个系统最著名
+  的特性就是允许一个包作为一个入口点，一个包声明一个入口点后，
+  其它包可以用钩子进入该包扩展成其它的包。
+- **安装管理器**: :command:`pip` 命令可以为你安装其它的库。
 
-If you have Python 2 (>=2.7.9) or Python 3 (>=3.4) installed from python.org,
-you will already have pip and setuptools on your system.  Otherwise, you
-will need to install them yourself.
+如果你安装的 Python 官网版本 (>=2.7.9) 或 (>=3.4) 的话，
+在你的系统上已经有 pip 和 setuptools 了。否则你需要自己安装。
 
-Flask itself, and all the libraries you can find on PyPI are distributed with
-either setuptools or distutils.
+Flask 自身和所有你可以在 PyPI 上找到的库既可以用
+setuptools 分发，也可以用 distutils 分发。
 
-In this case we assume your application is called
-:file:`yourapplication.py` and you are not using a module, but a :ref:`package
-<larger-applications>`. If you have not yet converted your application into
-a package, head over to the :ref:`larger-applications` pattern to see
-how this can be done.
+在这里我们假设你的网络应用名叫 :file:`yourapplication.py` 
+并且你没有使用一个模块，而是要用 :ref:`package
+<larger-applications>` 包的形式。如果你还没有把网络应用
+转换成一个包的话，回顾 :ref:`larger-applications` 模式文档
+看看如何实现应用变成包的方法。
 
-A working deployment with setuptools is the first step into more complex
-and more automated deployment scenarios.  If you want to fully automate
-the process, also read the :ref:`fabric-deployment` chapter.
+使用 setuptools 的部署工作是进入更加多层化和更加自动化部署情景
+的第一步。如果你想要全部自动化过程，
+还要阅读 :ref:`fabric-deployment` 参考文档内容。
 
-Basic Setup Script
+基础配置脚本
 ------------------
 
-Because you have Flask installed, you have setuptools available on your system.
-Flask already depends upon setuptools.
+因为你已经安装 Flask 了，在你的系统上也有了可用的 setuptools 库。
+Flask 也是依据 setuptools 库来分发的。
 
-Standard disclaimer applies: :ref:`you better use a virtualenv
-<virtualenv>`.
+标准的免责声明应用在： :ref:`you better use a virtualenv
+<virtualenv>` 参考文档中。
 
-Your setup code always goes into a file named :file:`setup.py` next to your
-application.  The name of the file is only convention, but because
-everybody will look for a file with that name, you better not change it.
+你的配置代码总要放在名叫 :file:`setup.py` 的一个文件中，
+与你的网络应用在一个路径里。这个文件名是惯例，因为每个人都
+会查看是否有这个文件，你最好不要改动这个名字。
 
-A basic :file:`setup.py` file for a Flask application looks like this::
+对于一个 Flask 网络应用来说，
+一个基础 :file:`setup.py` 文件代码如下一样::
 
     from setuptools import setup
 
@@ -63,9 +59,8 @@ A basic :file:`setup.py` file for a Flask application looks like this::
         install_requires=['Flask']
     )
 
-Please keep in mind that you have to list subpackages explicitly.  If you
-want setuptools to lookup the packages for you automatically, you can use
-the ``find_packages`` function::
+请记住，你要明确地描述子包列表。如果你想要 setuptools 库
+自动查看这些包的话，你可以使用 ``find_packages`` 函数::
 
     from setuptools import setup, find_packages
 
@@ -74,22 +69,22 @@ the ``find_packages`` function::
         packages=find_packages()
     )
 
-Most parameters to the ``setup`` function should be self explanatory,
-``include_package_data`` and ``zip_safe`` might not be.
-``include_package_data`` tells setuptools to look for a :file:`MANIFEST.in` file
-and install all the entries that match as package data.  We will use this
-to distribute the static files and templates along with the Python module
-(see :ref:`distributing-resources`).  The ``zip_safe`` flag can be used to
-force or prevent zip Archive creation.  In general you probably don't want
-your packages to be installed as zip files because some tools do not
-support them and they make debugging a lot harder.
+该 ``setup`` 函数中的大部分参数都要自己来解释清楚，
+``include_package_data`` 和 ``zip_safe`` 两项可以不用。
+``include_package_data`` 参数告诉 setuptools 库要查找
+一个 :file:`MANIFEST.in` 文件，并且安装里面描述的所有条目，
+那些条目都匹配成包数据。我们会使用这个文件来分发静态文件和模版，
+随着 Python 模块一起分发(查看 :ref:`distributing-resources` 内容)。
+该 ``zip_safe`` 旗语参数可以用来开启建立或放置建立压缩档案。
+通用中你可能不想让你的那些包都安装成压缩文件，因为有些工具不支持
+压缩文档形式，并且给调试造成大量困难。
 
 
-Tagging Builds
+标签版本建立
 --------------
 
-It is useful to distinguish between release and development builds. Add a
-:file:`setup.cfg` file to configure these options. ::
+在发布和开发版本建立之间这是有用的。增加一个
+:file:`setup.cfg` 文件来配置这些选项内容。 ::
 
     [egg_info]
     tag_build = .dev
@@ -98,40 +93,40 @@ It is useful to distinguish between release and development builds. Add a
     [aliases]
     release = egg_info -Db ''
 
-Running ``python setup.py sdist`` will create a development package
-with ".dev" and the current date appended: ``flaskr-1.0.dev20160314.tar.gz``.
-Running ``python setup.py release sdist`` will create a release package
-with only the version: ``flaskr-1.0.tar.gz``.
+运行 ``python setup.py sdist`` 命令会建立一个开发包，其中含有
+".dev" 和当前日期内容增加到版本建立信息中：
+ ``flaskr-1.0.dev20160314.tar.gz`` 。
+运行 ``python setup.py release sdist`` 命令会建立一个发布包，
+只含有版本号信息： ``flaskr-1.0.tar.gz`` 。
 
 
 .. _distributing-resources:
 
-Distributing Resources
+分发资源
 ----------------------
 
-If you try to install the package you just created, you will notice that
-folders like :file:`static` or :file:`templates` are not installed for you.  The
-reason for this is that setuptools does not know which files to add for
-you.  What you should do, is to create a :file:`MANIFEST.in` file next to your
-:file:`setup.py` file.  This file lists all the files that should be added to
-your tarball::
+如果你尝试安装你刚建立的包的话，你会注意到像
+ :file:`static` 或 :file:`templates` 文件夹都没有安装。
+原因就是 setuptools 还不知道哪些文件要为你增加到分发中。
+那么你应该做什么呢？那就是建立一个 :file:`MANIFEST.in` 文件，
+与你的 :file:`setup.py` 文件在一个路径下。把应该增加的资源文件
+都列在这个分发资源文件里::
 
     recursive-include yourapplication/templates *
     recursive-include yourapplication/static *
 
-Don't forget that even if you enlist them in your :file:`MANIFEST.in` file, they
-won't be installed for you unless you set the `include_package_data`
-parameter of the ``setup`` function to ``True``!
+别忘了，即使罗列在你的 :file:`MANIFEST.in` 文件中的资源，
+它们也不会安装上，除非你在 ``setup`` 函数中把参数
+`include_package_data` 设置成 ``True`` 才会真正的安装资源！
 
 
-Declaring Dependencies
+声明依赖关系
 ----------------------
 
-Dependencies are declared in the ``install_requires`` parameter as a list.
-Each item in that list is the name of a package that should be pulled from
-PyPI on installation.  By default it will always use the most recent
-version, but you can also provide minimum and maximum version
-requirements.  Here some examples::
+依赖关系都要声明在 ``install_requires`` 参数中，以列表形式描述。
+列表中的每一项都是一个应该从 PyPI 上安装的包名。
+默认会一直安装最新的版本，但你也可以提供版本号的上下限。
+如下就是一个示例::
 
     install_requires=[
         'Flask>=0.2',
@@ -139,38 +134,36 @@ requirements.  Here some examples::
         'BrokenPackage>=0.7,<=1.0'
     ]
 
-As mentioned earlier, dependencies are pulled from PyPI.  What if you
-want to depend on a package that cannot be found on PyPI and won't be
-because it is an internal package you don't want to share with anyone?
-Just do it as if there was a PyPI entry and provide a list of
-alternative locations where setuptools should look for tarballs::
+前面已经提醒过了，众多依赖包都要从 PyPI 来安装。如果你想要的一个
+依赖包在 PyPI 上找不到，而且不属于一个不想分享的内部包情况的话，
+你该怎么办呢？只需要提供一个类似 PyPI 的入口点并且提供另一个位置
+链接让 setuptools 应该查询得到::
 
     dependency_links=['http://example.com/yourfiles']
 
-Make sure that page has a directory listing and the links on the page are
-pointing to the actual tarballs with their correct filenames as this is
-how setuptools will find the files.  If you have an internal company
-server that contains the packages, provide the URL to that server.
+确保包所在的页面有一个目录清单，并且页面上的链接都指向实际文件，
+文件名都要正确，这就是与 setuptools 库如何发现所需文件一样。
+如果你有一个内部公司服务器的话，提供含有这些依赖包的 URL 地址即可。
 
 
-Installing / Developing
+安装 / 开发
 -----------------------
 
-To install your application (ideally into a virtualenv) just run the
-:file:`setup.py` script with the ``install`` parameter.  It will install your
-application into the virtualenv's site-packages folder and also download
-and install all dependencies::
+要安装你的网络应用（理想的环境就是在虚拟环境中）只要运行
+:file:`setup.py` 脚本时使用 ``install`` 参数即可。
+它就会把你的网络应用安装到虚拟环境的 site-packages 文件夹里，
+并且也会下载并安装所有依赖包::
 
     $ python setup.py install
 
-If you are developing on the package and also want the requirements to be
-installed, you can use the ``develop`` command instead::
+如果你们正在开发这个包的话，并且也想需要安装成开发版，
+你可以使用 ``develop`` 参数来安装::
 
     $ python setup.py develop
 
-This has the advantage of just installing a link to the site-packages
-folder instead of copying the data over.  You can then continue to work on
-the code without having to run ``install`` again after each change.
+开发版的安装优势是，安装一个连接到 site-packages 目录，
+而不是把数据复制到这个目录中。你可以稍后继续工作在开发代码上，
+而且每次代码变更后都不用再次使用 ``install`` 来安装了。
 
 
 .. _pip: https://pypi.org/project/pip/
