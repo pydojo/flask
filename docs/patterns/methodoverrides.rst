@@ -1,15 +1,15 @@
-Adding HTTP Method Overrides
+增加 HTTP 方法覆写
 ============================
 
-Some HTTP proxies do not support arbitrary HTTP methods or newer HTTP
-methods (such as PATCH).  In that case it's possible to “proxy” HTTP
-methods through another HTTP method in total violation of the protocol.
+有的 HTTP 代理不支持任意 HTTP 方法，或者不支持更新的 HTTP 方法
+ (例如， PATCH 这个 HTTP 方法)。在这种情况下，要代理 HTTP 方法，
+可能要通过另一种完全违背协议的 HTTP 方法来实现了。
 
-The way this works is by letting the client do an HTTP POST request and
-set the ``X-HTTP-Method-Override`` header and set the value to the
-intended HTTP method (such as ``PATCH``).
+这种方法是通过让客户端来实现一个 HTTP POST 请求方法，并且设置
+ ``X-HTTP-Method-Override`` 头部信息以及设置值给要使用的
+ HTTP 方法 (例如， ``PATCH``)。
 
-This can easily be accomplished with an HTTP middleware::
+用一个 HTTP 中间件就容易实现::
 
     class HTTPMethodOverrideMiddleware(object):
         allowed_methods = frozenset([
@@ -35,7 +35,7 @@ This can easily be accomplished with an HTTP middleware::
                 environ['CONTENT_LENGTH'] = '0'
             return self.app(environ, start_response)
 
-To use this with Flask this is all that is necessary::
+要用 Flask 来做这件事，所需要的全部代码就是如下几行::
 
     from flask import Flask
 
