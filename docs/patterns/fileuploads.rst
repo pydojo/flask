@@ -1,24 +1,24 @@
 .. _uploading-files:
 
-Uploading Files
+上传文件
 ===============
 
-Ah yes, the good old problem of file uploads.  The basic idea of file
-uploads is actually quite simple.  It basically works like this:
+是的，文件上传一直是一个好的旧问题。文件上传的基本思路实际上
+是非常简单的。它基础工作就像下面所述：
 
-1. A ``<form>`` tag is marked with ``enctype=multipart/form-data``
-   and an ``<input type=file>`` is placed in that form.
-2. The application accesses the file from the :attr:`~flask.request.files`
-   dictionary on the request object.
-3. use the :meth:`~werkzeug.datastructures.FileStorage.save` method of the file to save
-   the file permanently somewhere on the filesystem.
+1. 一个 HTML ``<form>`` 标签使用 ``enctype=multipart/form-data``
+   标记后把 ``<input type=file>`` 标签放在表单标签里。
+2. 网络应用访问文件是从请求对象上的 :attr:`~flask.request.files` 
+   属性字典中获得上传的文件。
+3. 使用文件的 :meth:`~werkzeug.datastructures.FileStorage.save` 方法
+   来把上传的文件保存在文件系统上。
 
-A Gentle Introduction
+一种绅士般的介绍
 ---------------------
 
-Let's start with a very basic application that uploads a file to a
-specific upload folder and displays a file to the user.  Let's look at the
-bootstrapping code for our application::
+让我们用一个非常基础的网络应用作为开始，该网络应用上传一个文件到
+一个具体的上传文件夹中，然后把这个文件显示给用户。
+让我们来看看我们这个网络应用的集成后的代码::
 
     import os
     from flask import Flask, flash, request, redirect, url_for
@@ -30,20 +30,20 @@ bootstrapping code for our application::
     app = Flask(__name__)
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-So first we need a couple of imports.  Most should be straightforward, the
-:func:`werkzeug.secure_filename` is explained a little bit later.  The
-``UPLOAD_FOLDER`` is where we will store the uploaded files and the
-``ALLOWED_EXTENSIONS`` is the set of allowed file extensions.
+第一步我们需要一些导入语句。大部分都是直接就明白的，
+:func:`werkzeug.secure_filename` 函数稍后解释。
+``UPLOAD_FOLDER`` 变量名指向了我们要存储上传文件到地方，
+``ALLOWED_EXTENSIONS`` 变量名指向了许可的文件扩展名集合。
 
-Why do we limit the extensions that are allowed?  You probably don't want
-your users to be able to upload everything there if the server is directly
-sending out the data to the client.  That way you can make sure that users
-are not able to upload HTML files that would cause XSS problems (see
-:ref:`xss`).  Also make sure to disallow ``.php`` files if the server
-executes them, but who has PHP installed on their server, right?  :)
+为什么我们要限制文件的扩展名呢？
+你可能不想让你的用户上传任何东西，如果服务器是直接把数据发送给客户端的话，
+确实应该限制一下。那样你可以确保用户都不能上传 HTML 文件，因为 HTML 文件
+会导致 XSS 的许多问题（查看 :ref:`xss` 文档内容)。
+同样确保不许可上传 ``.php`` 文件，如果服务器执行 php 文件的话，那么是谁
+把 PHP 文件安装到服务器上的呢？是吧 :)
 
-Next the functions that check if an extension is valid and that uploads
-the file and redirects the user to the URL for the uploaded file::
+第二步，写一些函数来检查扩展名是否是合法的，然后上传文件，接着把用户重定向
+到上传文件的 URL 地址上::
 
     def allowed_file(filename):
         return '.' in filename and \
@@ -77,38 +77,37 @@ the file and redirects the user to the URL for the uploaded file::
         </form>
         '''
 
-So what does that :func:`~werkzeug.utils.secure_filename` function actually do?
-Now the problem is that there is that principle called "never trust user
-input".  This is also true for the filename of an uploaded file.  All
-submitted form data can be forged, and filenames can be dangerous.  For
-the moment just remember: always use that function to secure a filename
-before storing it directly on the filesystem.
+那么此时 :func:`~werkzeug.utils.secure_filename` 函数真正是做什么的呢？
+现在的问题是有一个原则叫作 **永远不要相信人的输入** 。
+对于一个上传文件的文件名来说也是成立的。所有提交的表单数据都可以被篡改，
+并且文件名都是危险的内容。如果你了解文件的实质，就会认识到这一点。
+在这里只需要记住：
+在直接存储到文件系统上之前，总要使用函数来对一个文件名进行安全处理。
 
-.. admonition:: Information for the Pros
+.. admonition:: 给专家提点建议
 
-   So you're interested in what that :func:`~werkzeug.utils.secure_filename`
-   function does and what the problem is if you're not using it?  So just
-   imagine someone would send the following information as `filename` to
-   your application::
+   那么你对 :func:`~werkzeug.utils.secure_filename` 函数所做的感兴趣吗？
+   如果你不使用这个函数会导致什么问题呢？那么想象一下，某个人发送了如下
+    `filename` 信息到你的网络应用::
 
       filename = "../../../../home/username/.bashrc"
 
-   Assuming the number of ``../`` is correct and you would join this with
-   the ``UPLOAD_FOLDER`` the user might have the ability to modify a file on
-   the server's filesystem he or she should not modify.  This does require some
-   knowledge about how the application looks like, but trust me, hackers
-   are patient :)
+   假设 ``../`` 的使用数量正好，你就会把这个文件加入到 ``UPLOAD_FOLDER`` 
+   所指的目录中，这样用户就可能具备了修改不该修改的服务器文件系统上的文件。
+   实现这个确实需要一些网络应用长什么样子的知识，但信任我，黑客们都是不急不躁的
+   一群家伙 :)
 
-   Now let's look how that function works:
+   现在我们来看看这个安全化文件名函数是如何工作的：
 
    >>> secure_filename('../../../../home/username/.bashrc')
    'home_username_.bashrc'
 
-Now one last thing is missing: the serving of the uploaded files. In the
-:func:`upload_file()` we redirect the user to
-``url_for('uploaded_file', filename=filename)``, that is, ``/uploads/filename``.
-So we write the :func:`uploaded_file` function to return the file of that name. As
-of Flask 0.5 we can use a function that does that for us::
+现在最后一件没说的事情就是：上传文件的服务过程。
+在 :func:`upload_file()` 函数中我们把用户
+重定向到 ``url_for('uploaded_file', filename=filename)`` 地址上，
+那就是 ``/uploads/filename`` 位置上。
+那么我们所写的 :func:`uploaded_file` 函数要返回那个名字的文件。
+作为 Flask 0.5 版本中，我们可以使用一个函数来为我们实现那个目标::
 
     from flask import send_from_directory
 
@@ -117,9 +116,9 @@ of Flask 0.5 we can use a function that does that for us::
         return send_from_directory(app.config['UPLOAD_FOLDER'],
                                    filename)
 
-Alternatively you can register `uploaded_file` as `build_only` rule and
-use the :class:`~werkzeug.wsgi.SharedDataMiddleware`.  This also works with
-older versions of Flask::
+另一个，我们可以把 `uploaded_file` 注册成 `build_only` 规则，然后使用
+ :class:`~werkzeug.wsgi.SharedDataMiddleware` 类。这种方法用较旧的
+ Flask 版本也有效::
 
     from werkzeug import SharedDataMiddleware
     app.add_url_rule('/uploads/<filename>', 'uploaded_file',
@@ -128,63 +127,61 @@ older versions of Flask::
         '/uploads':  app.config['UPLOAD_FOLDER']
     })
 
-If you now run the application everything should work as expected.
+如果你现在运行网络应用，每件事应该如期而至。
 
 
-Improving Uploads
+改善上传
 -----------------
 
 .. versionadded:: 0.6
 
-So how exactly does Flask handle uploads?  Well it will store them in the
-webserver's memory if the files are reasonable small otherwise in a
-temporary location (as returned by :func:`tempfile.gettempdir`).  But how
-do you specify the maximum file size after which an upload is aborted?  By
-default Flask will happily accept file uploads to an unlimited amount of
-memory, but you can limit that by setting the ``MAX_CONTENT_LENGTH``
-config key::
+那么 Flask 是如何处理上传的呢？
+如果上传文件都是小型文件的话，会存储在网络服务器的内存中，
+否则存储在临时位置上 (与 :func:`tempfile.gettempdir` 返回结果一样)。
+但你如何在一个上传终止后描述文件的最大规模呢？
+默认情况下，Flask 会高兴地接受一个文件上传到没有内存限制的地方，
+但你可以通过设置 ``MAX_CONTENT_LENGTH`` 配置键值来限制::
 
     from flask import Flask, Request
 
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-The code above will limit the maximum allowed payload to 16 megabytes.
-If a larger file is transmitted, Flask will raise a
-:exc:`~werkzeug.exceptions.RequestEntityTooLarge` exception.
+上面这段代码会限制允许的最大装载量到 16 兆字节。
+如果传输一个大于 16 MB 的文件，Flask 会抛出一个
+:exc:`~werkzeug.exceptions.RequestEntityTooLarge` 例外。
 
-.. admonition:: Connection Reset Issue
+.. admonition:: 连接重置问题
 
-    When using the local development server, you may get a connection
-    reset error instead of a 413 response. You will get the correct
-    status response when running the app with a production WSGI server.
+    当使用本地开发服务器时，你也许得到一个连接重置错误，
+    而不是一个 413 响应代号。
+    当用一个生产 WSGI 服务器运行网络应用时，你会得到
+    正确的状态响应代号。
 
-This feature was added in Flask 0.6 but can be achieved in older versions
-as well by subclassing the request object.  For more information on that
-consult the Werkzeug documentation on file handling.
+这个特性已经加入到 Flask 0.6 版本中，但在较旧的版本里也可以实现，
+通过请求对象子类化。对于更多的信息咨询 Werkzeug 文件处理文档内容。
 
 
-Upload Progress Bars
+上传进度条
 --------------------
 
-A while ago many developers had the idea to read the incoming file in
-small chunks and store the upload progress in the database to be able to
-poll the progress with JavaScript from the client.  Long story short: the
-client asks the server every 5 seconds how much it has transmitted
-already.  Do you realize the irony?  The client is asking for something it
-should already know.
+许久以前许多开发者们都曾经有以许多小车皮形式读取进入的文件思路，
+并且把上传进度存储在数据库中，这样能够在客户端上使用
+JavaScript 来记录上传进度。长话短说：
+客户端每隔5秒向服务器询问已经传输了多少数据。
+你认识到这个讽刺了吗？客户端正在问它本来应该知道的事情，
+为何多此一举呢！
 
-An Easier Solution
-------------------
+一个更容易的解决方案
+-----------------------
 
-Now there are better solutions that work faster and are more reliable. There
-are JavaScript libraries like jQuery_ that have form plugins to ease the
-construction of progress bar.
+现在有许多更好的解决方案，而且工作起来更快更可信赖。
+有许多 JavaScript 库，像 jQuery_ 就有表单插件容易
+建立进度条功能。
 
-Because the common pattern for file uploads exists almost unchanged in all
-applications dealing with uploads, there is also a Flask extension called
-`Flask-Uploads`_ that implements a full fledged upload mechanism with white and
-blacklisting of extensions and more.
+对于现有的文件上传几乎在所有网络应用中都是使用共性的模式来处理上传任务，
+我们也有一个 Flask 扩展件名叫 `Flask-Uploads`_ 部署了一种完全成熟的
+上传机制，在扩展名中建立白名单和黑名单，以及更多功能。
 
 .. _jQuery: https://jquery.com/
 .. _Flask-Uploads: https://pythonhosted.org/Flask-Uploads/
