@@ -1,7 +1,6 @@
 :orphan:
 
-MongoDB with MongoKit
-=====================
+用MongoKit 做 MongoDB 数据库
+===================================
 
-MongoKit is no longer maintained. See :doc:`/patterns/mongoengine`
-instead.
+MongoKit 不再维护了。相反要查看 :doc:`/patterns/mongoengine` 文档内容。
