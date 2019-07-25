@@ -1,11 +1,13 @@
-MongoDB with MongoEngine
-========================
+用 MongoEngine 做 MongoDB 数据库
+========================================
 
-Using a document database like MongoDB is a common alternative to
-relational SQL databases. This pattern shows how to use
-`MongoEngine`_, a document mapper library, to integrate with MongoDB.
+使用一种文档数据库，就像 MongoDB 一样是共同使用的数据库，
+代替关系型数据库的一种新型数据库。
+本模式介绍如何使用 `MongoEngine`_ 工具，
+它是一个文档数据库映射器库，集成了 MongoDB 数据库。
 
-A running MongoDB server and `Flask-MongoEngine`_ are required. ::
+一台运行 MongoDB 数据库的服务器和
+ `Flask-MongoEngine`_ 扩展件都是所需要的前提条件。 ::
 
     pip install flask-mongoengine
 
@@ -13,11 +15,12 @@ A running MongoDB server and `Flask-MongoEngine`_ are required. ::
 .. _Flask-MongoEngine: https://flask-mongoengine.readthedocs.io
 
 
-Configuration
+配置
 -------------
 
-Basic setup can be done by defining ``MONGODB_SETTINGS`` on
-``app.config`` and creating a ``MongoEngine`` instance. ::
+基础配置可以通过在 ``app.config`` 上
+定义 ``MONGODB_SETTINGS`` 属性来实现，
+然后建立一个 ``MongoEngine`` 实例即可。 ::
 
     from flask import Flask
     from flask_mongoengine import MongoEngine
@@ -29,11 +32,11 @@ Basic setup can be done by defining ``MONGODB_SETTINGS`` on
     db = MongoEngine(app)
 
 
-Mapping Documents
+映射文档数据库
 -----------------
 
-To declare a model that represents a Mongo document, create a class that
-inherits from ``Document`` and declare each of the fields. ::
+要声明一个模块来代表一个 Mongo 文档数据库，建立一个
+继承自 ``Document`` 类的子类后声明每个区域即可。 ::
 
     import mongoengine as me
 
@@ -44,9 +47,9 @@ inherits from ``Document`` and declare each of the fields. ::
         director = me.StringField()
         actors = me.ListField()
 
-If the document has nested fields, use ``EmbeddedDocument`` to
-defined the fields of the embedded document and
-``EmbeddedDocumentField`` to declare it on the parent document. ::
+如果文档含有嵌入式区域的话，使用 ``EmbeddedDocument`` 类
+来定义嵌入式文档区域，并且使用 ``EmbeddedDocumentField`` 类
+在父文档上来声明嵌入区域。 ::
 
     class Imdb(me.EmbeddedDocument):
         imdb_id = me.StringField()
@@ -58,12 +61,12 @@ defined the fields of the embedded document and
         imdb = me.EmbeddedDocumentField(Imdb)
 
 
-Creating Data
+建立数据
 -------------
 
-Instantiate your document class with keyword arguments for the fields.
-You can also assign values to the field attributes after instantiation.
-Then call ``doc.save()``. ::
+针对区域来实例化你的文档类要使用关键字参数。
+你也可以在实例化之后把值分配给区域属性。
+然后调用 ``doc.save()`` 就可以保存到数据库中了。 ::
 
     bttf = Movie(title="Back To The Future", year=1985)
     bttf.actors = [
@@ -74,17 +77,16 @@ Then call ``doc.save()``. ::
     bttf.save()
 
 
-Queries
--------
+查询数据
+------------
 
-Use the class ``objects`` attribute to make queries. A keyword argument
-looks for an equal value on the field. ::
+使用类的 ``objects`` 属性来建立查询。
+一个关键字参数查询区域上的等价数据。 ::
 
     bttf = Movies.objects(title="Back To The Future").get_or_404()
 
-Query operators may be used by concatenating them with the field name
-using a double-underscore. ``objects``, and queries returned by
-calling it, are iterable. ::
+查询操作可以通过使用一个双下划线把区域名串联起来。
+ ``objects`` 和通过调用所返回的查询结果都是可迭代对象。 ::
 
     some_theron_movie = Movie.objects(actors__in=["Charlize Theron"]).first()
 
@@ -92,12 +94,11 @@ calling it, are iterable. ::
         print(recents.title)
 
 
-Documentation
+文档
 -------------
 
-There are many more ways to define and query documents with MongoEngine.
-For more information, check out the `official documentation
-<MongoEngine_>`_.
+使用 MongoEngine 有许多方法来定义和查询文档数据库。
+更多信息查看官方文档 <MongoEngine_>`_ 。
 
-Flask-MongoEngine adds helpful utilities on top of MongoEngine. Check
-out their `documentation <Flask-MongoEngine_>`_ as well.
+Flask-MongoEngine 扩展件在 MongoEngine 顶层增加了许多帮助工具。
+也要查看 `documentation <Flask-MongoEngine_>`_ 扩展件文档。
