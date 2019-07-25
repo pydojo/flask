@@ -1,28 +1,28 @@
-View Decorators
+视图装饰器
 ===============
 
-Python has a really interesting feature called function decorators.  This
-allows some really neat things for web applications.  Because each view in
-Flask is a function, decorators can be used to inject additional
-functionality to one or more functions.  The :meth:`~flask.Flask.route`
-decorator is the one you probably used already.  But there are use cases
-for implementing your own decorator.  For instance, imagine you have a
-view that should only be used by people that are logged in.  If a user
-goes to the site and is not logged in, they should be redirected to the
-login page.  This is a good example of a use case where a decorator is an
-excellent solution.
+Python 有一个真正有趣的特性，名叫函数装饰器。
+对于网络应用来说这就允许实现一些真正的整洁编码。
+因为在 Flask 中每个视图都是一个函数，而装饰器
+可以用来把额外的功能注射到一个或多个函数中。
+其中 :meth:`~flask.Flask.route` 方法装饰器
+就是你可能用过的一个。对于部署你自己的装饰器来说，
+有许多用例，例如，想象一下你有一个视图函数，它
+应该只被人们用来登录用。如果一名用户访问了站点后，
+却没有登录，那么就应该重定向到登录页面上。这是一个
+良好的用例情况，那么用一个装饰器就是一个优秀的解决方案。
 
-Login Required Decorator
+登录所需的装饰器
 ------------------------
 
-So let's implement such a decorator.  A decorator is a function that
-wraps and replaces another function.  Since the original function is
-replaced, you need to remember to copy the original function's information
-to the new function.  Use :func:`functools.wraps` to handle this for you.
+那么我们来部署一个这样的装饰器吧。
+一个装饰器就是一个函数，不过这个函数打包并替换另一个函数。
+由于原始函数被替换了，你需要记住把原始函数的信息复制给新函数。
+使用 :func:`functools.wraps` 函数来为你处理这种需求。
 
-This example assumes that the login page is called ``'login'`` and that
-the current user is stored in ``g.user`` and is ``None`` if there is no-one
-logged in. ::
+下面的例子假设登录页面叫作 ``'login'`` 并且当前用户已经
+存储在 ``g.user`` 并且如果没有一个人登录的话就是 ``None`` 值。
+定义一个装饰器的代码如下 ::
 
     from functools import wraps
     from flask import g, request, redirect, url_for
@@ -35,49 +35,46 @@ logged in. ::
             return f(*args, **kwargs)
         return decorated_function
 
-To use the decorator, apply it as innermost decorator to a view function.
-When applying further decorators, always remember
-that the :meth:`~flask.Flask.route` decorator is the outermost. ::
+要使用装饰器，把它装饰给一个视图函数，放在最里面的位置上。
+当应用下一个装饰器时，总要记住 :meth:`~flask.Flask.route` 方法
+要作为最外面的装饰来使用。 ::
 
     @app.route('/secret_page')
     @login_required
     def secret_page():
         pass
 
-.. note::
-    The ``next`` value will exist in ``request.args`` after a ``GET`` request for
-    the login page.  You'll have to pass it along when sending the ``POST`` request
-    from the login form.  You can do this with a hidden input tag, then retrieve it
-    from ``request.form`` when logging the user in. ::
+.. 注意::
+    对于登录页面来说，在一个 ``GET`` 请求之后，
+    ``next`` 值会出现在 ``request.args`` 中。
+    在登录表单发送 ``POST`` 请求时，你还要把它代入。
+    你可以在 `input` 标签中用一个隐藏类型来实现，
+    当用户登录时，然后从 ``request.form`` 取回它。 ::
 
         <input type="hidden" value="{{ request.args.get('next', '') }}"/>
 
 
-Caching Decorator
+缓存装饰器
 -----------------
 
-Imagine you have a view function that does an expensive calculation and
-because of that you would like to cache the generated results for a
-certain amount of time.  A decorator would be nice for that.  We're
-assuming you have set up a cache like mentioned in :ref:`caching-pattern`.
+想象一下你有一个视图函数，要实现一种昂贵的计算任务，
+并且你可能要缓存生成的结果一段时间。一个装饰器会是
+这种情形的不错解决方案。我们正在假设你已经配置了一个
+缓存，就像在 :ref:`caching-pattern` 文档中所说的一样。
 
-Here is an example cache function.  It generates the cache key from a
-specific prefix (actually a format string) and the current path of the
-request.  Notice that we are using a function that first creates the
-decorator that then decorates the function.  Sounds awful? Unfortunately
-it is a little bit more complex, but the code should still be
-straightforward to read.
+下面是这个例子的缓存函数。它从一种具体的前缀（实际是一种格式化字符串）
+和当前请求路径生成一个缓存钥匙。注意，我们正在使用一个函数先建立装饰器，
+然后用来装饰视图函数。听起来有点坏坏的？不幸的是，这个函数有一点儿多层化，
+但代码依然能够直接读懂。
 
-The decorated function will then work as follows
+装饰过的视图函数会像下面一样来工作：
 
-1. get the unique cache key for the current request base on the current
-   path.
-2. get the value for that key from the cache. If the cache returned
-   something we will return that value.
-3. otherwise the original function is called and the return value is
-   stored in the cache for the timeout provided (by default 5 minutes).
+1. 对于当前请求来说，根据当前路径来得到一个唯一的缓存钥匙。
+2. 对于缓存钥匙来说会得到一个值。如果缓存返回某个内容，我们就会返回那个值。
+3. 否则被调用的原始函数和返回值就存储在缓存中，根据提供的时限
+   (默认是 5 分钟)。
 
-Here the code::
+代码如下::
 
     from functools import wraps
     from flask import request
@@ -96,18 +93,16 @@ Here the code::
             return decorated_function
         return decorator
 
-Notice that this assumes an instantiated `cache` object is available, see
-:ref:`caching-pattern` for more information.
+注意，这里假设了一个可用的实例化 `cache` 对象，查看
+:ref:`caching-pattern` 缓存模式文档内容了解更多信息。
 
 
-Templating Decorator
+模版化装饰器
 --------------------
 
-A common pattern invented by the TurboGears guys a while back is a
-templating decorator.  The idea of that decorator is that you return a
-dictionary with the values passed to the template from the view function
-and the template is automatically rendered.  With that, the following
-three examples do exactly the same::
+一种共同的模式被 TurboGears 这些家伙发明出来，那就是一种模版化装饰器。
+这种装饰器的思路是你返回一个字典，字典值从视图函数代入到模版中，
+然后模版被自动化翻译。使用这种方法，下面的3个例子所做的都是一件事::
 
     @app.route('/')
     def index():
@@ -123,15 +118,14 @@ three examples do exactly the same::
     def index():
         return dict(value=42)
 
-As you can see, if no template name is provided it will use the endpoint
-of the URL map with dots converted to slashes + ``'.html'``.  Otherwise
-the provided template name is used.  When the decorated function returns,
-the dictionary returned is passed to the template rendering function.  If
-``None`` is returned, an empty dictionary is assumed, if something else than
-a dictionary is returned we return it from the function unchanged.  That
-way you can still use the redirect function or return simple strings.
+如你所见，如果没有提供模版名的话，它会使用带着句号的 URL 映射中的端点
+转换成斜杠加上 ``'.html'`` 形式。否则就使用提供的模版名。
+当装饰的函数返回时，返回的字典代入到翻译模版函数中。如果返回的是
+``None`` 值的话，就假设成一个空字典；如果返回的不是字典的话，
+我们就从无变化的函数来返回非字典值。这种方式你可以依然使用重定向函数，
+或直接返回字符串。
 
-Here is the code for that decorator::
+如下就是模版装饰的代码::
 
     from functools import wraps
     from flask import request, render_template
@@ -154,12 +148,12 @@ Here is the code for that decorator::
         return decorator
 
 
-Endpoint Decorator
+端点装饰器
 ------------------
 
-When you want to use the werkzeug routing system for more flexibility you
-need to map the endpoint as defined in the :class:`~werkzeug.routing.Rule`
-to a view function. This is possible with this decorator. For example::
+当你想要使用 werkzeug 路由系统来提供更灵活的性能时，
+你需要把端点映射成定义在 :class:`~werkzeug.routing.Rule` 类中
+提供给一个视图函数。这样才可能使用端点装饰器。例如::
 
     from flask import Flask
     from werkzeug.routing import Rule
