@@ -1,22 +1,19 @@
 .. _template-inheritance:
 
-Template Inheritance
+模版继承
 ====================
 
-The most powerful part of Jinja is template inheritance. Template inheritance
-allows you to build a base "skeleton" template that contains all the common
-elements of your site and defines **blocks** that child templates can override.
+Jinja 最有威力的部分就是模版继承系统。模版继承可以让你建立一个基础骨架模版，
+骨架模版含有你的站点所有共同使用的元素，并且定义的 **块** 语句在子模版中可以覆写。
 
-Sounds complicated but is very basic. It's easiest to understand it by starting
-with an example.
+听起来复杂，但这是非常基础的功能。最容易理解的方法就是通过一个例子作为开始。
 
 
-Base Template
+基础模版
 -------------
 
-This template, which we'll call :file:`layout.html`, defines a simple HTML skeleton
-document that you might use for a simple two-column page. It's the job of
-"child" templates to fill the empty blocks with content:
+这种模版我们会命名为 :file:`layout.html` 文件名，定义一个简单的 HTML 骨架文档，
+你可以使用一个简单的双列排版页面。它的子模版负责填充内容块语句：
 
 .. sourcecode:: html+jinja
 
@@ -38,14 +35,13 @@ document that you might use for a simple two-column page. It's the job of
       </body>
     </html>
 
-In this example, the ``{% block %}`` tags define four blocks that child templates
-can fill in. All the `block` tag does is tell the template engine that a
-child template may override those portions of the template.
+在这个模版里， ``{% block %}`` 定义的4歌块语句都是子模版可以填充的元素。
+所有 `block` 语句就是告诉模版引擎一个子模版可以覆写的区域。
 
-Child Template
+子模版
 --------------
 
-A child template might look like this:
+一个子模版也许看起来如下一样：
 
 .. sourcecode:: html+jinja
 
@@ -63,8 +59,9 @@ A child template might look like this:
         Welcome on my awesome homepage.
     {% endblock %}
 
-The ``{% extends %}`` tag is the key here. It tells the template engine that
-this template "extends" another template.  When the template system evaluates
-this template, first it locates the parent.  The extends tag must be the
-first tag in the template.  To render the contents of a block defined in
-the parent template, use ``{{ super() }}``.
+这里的 ``{% extends %}`` 语句是关键。
+它告诉模版引擎本模版扩展自另一个模版。
+当模版系统评估本模版时，首先做的就是分配父模版内容。
+`extends` 语句必须放在本模版的第一行上。
+要翻译定义在父模版中的块语句内容，
+就是用 ``{{ super() }}`` 语句。
