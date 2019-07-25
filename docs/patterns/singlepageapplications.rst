@@ -1,12 +1,12 @@
-Single-Page Applications
+单页网络应用
 ========================
 
-Flask can be used to serve Single-Page Applications (SPA) by placing static
-files produced by your frontend framework in a subfolder inside of your
-project. You will also need to create a catch-all endpoint that routes all
-requests to your SPA.
+Flask 可以用来服务单页网络应用 (SPA) ，
+通过把你前端框架生成的静态文件放在你项目中的一个子文件夹里。
+你也需要建立一个一下获得所有内容的端点，
+该端点把所有请求都指向你的 SPA 路径。
 
-The following example demonstrates how to serve an SPA along with an API::
+下面的例子示范了如何用一个 API 服务一项 SPA 的代码::
 
     from flask import Flask, jsonify
 
