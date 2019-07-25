@@ -1,18 +1,16 @@
-Request Content Checksums
+请求内容校验和
 =========================
 
-Various pieces of code can consume the request data and preprocess it.
-For instance JSON data ends up on the request object already read and
-processed, form data ends up there as well but goes through a different
-code path.  This seems inconvenient when you want to calculate the
-checksum of the incoming request data.  This is necessary sometimes for
-some APIs.
+各种代码片段可以耗尽请求数据后进行预处理。
+例如在已读取和处理完的请求对象上以 JSON 数据作为结束，
+表单数据也会终止于此，但通过的代码路径是不同的。
+当你想要对进入的请求数据计算校验和时，这看起来就不方便了。
+对于一些 APIs 来说有时计算校验和是需要的。
 
-Fortunately this is however very simple to change by wrapping the input
-stream.
+不管如何做到的，幸运的是通过打包成输入流就非常容易去改变。
 
-The following example calculates the SHA1 checksum of the incoming data as
-it gets read and stores it in the WSGI environment::
+下面的例子计算了进入数据的 SHA1 校验和，
+在 WSGI 环境中获得读取数据后再存储数据::
 
     import hashlib
 
@@ -38,12 +36,12 @@ it gets read and stores it in the WSGI environment::
         env['wsgi.input'] = stream
         return stream._hash
 
-To use this, all you need to do is to hook the calculating stream in
-before the request starts consuming data.  (Eg: be careful accessing
-``request.form`` or anything of that nature.  ``before_request_handlers``
-for instance should be careful not to access it).
+要使用这种方法，所有你需要做的就是在请求开始消耗数据之前，
+把计算数据流用钩进来。 (例如，要小心访问 ``request.form``
+或任何该性质的对象。 ``before_request_handlers``
+对于此种情景应该小心地别访问它)。
 
-Example usage::
+示例用法::
 
     @app.route('/special-api', methods=['POST'])
     def special_api():
