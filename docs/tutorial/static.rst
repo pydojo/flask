@@ -1,26 +1,25 @@
-Static Files
+静态文件
 ============
 
-The authentication views and templates work, but they look very plain
-right now. Some `CSS`_ can be added to add style to the HTML layout you
-constructed. The style won't change, so it's a *static* file rather than
-a template.
+授权蓝图中的视图函数和模版都工作起来了，
+但此时它们看起来还很是纯文本样式。
+一些 `CSS`_ 语言可以增加样式给 HTML 中已建立的图层。
+样式文件依然是一种 *静态* 文件，根一个模版一样。
 
-Flask automatically adds a ``static`` view that takes a path relative
-to the ``flaskr/static`` directory and serves it. The ``base.html``
-template already has a link to the ``style.css`` file:
+Flask 自动增加一个 ``static`` 视图函数，该函数会得到
+相关于 ``flaskr/static`` 子目录的路径并服务这个文件夹。
+其中 ``base.html`` 模版里已经有了一个到 ``style.css`` 文件的链接：
 
 .. code-block:: html+jinja
 
     {{ url_for('static', filename='style.css') }}
 
-Besides CSS, other types of static files might be files with JavaScript
-functions, or a logo image. They are all placed under the
-``flaskr/static`` directory and referenced with
-``url_for('static', filename='...')``.
+除了 CSS 外，其它类型的静态文件可以含有 JavaScript 函数，
+或者一个图标图片。这些都要放在 ``flaskr/static`` 目录下，
+然后用 ``url_for('static', filename='...')`` 来指向。
 
-This tutorial isn't focused on how to write CSS, so you can just copy
-the following into the ``flaskr/static/style.css`` file:
+本部分教程内容不关注在如何写 CSS 文件，所以你可以把下面的
+CSS 语言复制到 ``flaskr/static/style.css`` 文件里：
 
 .. code-block:: css
     :caption: ``flaskr/static/style.css``
@@ -52,21 +51,20 @@ the following into the ``flaskr/static/style.css`` file:
     input.danger { color: #cc2f2e; }
     input[type=submit] { align-self: start; min-width: 10em; }
 
-You can find a less compact version of ``style.css`` in the
-:gh:`example code <examples/tutorial/flaskr/static/style.css>`.
+你可以在 :gh:`example code <examples/tutorial/flaskr/static/style.css>`
+中找到更松散的一种 CSS 样式内容。
 
-Go to http://127.0.0.1:5000/auth/login and the page should look like the
-screenshot below.
+现在刷新 http://127.0.0.1:5000/auth/login 地址后你就看到像下面截图一样的页面风格了。
 
 .. image:: flaskr_login.png
     :align: center
     :class: screenshot
     :alt: screenshot of login page
 
-You can read more about CSS from `Mozilla's documentation <CSS_>`_. If
-you change a static file, refresh the browser page. If the change
-doesn't show up, try clearing your browser's cache.
+你可以从 `Mozilla's documentation <CSS_>`_ 上阅读更多有关 CSS 的内容。
+如果你改变了 CSS 文件内容，刷新网页就可以看到新样式效果。
+如果没有显示新风格的话，尝试清空你的浏览器缓存再看看。
 
 .. _CSS: https://developer.mozilla.org/docs/Web/CSS
 
-Continue to :doc:`blog`.
+继续阅读 :doc:`blog` 文档内容。
