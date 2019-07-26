@@ -1,23 +1,23 @@
-Project Layout
+项目层次
 ==============
 
-Create a project directory and enter it:
+建立一个项目目录后进入项目目录的命令是：
 
 .. code-block:: none
 
     $ mkdir flask-tutorial
     $ cd flask-tutorial
 
-Then follow the :doc:`installation instructions </installation>` to set
-up a Python virtual environment and install Flask for your project.
+然后按照 :doc:`installation instructions </installation>` 文档内容来
+配置一个 Python 虚拟环境后为你的项目安装 Flask 框架。
 
-The tutorial will assume you're working from the ``flask-tutorial``
-directory from now on. The file names at the top of each code block are
-relative to this directory.
+从此时开始，本教程内容都是假设你工作在 ``flask-tutorial`` 目录上。
+每个代码块的顶层文件名都会关联到这个目录上。
 
-----
+单个文件形式的网络应用
+---------------------------
 
-A Flask application can be as simple as a single file.
+一个 Flask 网络应用可以简单放在单个文件中。
 
 .. code-block:: python
     :caption: ``hello.py``
@@ -31,27 +31,25 @@ A Flask application can be as simple as a single file.
     def hello():
         return 'Hello, World!'
 
-However, as a project gets bigger, it becomes overwhelming to keep all
-the code in one file. Python projects use *packages* to organize code
-into multiple modules that can be imported where needed, and the
-tutorial will do this as well.
+不管如何做到的，当一个项目变得更大时，
+把所有代码放到一个文件里，会让人非常难受。
+Python 的众多项目都使用 *包* 的概念来把
+代码组织到多个模块中，这些模块可以在需求的
+位置上再被导入，并且本教程也会这样做。
 
-The project directory will contain:
+本项目目录会包含：
 
-* ``flaskr/``, a Python package containing your application code and
-  files.
-* ``tests/``, a directory containing test modules.
-* ``venv/``, a Python virtual environment where Flask and other
-  dependencies are installed.
-* Installation files telling Python how to install your project.
-* Version control config, such as `git`_. You should make a habit of
-  using some type of version control for all your projects, no matter
-  the size.
-* Any other project files you might add in the future.
+* ``flaskr/`` 目录，一个 Python 包，其中放你的网络应用代码和相关文件。
+* ``tests/`` 目录，一个含有许多单元测试模块的目录。
+* ``venv/`` 目录，一个 Python 虚拟环境目录，其中安装 Flask 和其它依赖包。
+* 一些安装文件会告诉 Python 如何安装你的项目。
+* 版本控制配置文件，例如， `git`_ 文件。你应该为你的所有项目都习惯使用某种
+  版本控制系统，不管项目规模是小还是大。
+* 任何以后你要增加的其它项目文件。
 
 .. _git: https://git-scm.com/
 
-By the end, your project layout will look like this:
+最终，你的项目层次会看起来如下一样：
 
 .. code-block:: none
 
@@ -84,10 +82,11 @@ By the end, your project layout will look like this:
     ├── setup.py
     └── MANIFEST.in
 
-If you're using version control, the following files that are generated
-while running your project should be ignored. There may be other files
-based on the editor you use. In general, ignore files that you didn't
-write. For example, with git:
+如果你正在使用 `git` 版本控制系统，
+如下生成的文件在运行你的项目时应该被忽略。
+也许有其它文件也要忽略，这要根据你使用的文本编辑器来决定。
+通用中，所忽略的文件都应该不是你写的文件。
+使用 `git` 来忽略那些不是你写的文件：
 
 .. code-block:: none
     :caption: ``.gitignore``
@@ -107,4 +106,4 @@ write. For example, with git:
     build/
     *.egg-info/
 
-Continue to :doc:`factory`.
+继续阅读 :doc:`factory` 文档内容。
