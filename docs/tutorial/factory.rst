@@ -1,32 +1,32 @@
 .. currentmodule:: flask
 
-Application Setup
+网络应用配置
 =================
 
-A Flask application is an instance of the :class:`Flask` class.
-Everything about the application, such as configuration and URLs, will
-be registered with this class.
+一个 Flask 网络应用就是一个 :class:`Flask` 类的实例。
+与网络应用有关的每一件事，例如配置和 URLs 地址，
+都会使用这个类来进行注册。
 
-The most straightforward way to create a Flask application is to create
-a global :class:`Flask` instance directly at the top of your code, like
-how the "Hello, World!" example did on the previous page. While this is
-simple and useful in some cases, it can cause some tricky issues as the
-project grows.
+最直接的建立一个 Flask 网络应用方法就是在全局范围里
+直接建立一个 :class:`Flask` 类实例，即在模块顶层上，
+就像刚才的 "Hello, World!" 例子中所做的那样。
+同时在某些情况中这是简单且有用的方法，但在项目长大时
+会导致一些技巧性的问题。
 
-Instead of creating a :class:`Flask` instance globally, you will create
-it inside a function. This function is known as the *application
-factory*. Any configuration, registration, and other setup the
-application needs will happen inside the function, then the application
-will be returned.
+代替全局范围中建立一个 :class:`Flask` 类实例，你会把
+类实例建立在一个函数体中。这个函数就是众所周知的 *网络应用工厂* 模式。
+任何一个配置、注册，和其它网络应用的配置都需要在函数体中来写，
+最后要返回网络应用。
 
 
-The Application Factory
+网络应用工厂
 -----------------------
 
-It's time to start coding! Create the ``flaskr`` directory and add the
-``__init__.py`` file. The ``__init__.py`` serves double duty: it will
-contain the application factory, and it tells Python that the ``flaskr``
-directory should be treated as a package.
+编码的时候到了！建立 ``flaskr`` 目录后在目录里增加一个
+名叫 ``__init__.py`` 的文件。
+这个 ``__init__.py`` 模块有双重责任：
+1. 它会包含网络应用工厂。
+2. 它告诉 Python 应该把 ``flaskr`` 目录视为一个包。
 
 .. code-block:: none
 
@@ -68,74 +68,69 @@ directory should be treated as a package.
 
         return app
 
-``create_app`` is the application factory function. You'll add to it
-later in the tutorial, but it already does a lot.
+``create_app`` 函数就是网络应用工厂函数。
+你会在本教程后面在工厂函数中增加许多内容，
+此时它已经做了许多事情。
 
-#.  ``app = Flask(__name__, instance_relative_config=True)`` creates the
-    :class:`Flask` instance.
+#.  ``app = Flask(__name__, instance_relative_config=True)`` 建立了
+    :class:`Flask` 类实例 `app` 。
 
-    *   ``__name__`` is the name of the current Python module. The app
-        needs to know where it's located to set up some paths, and
-        ``__name__`` is a convenient way to tell it that.
+    *   ``__name__`` 变量作为第一个参数值，是当前dunder init 模块名。
+        这样 `app` 就知道在什么地方配置一些路径，而且dunder name 就是
+        告诉 `app` 这个信息的最佳人选。
 
-    *   ``instance_relative_config=True`` tells the app that
-        configuration files are relative to the
-        :ref:`instance folder <instance-folders>`. The instance folder
-        is located outside the ``flaskr`` package and can hold local
-        data that shouldn't be committed to version control, such as
-        configuration secrets and the database file.
+    *   ``instance_relative_config=True`` 第二个参数是告诉 `app` 配置
+        文件都在 :ref:`instance folder <instance-folders>` 目录里。
+        这个实例目录放在 ``flaskr`` 包外面，并且可以保存本地数据，而这些
+        本地数据不应该提交给版本控制系统，例如配置密钥和数据文件。
 
-#.  :meth:`app.config.from_mapping() <Config.from_mapping>` sets
-    some default configuration that the app will use:
+#.  :meth:`app.config.from_mapping() <Config.from_mapping>` 方法是
+    设置 `app` 会使用的一些默认配置：
 
-    *   :data:`SECRET_KEY` is used by Flask and extensions to keep data
-        safe. It's set to ``'dev'`` to provide a convenient value
-        during development, but it should be overridden with a random
-        value when deploying.
+    *   :data:`SECRET_KEY` 密钥数据是被 Flask 和 Flask 扩展件使用，这样
+        保证了数据安全。这里设置的 ``'dev'`` 只是为开发时提供了一个方便值，
+        当部署网络应用时，例如你应该用 `os.urandom(64)` 生成一个64位随机密钥值。
 
-    *   ``DATABASE`` is the path where the SQLite database file will be
-        saved. It's under
-        :attr:`app.instance_path <Flask.instance_path>`, which is the
-        path that Flask has chosen for the instance folder. You'll learn
-        more about the database in the next section.
+    *   ``DATABASE`` 配置项是告诉 `app` SQLite 数据库文件会存储在什么地方。
+        此处我们把数据库文件存储在
+        :attr:`app.instance_path <Flask.instance_path>` 网络应用实例目录里，
+        这个路径是 Flask 已经选好的。你会在下一篇文档中学习更多关于数据库内容。
 
-#.  :meth:`app.config.from_pyfile() <Config.from_pyfile>` overrides
-    the default configuration with values taken from the ``config.py``
-    file in the instance folder if it exists. For example, when
-    deploying, this can be used to set a real ``SECRET_KEY``.
+#.  :meth:`app.config.from_pyfile() <Config.from_pyfile>` 方法覆写了
+    默认配置，它会使用来自 ``config.py`` 配置文件中的内容来更新配置内容，
+    如果这个配置文件在实例文件夹中的话就可以实现更新。例如，当部署的时候，
+    可以把真正的 ``SECRET_KEY`` 密钥值写在这个配置文件里。
 
-    *   ``test_config`` can also be passed to the factory, and will be
-        used instead of the instance configuration. This is so the tests
-        you'll write later in the tutorial can be configured
-        independently of any development values you have configured.
+    *   ``test_config`` 参数也代入到工厂函数里，并且会用来替换实例配置。
+        这是为了单元测试时使用的配置，你会在本教程后面来写单元测试时使用的
+        配置，届时可以逐项修改开发配置值。
 
-#.  :func:`os.makedirs` ensures that
-    :attr:`app.instance_path <Flask.instance_path>` exists. Flask
-    doesn't create the instance folder automatically, but it needs to be
-    created because your project will create the SQLite database file
-    there.
+#.  :func:`os.makedirs` 函数是为了确保
+    :attr:`app.instance_path <Flask.instance_path>` 实例目录存在。
+    Flask 不会自动建立实例目录，但需要建立这样一个实例目录，因为你的项目会
+    在实例目录中建立 SQLite 数据库文件。
 
-#.  :meth:`@app.route() <Flask.route>` creates a simple route so you can
-    see the application working before getting into the rest of the
-    tutorial. It creates a connection between the URL ``/hello`` and a
-    function that returns a response, the string ``'Hello, World!'`` in
-    this case.
+#.  :meth:`@app.route() <Flask.route>` 方法是直接建立一个路由，所以你
+    可以看到网络应用能够工作。它建立了一个连接，该链接就是在 URL ``/hello``
+     地址和这个函数所返回的一个响应对象关联了起来，此处的响应对象就是一个字符串。
 
 
-Run The Application
+运行网络应用
 -------------------
 
-Now you can run your application using the ``flask`` command. From the
-terminal, tell Flask where to find your application, then run it in
-development mode. Remember, you should still be in the top-level
-``flask-tutorial`` directory, not the ``flaskr`` package.
+现在我们可以使用 ``flask`` 命令来运行网络应用。
+在终端里要先告诉 Flask 在哪里找到网络应用，然后
+再以开发模式来运行网络应用。记住，执行这些命令时，
+你要在 ``flask-tutorial`` 目录中，而不是在
+ ``flaskr`` 包路径下执行终端命令。
 
-Development mode shows an interactive debugger whenever a page raises an
-exception, and restarts the server whenever you make changes to the
-code. You can leave it running and just reload the browser page as you
-follow the tutorial.
+开发模式显示一个交互式调试器，不管什么时候一个页面
+抛出例外时，调试器就会出现，并且不管你什么时候保存
+改变网络应用代码后，服务器都会重启。
+你可以不用管服务器的运行，只需要刷新一下浏览器页面
+就可以，继续看下面的教程内容。
 
-For Linux and Mac:
+对于 Linux 和 Mac 操作系统来说：
 
 .. code-block:: none
 
@@ -143,7 +138,7 @@ For Linux and Mac:
     $ export FLASK_ENV=development
     $ flask run
 
-For Windows cmd, use ``set`` instead of ``export``:
+对于 Windows 系统的 cmd 来说，使用 ``set`` 命令，而不是 ``export`` 命令：
 
 .. code-block:: none
 
@@ -151,7 +146,7 @@ For Windows cmd, use ``set`` instead of ``export``:
     > set FLASK_ENV=development
     > flask run
 
-For Windows PowerShell, use ``$env:`` instead of ``export``:
+对于 Windows 系统的 PowerShell 来说，使用 ``$env:`` 而不是 ``set`` 命令：
 
 .. code-block:: none
 
@@ -159,7 +154,7 @@ For Windows PowerShell, use ``$env:`` instead of ``export``:
     > $env:FLASK_ENV = "development"
     > flask run
 
-You'll see output similar to this:
+你会在终端里看到类似如下的输出结果：
 
 .. code-block:: none
 
@@ -171,8 +166,7 @@ You'll see output similar to this:
      * Debugger is active!
      * Debugger PIN: 855-212-761
 
-Visit http://127.0.0.1:5000/hello in a browser and you should see the
-"Hello, World!" message. Congratulations, you're now running your Flask
-web application!
+用浏览器访问 http://127.0.0.1:5000/hello 网址，你就可以看到页面上显示了
+返回的字符串内容。恭喜你，你此时正在运行你的 Flask 网络应用呢！
 
-Continue to :doc:`database`.
+继续阅读 :doc:`database` 文档内容。
