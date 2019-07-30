@@ -3,9 +3,8 @@
     flask._compat
     ~~~~~~~~~~~~~
 
-    Some py2/py3 compatibility support based on a stripped down
-    version of six so we don't have to depend on a specific version
-    of it.
+    一种 py2/py3 兼容性模块，支持基于没有 six 模块的版本，
+    这样我们不再依赖一个具体的版本。
 
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
@@ -59,7 +58,7 @@ else:
 
 
 def with_metaclass(meta, *bases):
-    """Create a base class with a metaclass."""
+    """建立一个含有元类的基类."""
     # This requires a bit of explanation: the basic idea is to make a
     # dummy metaclass for one level of class instantiation that replaces
     # itself with the actual metaclass.
