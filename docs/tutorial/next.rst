@@ -1,36 +1,35 @@
-Keep Developing!
+继续开发吧！
 ================
 
-You've learned about quite a few Flask and Python concepts throughout
-the tutorial. Go back and review the tutorial and compare your code with
-the steps you took to get there. Compare your project to the
-:gh:`example project <examples/tutorial>`, which might look a bit
-different due to the step-by-step nature of the tutorial.
+通过本项目教程你已经学会了非常少的 Flask 和 Python 概念。
+好好复习一下本项目教程，然后对比一下你写的代码步骤，熟悉开发流程。
+用你写的项目与 :gh:`example project <examples/tutorial>` 比较一下，
+这样在差异中更能够掌握好教程中所传授的开发流程实质。
 
-There's a lot more to Flask than what you've seen so far. Even so,
-you're now equipped to start developing your own web applications. Check
-out the :ref:`quickstart` for an overview of what Flask can do, then
-dive into the docs to keep learning. Flask uses `Jinja`_, `Click`_,
-`Werkzeug`_, and `ItsDangerous`_ behind the scenes, and they all have
-their own documentation too. You'll also be interested in
-:ref:`extensions` which make tasks like working with the database or
-validating form data easier and more powerful.
+在本项目教程中所见，还有大量关于 Flask 和 Python 的概念。
+尽管如此，你现在已经装备上开发你自己网络应用所需启程技术。
+查阅 :ref:`quickstart` 文档内容回顾一下 Flask 都可以做什么，
+然后深入 Flask 项目中的文档内容继续学习。Flask 使用的
+ `Jinja`_、 `Click`_、 `Werkzeug`_ 和 `ItsDangerous`_ 
+这些库的意义，以及它们也都有自己的文档内容。你也会在
+:ref:`extensions` 文档中找到你的兴趣所在，这些扩展件
+让许多任务，像数据库或验证表单数据更加容易，更加有威力。
 
-If you want to keep developing your Flaskr project, here are some ideas
-for what to try next:
+如果你想要继续开发你的 Flaskr 项目的话，下面有一些思路作为
+你们继续学习的线索：
 
-*   A detail view to show a single post. Click a post's title to go to
-    its page.
-*   Like / unlike a post.
-*   Comments.
-*   Tags. Clicking a tag shows all the posts with that tag.
-*   A search box that filters the index page by name.
-*   Paged display. Only show 5 posts per page.
-*   Upload an image to go along with a post.
-*   Format posts using Markdown.
-*   An RSS feed of new posts.
+*   用一个细节视图函数来显示单篇发布内容。点击一个发布标题
+	就可以查看该篇文章。
+*   对一篇发布内容进行一个 喜欢/不喜欢 的投票。
+*   给一篇发布内容留言。
+*   增加标签。点击一个标签可以显示所有含有该标签对发布内容。
+*   一个搜索引擎放在主页上，可以通过名字来过滤发布内容。
+*   页面展示。每个页面中只显示5篇发布内容。
+*   上传一张图片作为发布内容中的图文并茂效果。
+*   使用 Markdown 来书写发布内容。
+*   一个 RSS 新闻订阅系统。
 
-Have fun and make awesome applications!
+祝你们玩的高兴，并且制作令人惊艳的网络应用吧！
 
 .. _Jinja: https://palletsprojects.com/p/jinja/
 .. _Click: https://palletsprojects.com/p/click/
