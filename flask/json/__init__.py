@@ -46,20 +46,17 @@ def _wrap_writer_for_text(fp, encoding):
 
 
 class JSONEncoder(_json.JSONEncoder):
-    """The default Flask JSON encoder.  This one extends the default simplejson
-    encoder by also supporting ``datetime`` objects, ``UUID`` as well as
-    ``Markup`` objects which are serialized as RFC 822 datetime strings (same
-    as the HTTP date format).  In order to support more data types override the
-    :meth:`default` method.
+    """默认的 Flask JSON 编码器。该编码器通过支持 ``datetime`` 对象、
+    ``UUID`` 和 ``Markup`` 对象扩展了默认的 simplejson 编码器。
+    ``Markup`` 对象都是序列化成 RFC 822 日期时间字符串（这样与 HTTP
+    的日期格式就一样了）。为了支持更多数据类型，覆写了 :meth:`default` 方法。
     """
 
     def default(self, o):
-        """Implement this method in a subclass such that it returns a
-        serializable object for ``o``, or calls the base implementation (to
-        raise a :exc:`TypeError`).
+        """部署这个方法是以一个子类形式实现的，这样它为 ``o`` 返回一个可序列化对象，
+        或者调用基础部署（会抛出一个 :exc:`TypeError` 例外类型）。
 
-        For example, to support arbitrary iterators, you could implement
-        default like this::
+        例如，要支持任意迭代器，你可以把 default 部署成如下这样::
 
             def default(self, o):
                 try:
@@ -82,15 +79,14 @@ class JSONEncoder(_json.JSONEncoder):
 
 
 class JSONDecoder(_json.JSONDecoder):
-    """The default JSON decoder.  This one does not change the behavior from
-    the default simplejson decoder.  Consult the :mod:`json` documentation
-    for more information.  This decoder is not only used for the load
-    functions of this module but also :attr:`~flask.Request`.
+    """默认的 JSON 解码器。没有改变默认的 simplejson 解码器行为。
+    参考 :mod:`json` 模块文档了解更多信息。
+    本解码器不仅给本模块的 `load` 函数使用，也给 :attr:`~flask.Request` 使用。
     """
 
 
 def _dump_arg_defaults(kwargs):
-    """Inject default arguments for dump functions."""
+    """把默认参数注射给 `dumps` 和 `dump` 函数."""
     if current_app:
         bp = current_app.blueprints.get(request.blueprint) if request else None
         kwargs.setdefault(
@@ -109,7 +105,7 @@ def _dump_arg_defaults(kwargs):
 
 
 def _load_arg_defaults(kwargs):
-    """Inject default arguments for load functions."""
+    """把默认参数注射给 `loads` 和 `load` 函数."""
     if current_app:
         bp = current_app.blueprints.get(request.blueprint) if request else None
         kwargs.setdefault(
@@ -122,14 +118,14 @@ def _load_arg_defaults(kwargs):
 
 
 def detect_encoding(data):
-    """Detect which UTF codec was used to encode the given bytes.
+    """检测使用哪种 UTF 编码给已知的字节编码。
 
-    The latest JSON standard (:rfc:`8259`) suggests that only UTF-8 is
-    accepted. Older documents allowed 8, 16, or 32. 16 and 32 can be big
-    or little endian. Some editors or libraries may prepend a BOM.
+    最新的 JSON 标准 (:rfc:`8259`) 建议了只接受 UTF-8 这种类型。
+    老旧的文档介绍允许使用 8、 16 或 32 类型。而 16 和 32 可以作为
+    大字节序或小字节序。有的编辑器或库也许增加了一个 BOM 信息。
 
-    :param data: Bytes in unknown UTF encoding.
-    :return: UTF encoding name
+    :param data: 未知的 UTF 编码字节。
+    :return: UTF 编码名
     """
     head = data[:4]
 
@@ -165,14 +161,13 @@ def detect_encoding(data):
 
 
 def dumps(obj, **kwargs):
-    """Serialize ``obj`` to a JSON formatted ``str`` by using the application's
-    configured encoder (:attr:`~flask.Flask.json_encoder`) if there is an
-    application on the stack.
+    """把 ``obj`` 序列化成一个 JSON 格式的 ``str`` 。
+    如果在堆栈上有一个网络应用的话，
+    使用网络应用的配置编码器 (:attr:`~flask.Flask.json_encoder`) 。
 
-    This function can return ``unicode`` strings or ascii-only bytestrings by
-    default which coerce into unicode strings automatically.  That behavior by
-    default is controlled by the ``JSON_AS_ASCII`` configuration variable
-    and can be overridden by the simplejson ``ensure_ascii`` parameter.
+    本函数可以返回 ``unicode`` 字符串或返回只有 ASCII 内容的字节字符串，
+    默认情况自动强制成 unicode 字符串。这种默认行为是通过 ``JSON_AS_ASCII``
+    配置变量来控制的，并且可以通过 simplejson 的 ``ensure_ascii`` 参数来覆写。
     """
     _dump_arg_defaults(kwargs)
     encoding = kwargs.pop('encoding', None)
@@ -183,7 +178,7 @@ def dumps(obj, **kwargs):
 
 
 def dump(obj, fp, **kwargs):
-    """Like :func:`dumps` but writes into a file object."""
+    """类似 :func:`dumps` 函数，但写成了一个文件对象."""
     _dump_arg_defaults(kwargs)
     encoding = kwargs.pop('encoding', None)
     if encoding is not None:
@@ -192,9 +187,9 @@ def dump(obj, fp, **kwargs):
 
 
 def loads(s, **kwargs):
-    """Unserialize a JSON object from a string ``s`` by using the application's
-    configured decoder (:attr:`~flask.Flask.json_decoder`) if there is an
-    application on the stack.
+    """把一个字符串 ``s`` 加载成非序列化的 JSON 对象 。
+    如果在堆栈上有一个网络应用的话，
+    使用网络应用的配置解码器 (:attr:`~flask.Flask.json_decoder`) 。
     """
     _load_arg_defaults(kwargs)
     if isinstance(s, bytes):
@@ -206,8 +201,7 @@ def loads(s, **kwargs):
 
 
 def load(fp, **kwargs):
-    """Like :func:`loads` but reads from a file object.
-    """
+    """类似 :func:`loads` 函数，但从一个文件对象来读取内容."""
     _load_arg_defaults(kwargs)
     if not PY2:
         fp = _wrap_reader_for_text(fp, kwargs.pop('encoding', None) or 'utf-8')
@@ -215,29 +209,31 @@ def load(fp, **kwargs):
 
 
 def htmlsafe_dumps(obj, **kwargs):
-    """Works exactly like :func:`dumps` but is safe for use in ``<script>``
-    tags.  It accepts the same arguments and returns a JSON string.  Note that
-    this is available in templates through the ``|tojson`` filter which will
-    also mark the result as safe.  Due to how this function escapes certain
-    characters this is safe even if used outside of ``<script>`` tags.
+    """工作起来完全像 :func:`dumps` 函数，
+    但对于用在 ``<script>`` 脚本标签中是安全的。
+    本函数接收同样的参数后返回一个 JSON 字符串。
+    注意这个函数可以用在模版中，通过 ``|tojson`` 过滤器
+    也可以把结果标记成安全。如果用在 ``<script>`` 标签外的话，
+    由于本函数转义某些字符的原理也是安全的。
 
-    The following characters are escaped in strings:
+    如下字符都会转义成字符串：
 
     -   ``<``
     -   ``>``
     -   ``&``
     -   ``'``
 
-    This makes it safe to embed such strings in any place in HTML with the
-    notable exception of double quoted attributes.  In that case single
-    quote your attributes or HTML escape it in addition.
+    这让在 HTML 中嵌入任何一个这种字符字符串都会变的安全，
+    但要注意使用双引号属性时的例外情况。在这种情况下，单引号
+    属性或者 HTML 转义时都是额外注意。
 
     .. versionchanged:: 0.10
-       This function's return value is now always safe for HTML usage, even
-       if outside of script tags or if used in XHTML.  This rule does not
-       hold true when using this function in HTML attributes that are double
-       quoted.  Always single quote attributes if you use the ``|tojson``
-       filter.  Alternatively use ``|tojson|forceescape``.
+       本函数返回的值现在一直会为 HTML 用法实现安全保护，
+       即使用在 `script` 标签外或用在 XHTML 中也是安全的。
+       当在 HTML 属性中都是双引号时，这种规则就不成立了。
+       如果你使用 ``|tojson`` 过滤器的话，
+       那就要一直用单引号来写 HTML 属性。
+       换一种用法是 ``|tojson|forceescape`` 强制转义。
     """
     rv = dumps(obj, **kwargs) \
         .replace(u'<', u'\\u003c') \
@@ -250,29 +246,26 @@ def htmlsafe_dumps(obj, **kwargs):
 
 
 def htmlsafe_dump(obj, fp, **kwargs):
-    """Like :func:`htmlsafe_dumps` but writes into a file object."""
+    """类似 :func:`htmlsafe_dumps` 函数，但写成了一个晚间对象."""
     fp.write(text_type(htmlsafe_dumps(obj, **kwargs)))
 
 
 def jsonify(*args, **kwargs):
-    """This function wraps :func:`dumps` to add a few enhancements that make
-    life easier.  It turns the JSON output into a :class:`~flask.Response`
-    object with the :mimetype:`application/json` mimetype.  For convenience, it
-    also converts multiple arguments into an array or multiple keyword arguments
-    into a dict.  This means that both ``jsonify(1,2,3)`` and
-    ``jsonify([1,2,3])`` serialize to ``[1,2,3]``.
+    """本函数打包了 :func:`dumps` 函数是为了增强一下更容易使用。
+    本函数把 JSON 结果变成一个 :class:`~flask.Response` 对象，
+    该类实例对象含有 :mimetype:`application/json` 媒体类型。
+    为了方便起见，本函数也把多参数转换成一个列表或者
+    把多关键字参数转换成一个字典。意思就是 ``jsonify(1,2,3)`` 和
+    ``jsonify([1,2,3])`` 都会序列化成 ``[1,2,3]`` 。
 
-    For clarity, the JSON serialization behavior has the following differences
-    from :func:`dumps`:
+    为了明确， JSON 序列化行为与 :func:`dumps` 函数有如下不同之处：
 
-    1. Single argument: Passed straight through to :func:`dumps`.
-    2. Multiple arguments: Converted to an array before being passed to
-       :func:`dumps`.
-    3. Multiple keyword arguments: Converted to a dict before being passed to
-       :func:`dumps`.
-    4. Both args and kwargs: Behavior undefined and will throw an exception.
+    1. 单个参数：直接代入到 :func:`dumps` 函数中。
+    2. 多参数：转换成列表后再代入 :func:`dumps` 函数中。
+    3. 多关键字参数：转换成字典后再代入 :func:`dumps` 函数中。
+    4. 同时使用 args 和 kwargs 参数时：没有定义行为并会抛出一个例外类型。
 
-    Example usage::
+    示例用法::
 
         from flask import jsonify
 
@@ -282,7 +275,7 @@ def jsonify(*args, **kwargs):
                            email=g.user.email,
                            id=g.user.id)
 
-    This will send a JSON response like this to the browser::
+    这种用法会发送一个 JSON 响应对象，就像浏览器中的::
 
         {
             "username": "admin",
@@ -292,13 +285,14 @@ def jsonify(*args, **kwargs):
 
 
     .. versionchanged:: 0.11
-       Added support for serializing top-level arrays. This introduces a
-       security risk in ancient browsers. See :ref:`json-security` for details.
+       增加了支持序列化顶层阵列。
+       否则在老旧的浏览器中会导致一项安全风险。
+       查看 :ref:`json-security` 了解细节。
 
-    This function's response will be pretty printed if the
-    ``JSONIFY_PRETTYPRINT_REGULAR`` config parameter is set to True or the
-    Flask app is running in debug mode. Compressed (not pretty) formatting
-    currently means no indents and no spaces after separators.
+    如果 ``JSONIFY_PRETTYPRINT_REGULAR`` 配置项设置成 `True` 的话，
+    或者 Flask 网络应用运行在调试模式中的话，
+    本函数的响应对象会是良好格式输出。
+    压缩的格式（非良好格式）当前意思就是在分隔符后没有缩进和没有空格。
 
     .. versionadded:: 0.2
     """
