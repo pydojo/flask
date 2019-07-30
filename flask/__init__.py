@@ -3,8 +3,8 @@
     flask
     ~~~~~
 
-    A microframework based on Werkzeug.  It's extensively documented
-    and follows best practice patterns.
+    一个基于 Werkzeug 的微框架。丰富了文档工作并
+    遵循了众多最好的实行模式。
 
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
