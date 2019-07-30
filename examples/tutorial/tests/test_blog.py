@@ -4,15 +4,15 @@ from flaskr.db import get_db
 
 def test_index(client, auth):
     response = client.get('/')
-    assert b"Log In" in response.data
-    assert b"Register" in response.data
+    assert "Log In".encode('utf8') in response.data
+    assert "Register".encode('utf8') in response.data
 
     auth.login()
     response = client.get('/')
-    assert b'test title' in response.data
-    assert b'by test on 2018-01-01' in response.data
-    assert b'test\nbody' in response.data
-    assert b'href="/1/update"' in response.data
+    assert 'test title'.encode('utf8') in response.data
+    assert 'by test on 2018-01-01'.encode('utf8') in response.data
+    assert 'test\nbody'.encode('utf8') in response.data
+    assert 'href="/1/update"'.encode('utf8') in response.data
 
 
 @pytest.mark.parametrize('path', (
@@ -78,7 +78,7 @@ def test_update(client, auth, app):
 def test_create_update_validate(client, auth, path):
     auth.login()
     response = client.post(path, data={'title': '', 'body': ''})
-    assert b'Title is required.' in response.data
+    assert 'Title is required.'.encode('utf8') in response.data
 
 
 def test_delete(client, auth, app):
