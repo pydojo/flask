@@ -1,10 +1,10 @@
-JavaScript Ajax Example
+JavaScript Ajax 示例
 =======================
 
-Demonstrates how to post form data and process a JSON response using
-JavaScript. This allows making requests without navigating away from the
-page. Demonstrates using |XMLHttpRequest|_, |fetch|_, and
-|jQuery.ajax|_. See the `Flask docs`_ about jQuery and Ajax.
+示范如何发布表单数据后如何使用 JavaScript 处理一个 JSON 响应对象。
+这就让制作请求时不用从页面上来实现导航。
+示范中使用了 |XMLHttpRequest|_、 |fetch|_ 和 |jQuery.ajax|_ 内容。
+查看 `Flask docs`_ 了解 jQuery 和 Ajax 内容。
 
 .. |XMLHttpRequest| replace:: ``XMLHttpRequest``
 .. _XMLHttpRequest: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
@@ -18,7 +18,7 @@ page. Demonstrates using |XMLHttpRequest|_, |fetch|_, and
 .. _Flask docs: http://flask.pocoo.org/docs/patterns/jquery/
 
 
-Install
+安装
 -------
 
 ::
@@ -28,8 +28,8 @@ Install
     $ pip install -e .
 
 
-Run
----
+运行
+------
 
 ::
 
@@ -39,8 +39,8 @@ Run
 Open http://127.0.0.1:5000 in a browser.
 
 
-Test
-----
+测试
+------
 
 ::
 
