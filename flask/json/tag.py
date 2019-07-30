@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Tagged JSON
-~~~~~~~~~~~
+标签过的 JSON
+~~~~~~~~~~~~~~~~~
 
-A compact representation for lossless serialization of non-standard JSON types.
-:class:`~flask.sessions.SecureCookieSessionInterface` uses this to serialize
-the session data, but it may be useful in other places. It can be extended to
-support other types.
+针对非标准 JSON 类型缺少序列化的一种坚实表现形式。
+:class:`~flask.sessions.SecureCookieSessionInterface` 类使用本模块
+序列化会话数据，但也可以用在其它地方。本模块可以扩展成支持其它类型。
 
 .. autoclass:: TaggedJSONSerializer
     :members:
@@ -14,12 +13,12 @@ support other types.
 .. autoclass:: JSONTag
     :members:
 
-Let's seen an example that adds support for :class:`~collections.OrderedDict`.
-Dicts don't have an order in Python or JSON, so to handle this we will dump
-the items as a list of ``[key, value]`` pairs. Subclass :class:`JSONTag` and
-give it the new key ``' od'`` to identify the type. The session serializer
-processes dicts first, so insert the new tag at the front of the order since
-``OrderedDict`` must be processed before ``dict``. ::
+让我们来看一个示例，该示例增加了 :class:`~collections.OrderedDict` 支持。
+在 Python 或 JSON 中，字典都是无序的数据类型，所以处理字典我们会把词条转换成
+ ``[key, value]`` 键值对列表形式。
+子类化 :class:`JSONTag` 类后会给子类一个新键 ``' od'`` 来识别类型。
+会话序列化器先处理字典，所以在最前面插入一个新的标签，因为
+``OrderedDict`` 必须要在处理 ``dict`` 字典之前先处理完。 ::
 
     from flask.json.tag import JSONTag
 
@@ -54,7 +53,7 @@ from flask.json import dumps, loads
 
 
 class JSONTag(object):
-    """Base class for defining type tags for :class:`TaggedJSONSerializer`."""
+    """为定义类型的基类标签给 :class:`TaggedJSONSerializer` 类."""
 
     __slots__ = ('serializer',)
 
@@ -63,34 +62,34 @@ class JSONTag(object):
     key = None
 
     def __init__(self, serializer):
-        """Create a tagger for the given serializer."""
+        """根据序列化器建立一个标签器."""
         self.serializer = serializer
 
     def check(self, value):
-        """Check if the given value should be tagged by this tag."""
+        """检查给出的值是否应该由本标签类进行标记."""
         raise NotImplementedError
 
     def to_json(self, value):
-        """Convert the Python object to an object that is a valid JSON type.
-        The tag will be added later."""
+        """把 Python 对象转换成一个合法的 JSON 类型对象，
+        标签会稍后增加。"""
         raise NotImplementedError
 
     def to_python(self, value):
-        """Convert the JSON representation back to the correct type. The tag
-        will already be removed."""
+        """把 JSON 形式转换回正确的类型，
+        标签也会被移除。"""
         raise NotImplementedError
 
     def tag(self, value):
-        """Convert the value to a valid JSON type and add the tag structure
-        around it."""
+        """把值转换成一个合法的 JSON 类型后，
+        把标签结构增加到结果上。"""
         return {self.key: self.to_json(value)}
 
 
 class TagDict(JSONTag):
-    """Tag for 1-item dicts whose only key matches a registered tag.
+    """对一维字典进行标签化，只有键与注册的标签进行匹配。
 
-    Internally, the dict key is suffixed with `__`, and the suffix is removed
-    when deserializing.
+    内部，字典键带有两个下划线 `__` 作为后缀，
+    并且在解序列化时会移除这个后缀。
     """
 
     __slots__ = ()
@@ -167,9 +166,9 @@ class TagBytes(JSONTag):
 
 
 class TagMarkup(JSONTag):
-    """Serialize anything matching the :class:`~flask.Markup` API by
-    having a ``__html__`` method to the result of that method. Always
-    deserializes to an instance of :class:`~flask.Markup`."""
+    """序列化任何与 :class:`~flask.Markup` 类 API 相匹配的对象，
+    查看那个方法结果使用 ``__html__`` 方法。
+    总会解序列化成一个 :class:`~flask.Markup` 类实例。"""
 
     __slots__ = ()
     key = ' m'
@@ -213,11 +212,10 @@ class TagDateTime(JSONTag):
 
 
 class TaggedJSONSerializer(object):
-    """Serializer that uses a tag system to compactly represent objects that
-    are not JSON types. Passed as the intermediate serializer to
-    :class:`itsdangerous.Serializer`.
+    """使用一个标签系统的序列化器，它坚固地呈现那些不是 JSON 类型的对象。
+    作为中间序列化器代入到 :class:`itsdangerous.Serializer` 类中。
 
-    The following extra types are supported:
+    支持的额外类型如下：
 
     * :class:`dict`
     * :class:`tuple`
@@ -244,18 +242,18 @@ class TaggedJSONSerializer(object):
             self.register(cls)
 
     def register(self, tag_class, force=False, index=None):
-        """Register a new tag with this serializer.
+        """使用本序列化器注册一个新标签。
 
-        :param tag_class: tag class to register. Will be instantiated with this
-            serializer instance.
-        :param force: overwrite an existing tag. If false (default), a
-            :exc:`KeyError` is raised.
-        :param index: index to insert the new tag in the tag order. Useful when
-            the new tag is a special case of an existing tag. If ``None``
-            (default), the tag is appended to the end of the order.
+        :param tag_class: 要注册的标签类。会被本序列化器类实例进行实例化。
+        :param force: 覆写一个已有的标签。如果参数值是 `False`  (默认值)，
+            会抛出一个 :exc:`KeyError` 例外类型。
+        :param index: 索引插入到标签顺序中的新标签。
+            当新标签是已有的标签时，这个参数是有用的。
+            如果参数值是 ``None`` (默认值) 的话，
+            新标签会插入到标签顺序的尾部。
 
-        :raise KeyError: if the tag key is already registered and ``force`` is
-            not true.
+        :raise KeyError: 如果新标签是已注册过的，
+            并且 ``force`` 参数值是 `False` 的话，抛出这个例外。
         """
         tag = tag_class(self)
         key = tag.key
@@ -272,7 +270,7 @@ class TaggedJSONSerializer(object):
             self.order.insert(index, tag)
 
     def tag(self, value):
-        """Convert a value to a tagged representation if necessary."""
+        """如果需要的话，本方法把一个值转换成一个标签过的表现形式."""
         for tag in self.order:
             if tag.check(value):
                 return tag.tag(value)
@@ -280,7 +278,7 @@ class TaggedJSONSerializer(object):
         return value
 
     def untag(self, value):
-        """Convert a tagged representation back to the original type."""
+        """把一个标签过的形式转换回原来的类型."""
         if len(value) != 1:
             return value
 
@@ -292,9 +290,9 @@ class TaggedJSONSerializer(object):
         return self.tags[key].to_python(value[key])
 
     def dumps(self, value):
-        """Tag the value and dump it to a compact JSON string."""
+        """标签化一个值后转化成一个坚固的 JSON 字符串."""
         return dumps(self.tag(value), separators=(',', ':'))
 
     def loads(self, value):
-        """Load data from a JSON string and deserialized any tagged objects."""
+        """从一个 JSON 字符串加载数据后解序列化任何一个标签过的对象."""
         return loads(value, object_hook=self.untag)
