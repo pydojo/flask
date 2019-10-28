@@ -32,9 +32,9 @@ def _default_template_ctx_processor():
 
 
 class Environment(BaseEnvironment):
-    """Works like a regular Jinja2 environment but has some additional
-    knowledge of how Flask's blueprint works so that it can prepend the
-    name of the blueprint to referenced templates if necessary.
+    """工作起来像一个常规的 Jinja2 环境，但有一些额外的知识，
+    那就是 Flask 的蓝图是如何工作的，因此本类可以把蓝图的名字
+    增加到参考的模版之前，如果需要的话。
     """
 
     def __init__(self, app, **options):
@@ -45,9 +45,7 @@ class Environment(BaseEnvironment):
 
 
 class DispatchingJinjaLoader(BaseLoader):
-    """A loader that looks for templates in the application and all
-    the blueprint folders.
-    """
+    """在应用和所有蓝图文件夹中查找模版的一个加载器。"""
 
     def __init__(self, app):
         self.app = app

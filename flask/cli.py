@@ -3,7 +3,7 @@
     flask.cli
     ~~~~~~~~~
 
-    A simple command line application to run flask apps.
+    一个直接运行 Flask 网络应用的命令行程序。
 
     :copyright: © 2010 by the Pallets team.
     :license: BSD, see LICENSE for more details.
@@ -38,12 +38,12 @@ except ImportError:
 
 
 class NoAppException(click.UsageError):
-    """Raised if an application cannot be found or loaded."""
+    """如果无法发现一个网络应用或无法加载一个网络应用就抛出这个例外."""
 
 
 def find_best_app(script_info, module):
-    """Given a module instance this tries to find the best possible
-    application in the module or raises an exception.
+    """根据一个模块实例尝试找到模块中最可能的网络应用，
+    或者抛出一个例外。
     """
     from . import Flask
 
@@ -99,9 +99,10 @@ def find_best_app(script_info, module):
 
 
 def call_factory(script_info, app_factory, arguments=()):
-    """Takes an app factory, a ``script_info` object and  optionally a tuple
-    of arguments. Checks for the existence of a script_info argument and calls
-    the app_factory depending on that and the arguments provided.
+    """获得一个网络应用工厂，一个 ``script_info`` 对象和
+    可选的一个多个参数组成的元组形式。
+    检查本函数所获得的参数中是否有 ``script_info`` 参数，
+    然后调用 ``app_factory`` 参数值。
     """
     args_spec = getargspec(app_factory)
     arg_names = args_spec.args
@@ -118,12 +119,11 @@ def call_factory(script_info, app_factory, arguments=()):
 
 
 def _called_with_wrong_args(factory):
-    """Check whether calling a function raised a ``TypeError`` because
-    the call failed or because something in the factory raised the
-    error.
+    """检查调用一个函数是否抛出一个 ``TypeError`` 例外，
+    因为调用失败或者工厂函数中某行代码抛出错误。
 
-    :param factory: the factory function that was called
-    :return: true if the call failed
+    :param factory: 要调用的工厂函数。
+    :return: 如果调用失败返回 ``True`` 值。
     """
     tb = sys.exc_info()[2]
 
@@ -142,10 +142,9 @@ def _called_with_wrong_args(factory):
 
 
 def find_app_by_string(script_info, module, app_name):
-    """Checks if the given string is a variable name or a function. If it is a
-    function, it checks for specified arguments and whether it takes a
-    ``script_info`` argument and calls the function with the appropriate
-    arguments.
+    """检查给出的字符串是否是一个变量名，还是一个函数名。
+    如果字符串是一个函数名的话，本函数检查具体的函数参数后，
+    是否得到一个 ``script_info`` 参数，并且用合适的参数来调用函数。
     """
     from flask import Flask
     match = re.match(r'^ *([^ ()]+) *(?:\((.*?) *,? *\))? *$', app_name)
@@ -202,8 +201,8 @@ def find_app_by_string(script_info, module, app_name):
 
 
 def prepare_import(path):
-    """Given a filename this will try to calculate the python path, add it
-    to the search path and return the actual module name that is expected.
+    """根据一个文件名来尝试计算 Python 路径，
+    把文件名加入到搜索路径中后，返回期望的实际模块名。
     """
     path = os.path.realpath(path)
 
@@ -286,10 +285,10 @@ version_option = click.Option(
 
 
 class DispatchingApp(object):
-    """Special application that dispatches to a Flask application which
-    is imported by name in a background thread.  If an error happens
-    it is recorded and shown as part of the WSGI handling which in case
-    of the Werkzeug debugger means that it shows up in the browser.
+    """调度给一个 Flask 网络应用的特殊应用，
+    在后端线程中通过应用名来导入。如果发生一个错误的话，
+    会记录下来，并且显示成 WSGI 处理中的部分内容，
+    在 Werkzeug 调试器环境里意味着会显示在浏览器中。
     """
 
     def __init__(self, loader, use_eager_loading=False):
@@ -340,12 +339,11 @@ class DispatchingApp(object):
 
 
 class ScriptInfo(object):
-    """Helper object to deal with Flask applications.  This is usually not
-    necessary to interface with as it's used internally in the dispatching
-    to click.  In future versions of Flask this object will most likely play
-    a bigger role.  Typically it's created automatically by the
-    :class:`FlaskGroup` but you can also manually create it and pass it
-    onwards as click object.
+    """用来处理 Flask 网络应用的辅助对象。
+    常常不需要与本类进行互动，因为本类是在调度给 click 库时的内部用法。
+    在 Flask 以后的版本中本类建立的对象最可能扮演一个更重要的角色。
+    典型情况下，本类的对象是通过 :class:`FlaskGroup` 类自动建立的，
+    但你也可以手动来建立后代入成 click 对象一样。
     """
 
     def __init__(self, app_import_path=None, create_app=None,
@@ -362,9 +360,8 @@ class ScriptInfo(object):
         self._loaded_app = None
 
     def load_app(self):
-        """Loads the Flask app (if not yet loaded) and returns it.  Calling
-        this multiple times will just result in the already loaded app to
-        be returned.
+        """加载 Flask 网络应用（假如还没加载的话）后返回网络应用。
+        多次调用本方法只会产生已加载的网络应用返回效果。
         """
         __traceback_hide__ = True
 
@@ -409,10 +406,9 @@ pass_script_info = click.make_pass_decorator(ScriptInfo, ensure=True)
 
 
 def with_appcontext(f):
-    """Wraps a callback so that it's guaranteed to be executed with the
-    script's application context.  If callbacks are registered directly
-    to the ``app.cli`` object then they are wrapped with this function
-    by default unless it's disabled.
+    """打包一个回调函数，这样才能确保带有脚本的网络应用语境能够执行该函数。
+    如果回调函数都直接注册到 ``app.cli`` 对象上的话，
+    那么这些回调函数都默认使用本函数来进行打包，除非禁用本函数。
     """
     @click.pass_context
     def decorator(__ctx, *args, **kwargs):
@@ -422,17 +418,17 @@ def with_appcontext(f):
 
 
 class AppGroup(click.Group):
-    """This works similar to a regular click :class:`~click.Group` but it
-    changes the behavior of the :meth:`command` decorator so that it
-    automatically wraps the functions in :func:`with_appcontext`.
+    """本类工作起来就像正规的 click 库的 :class:`~click.Group` 类一样，
+    但区别是本类改变了 :meth:`command` 方法装饰器的行为，
+    所以才能够自动地把函数打包到 :func:`with_appcontext` 函数中。
 
-    Not to be confused with :class:`FlaskGroup`.
+    别与 :class:`FlaskGroup` 类搞混了。
     """
 
     def command(self, *args, **kwargs):
-        """This works exactly like the method of the same name on a regular
-        :class:`click.Group` but it wraps callbacks in :func:`with_appcontext`
-        unless it's disabled by passing ``with_appcontext=False``.
+        """本方法与 :class:`click.Group` 类的同名方法工作完全一样，
+        但本方法把回调函数打包到 :func:`with_appcontext` 函数中，
+        除非通过代入 ``with_appcontext=False`` 参数值后禁用本方法。
         """
         wrap_for_ctx = kwargs.pop('with_appcontext', True)
         def decorator(f):
@@ -442,37 +438,32 @@ class AppGroup(click.Group):
         return decorator
 
     def group(self, *args, **kwargs):
-        """This works exactly like the method of the same name on a regular
-        :class:`click.Group` but it defaults the group class to
-        :class:`AppGroup`.
+        """本方法与 :class:`click.Group` 类的同名方法工作完全一样，
+        但本方法默认默认分组到 :class:`AppGroup` 类上。
         """
         kwargs.setdefault('cls', AppGroup)
         return click.Group.group(self, *args, **kwargs)
 
 
 class FlaskGroup(AppGroup):
-    """Special subclass of the :class:`AppGroup` group that supports
-    loading more commands from the configured Flask app.  Normally a
-    developer does not have to interface with this class but there are
-    some very advanced use cases for which it makes sense to create an
-    instance of this.
+    """本类是 :class:`AppGroup` 类的特殊子类，
+    支持从配置完的 Flask 网络应用中加载更多命令。
+    正常情况，一名开发者不用与本类进行互动，
+    但本类有一些非常高级的用法，针对本类的实例来说是有意义的。
 
-    For information as of why this is useful see :ref:`custom-scripts`.
+    对于为什么有意义查看 :ref:`custom-scripts` 参考文档。
 
-    :param add_default_commands: if this is True then the default run and
-        shell commands wil be added.
-    :param add_version_option: adds the ``--version`` option.
-    :param create_app: an optional callback that is passed the script info and
-        returns the loaded app.
-    :param load_dotenv: Load the nearest :file:`.env` and :file:`.flaskenv`
-        files to set environment variables. Will also change the working
-        directory to the directory containing the first file found.
-    :param set_debug_flag: Set the app's debug flag based on the active
-        environment
+    :param add_default_commands: 如果这个参数值是 `True` 的话，
+                                 默认运行加入的终端命令。
+    :param add_version_option: 增加 ``--version`` 命令选项。
+    :param create_app: 一种可选的回调功能，脚本信息代入后返回加载的网络应用。
+    :param load_dotenv: 加载最近的 :file:`.env` 文件和 :file:`.flaskenv` 文件，
+                        用来设置环境变量。也会把工作目录变成含有找到的第一个文件所在目录。
+    :param set_debug_flag: 根据激活的环境设置网络应用的调试旗语。
 
     .. versionchanged:: 1.0
-        If installed, python-dotenv will be used to load environment variables
-        from :file:`.env` and :file:`.flaskenv` files.
+        如果安装了 python-dotenv 的话，会使用 python-dotenv 来加载
+        来自 :file:`.env` 文件和 :file:`.flaskenv` 文件中的环境变量。
     """
 
     def __init__(self, add_default_commands=True, create_app=None,
@@ -571,28 +562,29 @@ class FlaskGroup(AppGroup):
 
 
 def _path_is_ancestor(path, other):
-    """Take ``other`` and remove the length of ``path`` from it. Then join it
-    to ``path``. If it is the original value, ``path`` is an ancestor of
-    ``other``."""
+    """得到 ``other`` 参数值后，去掉 ``path`` 参数值长度。
+    然后加入到 ``path`` 参数值中。
+    如果结果是原来的值的话， ``path`` 参数值就是``other`` 参数值的前身。
+    """
     return os.path.join(path, other[len(path):].lstrip(os.sep)) == other
 
 
 def load_dotenv(path=None):
-    """Load "dotenv" files in order of precedence to set environment variables.
+    """加载 "dotenv" 文件达到提前设置环境变量的效果。
 
-    If an env var is already set it is not overwritten, so earlier files in the
-    list are preferred over later files.
+    如果已经设置了一个环境变量的话，不会覆写环境变量，
+    所以列表中先找到的文件都优先于后找到的文件。
 
-    Changes the current working directory to the location of the first file
-    found, with the assumption that it is in the top level project directory
-    and will be where the Python path should import local packages from.
+    把当前工作目录变成找到的第一个文件所在目录，
+    文件都假设在项目目录顶层位置中，并且是导入
+    本地包应该有的 Python 路径上。
 
-    This is a no-op if `python-dotenv`_ is not installed.
+    如果没有安装 `python-dotenv`_ 的话，本函数就没有效果。
 
     .. _python-dotenv: https://github.com/theskumar/python-dotenv#readme
 
-    :param path: Load the file at this location instead of searching.
-    :return: ``True`` if a file was loaded.
+    :param path: 在本参数值位置上加载文件，而不是搜索路径。
+    :return: 如果一个文件加载完毕，返回值是 ``True``
 
     .. versionadded:: 1.0
     """
@@ -627,8 +619,8 @@ def load_dotenv(path=None):
 
 
 def show_server_banner(env, debug, app_import_path, eager_loading):
-    """Show extra startup messages the first time the server is run,
-    ignoring the reloader.
+    """在服务器第一次运行时显示额外的启动消息，
+    忽略重载器。
     """
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         return
@@ -654,9 +646,10 @@ def show_server_banner(env, debug, app_import_path, eager_loading):
 
 
 class CertParamType(click.ParamType):
-    """Click option type for the ``--cert`` option. Allows either an
-    existing file, the string ``'adhoc'``, or an import for a
-    :class:`~ssl.SSLContext` object.
+    """为 ``--cert`` 命令行选项增加的 Click 库支持。
+    对一个 :class:`~ssl.SSLContext` 类对象来说，
+    允许是一个存在的文件、或是字符串 ``'adhoc'``，
+    又或是允许一项导入。
     """
 
     name = 'path'
@@ -694,8 +687,10 @@ class CertParamType(click.ParamType):
 
 
 def _validate_key(ctx, param, value):
-    """The ``--key`` option must be specified when ``--cert`` is a file.
-    Modifies the ``cert`` param to be a ``(cert, key)`` pair if needed.
+    """当 ``--cert`` 以一个文件方式使用时，
+    必须描述一个 ``--key`` 命令行选项。
+    如果需要的话，把 ``cert`` 参数描述成
+    一个 ``(cert, key)`` 证书钥匙对儿形式。
     """
     cert = ctx.params.get('cert')
     is_adhoc = cert == 'adhoc'

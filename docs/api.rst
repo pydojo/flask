@@ -805,8 +805,8 @@ URL路由注册
 
 .. autofunction:: pass_script_info
 
-   Marks a function so that an instance of :class:`ScriptInfo` is passed
-   as first argument to the click callback.
+   装饰一个函数后， :class:`ScriptInfo` 的一个实例会作为
+   第一参数传递给 click 回调函数。
 
 .. autodata:: run_command
 

@@ -109,16 +109,15 @@ class JSONMixin(object):
 
 
 class Request(RequestBase, JSONMixin):
-    """The request object used by default in Flask.  Remembers the
-    matched endpoint and view arguments.
+    """默认用在 Flask 中的请求对象。
+    记住了匹配的端点和视图参数。
 
-    It is what ends up as :class:`~flask.request`.  If you want to replace
-    the request object used you can subclass this and set
-    :attr:`~flask.Flask.request_class` to your subclass.
+    本类就是结束成 :class:`~flask.request` 类。如果你想替换
+    使用的请求对象，你可以写一个本类的子类，然后设置 
+    :attr:`~flask.Flask.request_class` 属性到你的子类。
 
-    The request object is a :class:`~werkzeug.wrappers.Request` subclass and
-    provides all of the attributes Werkzeug defines plus a few Flask
-    specific ones.
+    请求对象就是一个 :class:`~werkzeug.wrappers.Request` 的子类，
+    并且提供了 Werkzeug 定义的所有属性，加上几个 Flask 描述的属性。
     """
 
     #: The internal URL rule that matched the request.  This can be
@@ -144,23 +143,22 @@ class Request(RequestBase, JSONMixin):
 
     @property
     def max_content_length(self):
-        """Read-only view of the ``MAX_CONTENT_LENGTH`` config key."""
+        """本属性是 ``MAX_CONTENT_LENGTH`` 配置键的只读内容。"""
         if current_app:
             return current_app.config['MAX_CONTENT_LENGTH']
 
     @property
     def endpoint(self):
-        """The endpoint that matched the request.  This in combination with
-        :attr:`view_args` can be used to reconstruct the same or a
-        modified URL.  If an exception happened when matching, this will
-        be ``None``.
+        """与请求相匹配的端点。这个属性与 :attr:`view_args` 属性组合使用
+        可以重新组建相同的或一个修改过的 URL 。当匹配时如果发生了一个例外的话，
+        本属性值会是 ``None``
         """
         if self.url_rule is not None:
             return self.url_rule.endpoint
 
     @property
     def blueprint(self):
-        """The name of the current blueprint"""
+        """本属性是当前蓝图的名字。"""
         if self.url_rule and '.' in self.url_rule.endpoint:
             return self.url_rule.endpoint.rsplit('.', 1)[0]
 
